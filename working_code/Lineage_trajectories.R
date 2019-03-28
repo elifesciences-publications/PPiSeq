@@ -1,5 +1,24 @@
-## (3) Make lineage trajectories of representative lineages 
-setwd("/Volumes/Zhimin/PPiseq/DMSO/all_lintag_files_final/DBC_counts/max_5/")
+##########################
+#### This script can be used to generate a plot of lineage trajectories 
+#### and use gradient colors (fitness values) to label each lineage
+##########################
+
+# Source some basic functions froma function.R in Github repository
+source_https <- function(u, unlink.tmp.certs = FALSE) {
+        # load package
+        require(RCurl)
+        # read script lines from website using a security certificate
+        if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
+        script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
+        if(unlink.tmp.certs) unlink("cacert.pem")
+        
+        # parase lines and evealuate in the global environement
+        eval(parse(text = script), envir= .GlobalEnv)
+}
+source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working_code/function.R", unlink.tmp.certs = TRUE)
+
+setwd("~/Dropbox/PPiSeq_02/")
+
 library("dplyr")
 library("tidyr")
 library(ggplot2)
@@ -7,98 +26,77 @@ library(plotly)
 library(gridExtra)
 library(reshape)
 library(ggpubr)
+
+#Commonly used colors
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 
-PPI_lineages = csvReader_T("known_PPI_fitness_barcodes_filtered.csv")
-
-PPI_lineages_select = PPI_lineages[, c(1, 3, 5, 7:11)]
+PPI_lineages = dataFram_T("Paper_data/DMSO_PPI_barcodes_fitness_counts.csv")
+PPI_lineages_select = PPI_lineages[, c(1, 3, 4, 6:10)] 
 for (i in 4:8){
         PPI_lineages_select[,i] = frequency(as.numeric(PPI_lineages_select[,i]))
 }
-
 PPI_lineages_select[PPI_lineages_select == "0"] = 1e-9 # 5081689
 
-csvWriter(PPI_lineages_select, "Lineage_plot/PPI_barcode_trajectories_fitness_plot.csv")
-
-filter_trajectories = function(a){
-        matrix_final_select= matrix(0, nrow(a), ncol(a))
-        colnames(matrix_final_select) = colnames(a)
-        for (i in 1: nrow(a)){
-                l= which(as.numeric(a[i,4:8]) == 1e-9)
-                if (length(l) == 0){
-                        matrix_final_select[i,]= a[i,]
-                }
-                else if (identical(l, (6-length(l)) : 5)){ # 5 = 8-4+1; 6 = 5 +1
-                        matrix_final_select[i,]= a[i,]
-                }
-                else{
-                        matrix_final_select[i,]= NA
-                }
-        }
-        matrix_final_select= na.omit(matrix_final_select) 
-        return(matrix_final_select)
-}
-
-PPI_lineages_final = filter_trajectories(PPI_lineages_select) # 4993630
-csvWriter(PPI_lineages_final, "Lineage_plot/Good_PPI_barcode_trajectories_fitness_plot.csv")
-
-setwd("/Volumes/Zhimin/PPiseq/DMSO/all_lintag_files_final/DBC_counts/max_5/Lineage_plot/")
-PPI_lineages = dataFrameReader_T("PPI_barcode_trajectories_fitness_plot.csv") ### Not choose good trajectories
-
-PPI_pos_DHFR = PPI_lineages[which(PPI_lineages[,1] == "positive_DHFR"),]
+# Extract Positive and Negative control
+PPI_pos_DHFR = PPI_lineages_select[which(PPI_lineages_select[,1] == "positive_DHFR"),]
 PPI_pos_DHFR[,1] = "Positive control"
-PPI_neg_DHFR = PPI_lineages[which(PPI_lineages[,1] == "negative_non_DHFR"),]
+PPI_neg_DHFR = PPI_lineages_select[which(PPI_lineages_select[,1] == "negative_non_DHFR"),]
 PPI_neg_DHFR[,1] = "Negative control"
 
-# Get PPIs containing IMD3 (YLR432W) as bait
-PPI_ERP3 = PPI_lineages[grep("YDL018C_", PPI_lineages[,1]),] # 5258
+# Get PPIs containing IMD3 (YLR432W) as bait, EPR3 as prey, 
+# YIL143C (promiscuous protein) as bit, and YPL139C as prey. 
+PPI_ERP3 = PPI_lineages_select[grep("YDL018C_", PPI_lineages_select[,1]),] # 5258
+PPI_IMD3 = PPI_lineages_select[grep("_YLR432W", PPI_lineages_select[,1]),] # 3545
+PPI_promiscuous_YPL139C = PPI_lineages_select[grep("YPL139C_", PPI_lineages_select[,1]),] # 6410
+PPI_promiscuous_YIL143C = PPI_lineages_select[grep("_YIL143C", PPI_lineages_select[,1]), ] # 3425
 
-PPI_IMD3 = PPI_lineages[grep("_YLR432W", PPI_lineages[,1]),] # 3545
-PPI_promiscuous_YPL139C = PPI_lineages[grep("YPL139C_", PPI_lineages[,1]),] # 6410
-PPI_promiscuous_YIL143C = PPI_lineages[grep("_YIL143C", PPI_lineages[,1]), ] # 3425
-
-csvWriter(PPI_ERP3, "ERP3-DHFR[3] X ORF-DHFR[1,2].csv")
-csvWriter(PPI_IMD3, "ORF-DHFR[3] X IMD3-DHFR[1,2].csv")
-csvWriter(PPI_promiscuous_YIL143C, "ORF-DHFR[3] X YIL143C-DHFR[1,2].csv")
-csvWriter(PPI_promiscuous_YPL139C, "YPL139C-DHFR[3] X ORF-DHFR[1,2].csv ")
-#PPI_control = do.call("rbind", list(PPI_pos_DHFR, PPI_neg_DHFR))
-
-PRS = PPI_lineages[grep("Pos", PPI_lineages[,1]),]
-RRS = PPI_lineages[grep("Neg", PPI_lineages[,1]),]
-
+# Extract PRS and RRS strains
+PRS = PPI_lineages_select[grep("Pos", PPI_lineages_select[,1]),]
+RRS = PPI_lineages_select[grep("Neg", PPI_lineages_select[,1]),]
 PRS[,1] = "PRS"
 RRS[,1] = "RRS"
 
-#PPI_reference = do.call("rbind", list(PRS, RRS))
-
-#### Fragment strains
-MATa_DHFR12 = csvReader_T("/Volumes/Zhimin/PPiseq/DMSO/all_lintag_files_final/PPI_barcodes/MATa_genome_combine.csv")
-MATalpha_DHFR3 = csvReader_T("/Volumes/Zhimin/PPiseq/DMSO/all_lintag_files_final/PPI_barcodes/MATalpha_genome_combine.csv")
-
-PPI_DHFR12 = PPI_lineages[which(PPI_lineages[,2] %in% MATa_DHFR12[,3]),]
+# Extract strains that contain ORF X Fragment only strains
+MATa_DHFR12 = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/PPI_barcodes/MATa_genome_combine.csv")
+MATalpha_DHFR3 = csvReader_T("~/Dropbox/PPiSeq_02/Working_data//PPI_barcodes/MATalpha_genome_combine.csv")
+PPI_DHFR12 = PPI_lineages_select[which(PPI_lineages_select[,2] %in% MATa_DHFR12[,3]),]
 PPI_DHFR12[,1] = "ORF X DHFR[1,2]"
-
-PPI_DHFR3 = PPI_lineages[which(PPI_lineages[,2] %in% MATalpha_DHFR3[,3]),]
+PPI_DHFR3 = PPI_lineages_select[which(PPI_lineages_select[,2] %in% MATalpha_DHFR3[,3]),]
 PPI_DHFR3[,1] = "DHFR[3] X ORF"
 
-PPI_pos_DHFR_transform = transform_lineages(PPI_pos_DHFR, 1,2,3, 4)
+##### A function to transform lineage matrix to data frame which can be plotted in ggplot2
+transform_lineages <- function(x, PPI_pos, barcode_pos, fitness_pos, G0_pos){
+        time_points = rep(c(0,3,6,9,12), nrow(x))
+        lineages = as.numeric(c(t(x[, G0_pos:(G0_pos + 4)])))
+        PPI = rep("0", length(time_points))
+        barcode = rep("0", length(time_points))
+        Fitness = rep(0, length(time_points))
+        for(i in 1:nrow(x)){
+                PPI[(i*5 -4): (i*5)] = as.character(rep(x[i,PPI_pos], 5))
+                barcode[(i*5 -4): (i*5)] = as.character(rep(x[i,barcode_pos], 5))
+                Fitness[(i*5 -4): (i*5)] = as.numeric(rep(x[i,fitness_pos], 5))
+        }
+        matrix_lineages = data.frame(PPI, barcode, Fitness, time_points, lineages)
+        return (matrix_lineages)
+}
+# Trasnform the lineages into a format for plot
+PPI_pos_DHFR_transform = transform_lineages(PPI_pos_DHFR, 1,2,3,4)
 PPI_neg_DHFR_transform = transform_lineages(PPI_neg_DHFR, 1,2,3,4)
 PRS_transform = transform_lineages(PRS, 1,2,3,4)
 RRS_transform = transform_lineages(RRS, 1,2,3,4)
 PPI_DHFR12_transform = transform_lineages(PPI_DHFR12, 1,2,3,4)
 PPI_DHFR3_transform = transform_lineages(PPI_DHFR3, 1,2,3,4)
-
 PPI_ERP3_transform = transform_lineages(PPI_ERP3, 1,2,3,4)
 PPI_IMD3_transform = transform_lineages(PPI_IMD3, 1,2,3,4)
-
 PPI_promiscuous_YPL139C_transform = transform_lineages(PPI_promiscuous_YPL139C, 1,2,3,4)
 PPI_promiscuous_YIL143C_transform = transform_lineages(PPI_promiscuous_YIL143C, 1,2,3,4)
 
-
+library(ggplot2)
 library(scales)
 
 Lineage_plot = function(PPI_pos_DHFR_transform, output){
+        PPI_pos_DHFR_transform = PPI_pos_DHFR_transform
         ggplot(data = PPI_pos_DHFR_transform, aes(x = time_points, y= lineages, group = barcode, color = Fitness)) +
                 geom_line(alpha =0.7, size = 0.3) +
                 scale_color_gradientn(colors = apple_colors[c(5,10,7)], limits = c(-0.5, 1.3)) +
@@ -120,36 +118,35 @@ Lineage_plot = function(PPI_pos_DHFR_transform, output){
         
 }
 
-Lineage_plot(PPI_pos_DHFR_transform, "Positive DHFR lineages.pdf")
-Lineage_plot(PPI_neg_DHFR_transform, "Negative DHFR lineages.pdf")
-Lineage_plot(PRS_transform, "PRS lineages.pdf")
-Lineage_plot(RRS_transform, "RRS lineages.pdf")
-Lineage_plot(PPI_DHFR12_transform, "ORF X DHFR[1,2] lineages.pdf")
-Lineage_plot(PPI_DHFR3_transform, "DHFR[3] X ORF lineages.pdf")
+Lineage_plot(PPI_pos_DHFR_transform, "Working_figure/DMSO_lineage_plot/Positive DHFR lineages.pdf")
+Lineage_plot(PPI_neg_DHFR_transform, "Working_figure/DMSO_lineage_plot/Negative DHFR lineages.pdf")
+Lineage_plot(PRS_transform, "Working_figure/DMSO_lineage_plot/PRS lineages.pdf")
+Lineage_plot(RRS_transform, "Working_figure/DMSO_lineage_plot/RRS lineages.pdf")
+Lineage_plot(PPI_DHFR12_transform, "Working_figure/DMSO_lineage_plot/ORF X DHFR[1,2] lineages.pdf")
+Lineage_plot(PPI_DHFR3_transform, "Working_figure/DMSO_lineage_plot/DHFR[3] X ORF lineages.pdf")
+Lineage_plot(PPI_ERP3_transform, "Working_figure/DMSO_lineage_plot/ERP3 X ORF lineages.pdf")
+Lineage_plot(PPI_IMD3_transform, "Working_figure/DMSO_lineage_plot/ORF X IMD3 lineages.pdf")
+Lineage_plot(PPI_promiscuous_YIL143C_transform, "Working_figure/DMSO_lineage_plot/ORF X YIL143C.pdf")
+Lineage_plot(PPI_promiscuous_YPL139C_transform, "Working_figure/DMSO_lineage_plot/YPL139C X ORF.pdf")
 
-Lineage_plot(PPI_ERP3_transform, "ERP3 X ORF lineages.pdf")
-Lineage_plot(PPI_IMD3_transform, "ORF X IMD3 lineages.pdf")
-Lineage_plot(PPI_promiscuous_YIL143C_transform, "ORF X YIL143C.pdf")
-Lineage_plot(PPI_promiscuous_YPL139C_transform, "YPL139C X ORF.pdf")
+#Randomly choose some lineages after removing these controls strains and make a plot
+all_control = do.call("rbind", list(PPI_pos_DHFR, PPI_neg_DHFR, PRS, RRS, PPI_DHFR12, PPI_DHFR3))# Combine all the controls
+PPI_lineages_remaining = PPI_lineages_select[which(!PPI_lineages_select[,2] %in% all_control[,2]),]
+PPI_lineages_remaining = PPI_lineages_remaining[order(as.numeric(PPI_lineages_remaining[,3]), decreasing = T),] # order the lineage based on their fitness
 
-#### Choose some lineages and make a plot
-all_control = do.call("rbind", list(PPI_pos_DHFR, PPI_neg_DHFR, PRS, RRS, PPI_DHFR12, PPI_DHFR3))
-
-PPI_lineages_remaining = PPI_lineages[which(!PPI_lineages[,2] %in% all_control[,2]),]
-PPI_lineages_remaining = PPI_lineages_remaining[order(PPI_lineages_remaining[,3], decreasing = T),]
-
-PPI_lineages_high = PPI_lineages_remaining[which(PPI_lineages_remaining[,3] > 0.4 & PPI_lineages_remaining[,4] > 1e-7),]
-PPI_lineages_medium = PPI_lineages_remaining[which(PPI_lineages_remaining[,3] > 0.1 & PPI_lineages_remaining [,3] < 0.4
-                                                   &PPI_lineages_remaining[,4] > 1e-8 ),]
-PPI_lineages_neutral = PPI_lineages_remaining[which(PPI_lineages_remaining[,3] > -0.2 & PPI_lineages_remaining [,3] < 0.2
-                                                    &PPI_lineages_remaining[,4] > 1e-8),]
-PPI_lineages_low = PPI_lineages_remaining[which(PPI_lineages_remaining[,3] > -0.5 & PPI_lineages_remaining [,3] < -0.1
-                                                &PPI_lineages_remaining[,4] > 1e-8),]
-
+# Different groups
+PPI_lineages_high = PPI_lineages_remaining[which(as.numeric(PPI_lineages_remaining[,3]) > 0.4 & as.numeric(PPI_lineages_remaining[,4]) > 1e-7),] # 5568
+PPI_lineages_medium = PPI_lineages_remaining[which(as.numeric(PPI_lineages_remaining[,3]) > 0.1 & as.numeric(PPI_lineages_remaining[,3]) < 0.4
+                                                   & as.numeric(PPI_lineages_remaining[,4]) > 1e-8 ),] # 2417400
+PPI_lineages_neutral = PPI_lineages_remaining[which(as.numeric(PPI_lineages_remaining[,3]) > -0.2 & as.numeric(PPI_lineages_remaining [,3]) < 0.2
+                                                    & as.numeric(PPI_lineages_remaining[,4]) > 1e-8),] # 4460803
+PPI_lineages_low = PPI_lineages_remaining[which(as.numeric(PPI_lineages_remaining[,3]) > -0.5 & as.numeric(PPI_lineages_remaining [,3]) < -0.1
+                                                & as.numeric(PPI_lineages_remaining[,4]) > 1e-8),] # 97172
+# 1000 lineages with fitness > 0.4; 2000 lineages with fitness > 0.1 & < 0.4; 2000 lineages > -0.2 & < 0.2; 1000 lineages < -0.1
 PPI_lineages_final = do.call("rbind", list(PPI_lineages_high[sample(1:nrow(PPI_lineages_high), 1000),],
                                            PPI_lineages_medium[sample(1:nrow(PPI_lineages_medium), 2000),],
                                            PPI_lineages_neutral[sample(1:nrow(PPI_lineages_neutral), 2000),],
                                            PPI_lineages_low[sample(1:nrow(PPI_lineages_low), 1000),]))
 PPI_lineages_final_transform = transform_lineages(PPI_lineages_final, 1,2,3,4)
 
-Lineage_plot(PPI_lineages_final_transform, "6000 representative lineages.pdf")
+Lineage_plot(PPI_lineages_final_transform, "Working_figure/DMSO_lineage_plot/6000 representative lineages.pdf")
