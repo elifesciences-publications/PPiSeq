@@ -770,8 +770,8 @@ dynamic_PPI_residual = function(DMSO_lineage, H2O2_lineage, DMSO_real, H2O2_real
         csvWriter(DMSO_H2O2_matrix, output_file)
 }
 
-
-###### Calculate the p-values for the same PPI in two environments by Cyber-T test. The input matrix should be output of dynamic_PPI_residual (above function)
+***
+##### Calculate the p-values for the same PPI in two environments by Cyber-T test. The input matrix should be output of dynamic_PPI_residual (above function)
 source("/Volumes/zmliu_02/PPiseq/Combine_environments/one_binary_PPV/dynamic_PPI/cyberT_test/bayesreg.R")
 Cal_Bayes_q = function(DMSO_H2O2_all, output_name){
         replicate_number = paste(as.character(DMSO_H2O2_all[,4]), as.character(DMSO_H2O2_all[,5]), sep = "_")
@@ -809,7 +809,7 @@ Cal_Bayes_q = function(DMSO_H2O2_all, output_name){
         csvWriter(data_all, output_name)
         return(data_all)
 }
-
+***
 #### To show the number in y axis in a scientific way
 fancy_scientific <- function(l) {
         # turn in to character string in scientific notation
