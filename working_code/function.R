@@ -131,13 +131,6 @@ standard_convert_systematic <- function(standard, database){
         return (systematic)
 }
 
-### Take the overlapped systematic and standard genes
-Find_standard <- function(gene_list, output){
-        gene_list= as.matrix(read.delim(gene_list, header=F))
-        systematic_standard = csvReader_T("/Volumes/Zhimin/PPiseq/DMSO/new_pipeline/reference_set/Systematic_standard_protein.csv")
-        gene_standard= systematic_standard[which(systematic_standard[,1] %in% gene_list[,1]),]
-        write.csv(gene_standard, output, row.names = F,  quote=F)
-}
 
 convert_PPI_unique_gene <- function (x){
         PPI= split_string_vector(x)
@@ -339,8 +332,8 @@ P_value <- function(PPI_relative_fitness, output_01, output_02){
 
 P_value_all_negative <- function(PPI_relative_fitness, output_01, output_02){
         PPI_indiv= csvReader_T(PPI_relative_fitness)
-        MATa_DHFR12 = csvReader_T("/Volumes/Zhimin/PPiseq/DMSO/all_lintag_files/PPI_barcodes/MATa_genome_combine.csv")
-        MATalpha_DHFR3 = csvReader_T("/Volumes/Zhimin/PPiseq/DMSO/all_lintag_files/PPI_barcodes/MATalpha_genome_combine.csv")
+        MATa_DHFR12 = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/PPI_barcodes/MATa_genome_combine.csv")
+        MATalpha_DHFR3 = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/PPI_barcodes/MATalpha_genome_combine.csv")
         PPI_DHFR12 = PPI_indiv[which(PPI_indiv[,3] %in% MATa_DHFR12[,3]),]
         PPI_DHFR3 = PPI_indiv[which(PPI_indiv[,3] %in% MATalpha_DHFR3[,3]),]
         PPI_negative_DHFR= PPI_indiv[which(PPI_indiv[,1] == "negative_non_DHFR"),]
@@ -695,7 +688,6 @@ ROC_matrix = function(matrix_ref, selected_fitness, selected_Q_value, pos_neg_ra
 }
 
 protein_degree_count = function(PPI){
-        source("/Volumes/zmliu_02/PPiseq/HU/R_code/function.R")
         all_PPI_gene = split_string_vector(PPI)
         protein_degree = as.data.frame(table(as.character(c(all_PPI_gene[,1], all_PPI_gene[,2]))))
         protein_degree_order= protein_degree[order(protein_degree[,2], decreasing = T),]
@@ -770,46 +762,7 @@ dynamic_PPI_residual = function(DMSO_lineage, H2O2_lineage, DMSO_real, H2O2_real
         csvWriter(DMSO_H2O2_matrix, output_file)
 }
 
-***
-##### Calculate the p-values for the same PPI in two environments by Cyber-T test. The input matrix should be output of dynamic_PPI_residual (above function)
-source("/Volumes/zmliu_02/PPiseq/Combine_environments/one_binary_PPV/dynamic_PPI/cyberT_test/bayesreg.R")
-Cal_Bayes_q = function(DMSO_H2O2_all, output_name){
-        replicate_number = paste(as.character(DMSO_H2O2_all[,4]), as.character(DMSO_H2O2_all[,5]), sep = "_")
-        DMSO_H2O2_all = cbind(DMSO_H2O2_all, replicate_number)
-        group = unique(replicate_number)
-        data_all = rep(0, (ncol(DMSO_H2O2_all)+1))
-        for(i in 1:length(group)){
-                group[i]
-                data = DMSO_H2O2_all[which(replicate_number == group[i]),]
-                if (data[1,4]== 1 | data[1,4] == 0 | data[1,5] == 1 | data[1,5] == 0){
-                        bayes_Q= rep(1, nrow(data))
-                        data_final = as.matrix(cbind(data, bayes_Q))
-                }else{
-                        num_rep_01 = data[1,4]
-                        num_rep_02 = data[1,5]
-                        data_cyber = data[,c(8:(7 + num_rep_01), 12:(11 + num_rep_02))]
-                        if (nrow(data_cyber) >= 2000){
-                                winSize = 101
-                        }else if (nrow(data_cyber) >= 1000 & nrow(data_cyber) < 2000){
-                                winSize = 51
-                        }else if (nrow(data_cyber < 1000)){
-                                temp_size = floor(nrow(data_cyber)/20)
-                                if (temp_size == 1 | temp_size == 0) { winSize = 3}
-                                else if(temp_size %% 2 == 0){winSize = temp_size + 1}
-                                else {winSize = temp_size}
-                        }        
-                        bayes_Q = bayesT(aData= data_cyber, numC= num_rep_01, numE= num_rep_02, ppde=FALSE, 
-                                         betaFit=1, bayes=TRUE, winSize, conf=12, 
-                                         doMulttest=TRUE, bayesIntC=FALSE, bayesIntE=FALSE)$BH
-                        data_final= as.matrix(cbind(data, bayes_Q))
-                }
-                data_all = rbind(data_all, data_final)
-        }
-        data_all = data_all[2:nrow(data_all),]
-        csvWriter(data_all, output_name)
-        return(data_all)
-}
-***
+
 #### To show the number in y axis in a scientific way
 fancy_scientific <- function(l) {
         # turn in to character string in scientific notation
