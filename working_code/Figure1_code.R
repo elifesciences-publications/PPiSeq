@@ -208,30 +208,44 @@ fitness = all_data[,3]
 color = color_label
 bar_plot_data = data.frame(PPI, fitness, color)
 bar_plot_data$PPI = factor(bar_plot_data$PPI, 
-                           levels = c("ORF X DHFR fragment", "DHFR(+)", "VOA1_VPH1",
+                                levels = c("ORF X DHFR fragment","DHFR(+)", "VOA1_VPH1",
+                                           "GNP1_SND3", "HNM1_KEX1", "CKA1_CKB1",
+                                           "SSS1_YOP1", "LCL3_SSM4", "DHFR(-)"))
+bar_plot_data_control = bar_plot_data[which(bar_plot_data[,1] == "ORF X DHFR fragment"),]
+bar_plot_data_real = bar_plot_data[which(!bar_plot_data[,1] %in% bar_plot_data_control[,1]),]
+bar_plot_data_real$PPI = factor(bar_plot_data_real$PPI, 
+                           levels = c("DHFR(+)", "VOA1_VPH1",
                                       "GNP1_SND3", "HNM1_KEX1", "CKA1_CKB1",
                                       "SSS1_YOP1", "LCL3_SSM4", "DHFR(-)"))
 library(ggplot2)
 
-ggplot(bar_plot_data, aes(x = PPI, y = fitness, group = PPI, col = color))+
-        #geom_boxplot()+
-        geom_point(alpha =0.3) +
+ggplot()+
+        geom_point(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_real, alpha =0.3)+
+        geom_violin(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_control, 
+                    draw_quantiles = c(0.25, 0.5, 0.75), show.legend = FALSE)+
+        geom_point(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_control, alpha = 0.1) +
+        #geom_violin(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_control) +
         #geom_boxplot(col = apple_colors[8])+
-        #geom_jitter(position=position_jitter(0.1), size = 0.6, alpha = 0.3) + 
-        stat_summary(fun.y="mean", geom="point", col = apple_colors[11], shape = 23, size = 1)+
+        scale_x_discrete(limits = c("ORF X DHFR fragment", "DHFR(+)", "VOA1_VPH1",
+                                    "GNP1_SND3", "HNM1_KEX1", "CKA1_CKB1",
+                                    "SSS1_YOP1", "LCL3_SSM4", "DHFR(-)")) +
+        
+        stat_summary(aes(x = PPI, y = fitness, group = PPI, col = color),bar_plot_data,
+                     fun.y="mean", geom="point", col = apple_colors[11], shape = 23, size = 1)+
         scale_color_manual(name = "", breaks = c('Positive PPI', "Negative PPI", "Negative control"),
-                           values  = apple_colors[c(6, 5,7)])  +
+                           values  = apple_colors[c(6, 5,7)]) +
         scale_y_continuous(name = "Fitness", 
                            limits=c(-1, 1.2),
                            breaks = seq(-1,1.2, by =0.2),
                            labels = seq(-1,1.2, by= 0.2))+
-  theme(legend.key=element_blank(), legend.position = "top")+
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        guides(color = guide_legend(override.aes = list(size = 1, alpha = 0.5)))+
+        theme(legend.key = element_blank(), legend.position = "top")+
+        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black", angle = 60, hjust =1),
+        theme(axis.text.x = element_text(size = 10, color = "black", angle = 60, hjust =1),
         axis.title.x = element_blank(),axis.text.y.left = element_text(size = 10, color = "black")) + 
-  theme(text = element_text(size=12))+ theme(plot.margin = unit(c(0.2,0.1,0.4,0.5), "cm"))
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure1C_Calling_PPIs.pdf", width= 5, height = 5)
+        theme(text = element_text(size=12))+ theme(plot.margin = unit(c(0.2,0.1,0.4,0.5), "cm"))
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure1C_Calling_PPIs_violin.pdf", width= 5, height = 5)
 
 ########################## Figure 1D and Figure 1E 
 ### Figure 1D: scatter plot to show the correlation between each pair of barcodes for the same PPI
@@ -322,11 +336,11 @@ ggplot() +
         annotate("text", x = 1, y = 1.2, label = "italic(r) == 0.7", parse = TRUE, size = 5) + 
         #theme(legend.position =c(0.7, 0.12), legend.key=element_blank(), legend.title = element_blank())+
         #theme(legend.key=element_blank(), legend.position = "top")+
-        scale_y_continuous(name = "Fitness of replicate1",
+        scale_y_continuous(name = "Fitness of barcode 1",
                            limits=c(0, 1.2),
                            breaks=seq(0,1.2, by =0.2),
                            labels = seq(0,1.2, by= 0.2)) +
-        scale_x_continuous(name = "Fitness of replicate2", 
+        scale_x_continuous(name = "Fitness of barcode 2", 
                            limits=c(0, 1.2),
                            breaks=seq(0,1.2, by =0.2),
                            labels = seq(0,1.2, by= 0.2)) +
@@ -352,11 +366,11 @@ ggplot() +
         scale_color_manual('', breaks = c("Positive PPI"),
                            values = apple_colors[8]) +
         
-        scale_y_continuous(name = "Fitness of replicate 2",
+        scale_y_continuous(name = "Fitness of barcode 2",
                            limits=c(0, 1.2),
                            breaks=seq(0,1.2, by =0.2),
                            labels = seq(0,1.2, by= 0.2)) +
-        scale_x_continuous(name = "Fitness of replicate 1", 
+        scale_x_continuous(name = "Fitness of barcode 1", 
                            limits=c(0, 1.2),
                            breaks=seq(0,1.2, by =0.2),
                            labels = seq(0,1.2, by= 0.2))+
