@@ -205,7 +205,7 @@ pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2A_Number_PPIs_across_environments
 barCenter = barplot(PPI_matrix, horiz=F, beside=F, ylim=c(0,20000), ylab="Cumulative number of PPIs",
                     space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6),
                     col= apple_colors[c(1,2)], axisnames=F, border=NA, cex.axis=0.8)
-legend("topleft", legend=c("Multiple environments", "Single environment"), 
+legend("topleft", legend=c("Single environment", "Multiple environments"), 
        fill=apple_colors[c(1,2)], cex=0.8, bty="n", border=FALSE)
 #text(x= barCenter, y = as.numeric(cumulative_count) + 1200, 
      #labels = as.character(cumulative_count) , cex=0.8, xpd = TRUE) # add cumulative number
@@ -418,3 +418,4 @@ for(i in 1:9){
 text(x = env_num_loc, y = -8, labels = as.character(1:9), cex = 0.8, xpd = TRUE)
 text(median(barCenter), y = -16, labels = "Number of positive environments", xpd = TRUE)
 dev.off()
+
