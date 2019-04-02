@@ -287,6 +287,7 @@ ggplot(environment_count, aes(x = factor(1), y = Freq, fill= environment_number)
 ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2B_PPI_environment_distribution.pdf", width =5 , height = 5)
 
 # Or make a barplot to show how many of them have been reproted
+all_PPI_matrix_final = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
 reported_PPI = csvReader_T("Working_data/multiple_validated_PPI.csv")
 matrix_PPI_env_rep = matrix(0, 2, 9)
 for(i in 1:9){
@@ -302,16 +303,19 @@ all_PPI_count # 8362 1356  655  535  555  664  570  619  513
 ratio = matrix_PPI_env_rep[1,]/all_PPI_count
 ratio # 0.03683329 0.10619469 0.17099237 0.21495327 0.26666667 0.31927711 0.44561404 0.54604200 0.43274854
 ratio_reported = c("3.7%", "10.6%", "17%", "21.5%", "26.7%", "31.9%", "44.6%", "54.6%", "43.3%")
+matrix_PPI_env_rep_reverse = matrix(0, nrow(matrix_PPI_env_rep), ncol(matrix_PPI_env_rep))
+matrix_PPI_env_rep_reverse[1,] = matrix_PPI_env_rep[2,]
+matrix_PPI_env_rep_reverse[2,] = matrix_PPI_env_rep[1,]
 pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2B_02_Number_environments_PPI_reproted.pdf", height = 5, width = 5)
-barCenter = barplot(matrix_PPI_env_rep, horiz=F, beside=F, ylim=c(0,10000), ylab="Number of PPIs",
+barCenter = barplot(matrix_PPI_env_rep_reverse, horiz=F, beside=F, ylim=c(0,10000), ylab="Number of PPIs",
                     space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6),
-                    col= apple_colors[c(6,7)], axisnames=F, border=NA, cex.axis=0.8)
-legend("topright", legend=c("Reported", "Unreported"), 
+                    col= apple_colors[c(7,6)], axisnames=F, border=NA, cex.axis=0.8)
+legend("topright", legend=c("Previously reported", "Previously unreported"), 
        fill=apple_colors[c(6,7)], bty="n", border=FALSE)
 text(x= barCenter, y = all_PPI_count + 300, labels = ratio_reported , 
-     cex=0.6, xpd = TRUE, col= "darkgreen") # add cumulative number
+     cex=0.6, xpd = TRUE, col= apple_colors[6]) # add cumulative number
 text(x= barCenter, y = -500, labels = as.character(1:9), xpd = TRUE)
-text(median(barCenter), y = -1200, labels = "Number of positive environments", xpd = TRUE)
+text(median(barCenter), y = -1200, labels = "Number of environments where a PPI is identified", xpd = TRUE)
 dev.off()
 
 #######################################
@@ -409,13 +413,81 @@ barCenter = barplot(ratio_all*100, horiz=F, beside=F, ylim=c(0,100), ylab="Valid
                     space= c(0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08,
                              0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08),
                     col= apple_colors[6:7] , axisnames=F, border=NA, cex.axis=0.8)
-legend("topleft", legend=c("Reported", "Unreported"),fill=apple_colors[6:7], cex=0.8, bty="n", border=FALSE)
+legend(-0.5,120, legend=c("Previously reported", "Previously unreported"),fill=apple_colors[6:7], cex=0.8, bty="n",
+       border=FALSE, xpd = TRUE)
 text(x= barCenter, y = ratio_all*100 + 2, labels = counts_label, cex=0.5, xpd = TRUE)
 env_num_loc = rep(0, 9)
 for(i in 1:9){
         env_num_loc[i] = mean(barCenter[(2*i-1):(2*i)])
 }
 text(x = env_num_loc, y = -8, labels = as.character(1:9), cex = 0.8, xpd = TRUE)
-text(median(barCenter), y = -16, labels = "Number of positive environments", xpd = TRUE)
+text(median(barCenter), y = -16, labels = "Number of environments where a PPI is identified", xpd = TRUE)
 dev.off()
 
+####################################
+### Figure2D A network to show the enriched biological process for PPI network
+setwd("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/")
+PPI_env_summary = csvReader_T("PPI_environment_count_summary.csv")
+PPI_env_count = PPI_env_summary[,1:2]
+## First split these PPIs into individual proteins and check the functional enrichment of these proteins
+## on a genetic interaction network. Split PPI into different groups: all_env, one_env, two_env, three_env, four_more_env
+PPI_unique_protein = function(PPI_env_count){
+        all_PPI= split_string_vector(PPI_env_count[,1])
+        all_PPI_unique = unique(c(all_PPI[,1], all_PPI[,2]))
+        return(all_PPI_unique)
+}
+all_env = PPI_unique_protein(PPI_env_count) # 2111
+csvWriter(all_env, "unique_protein_from_PPI/all_environment_unique_PPI.csv")
+#One_env
+PPI_env_one = PPI_env_count[which(as.numeric(PPI_env_count[,2]) == 1),]
+one_env = PPI_unique_protein(PPI_env_one) # 2089
+csvWriter(one_env, "unique_protein_from_PPI/One_environment_unique_PPI.csv")
+#Two_env
+PPI_env_two = PPI_env_count[which(as.numeric(PPI_env_count[,2]) == 2),]
+two_env = PPI_unique_protein(PPI_env_two) # 754
+csvWriter(two_env, "unique_protein_from_PPI/Two_environment_unique_PPI.csv")
+#Three_env
+PPI_env_three = PPI_env_count[which(as.numeric(PPI_env_count[,2]) == 3),]
+three_env = PPI_unique_protein(PPI_env_three) # 462
+csvWriter(three_env, "unique_protein_from_PPI/Three_environment_unique_PPI.csv")
+#Four_more_env
+PPI_env_four = PPI_env_count[which(as.numeric(PPI_env_count[,2]) >= 4),]
+four_env = PPI_unique_protein(PPI_env_four) # 800
+csvWriter(four_env, "unique_protein_from_PPI/Four_more_environment_unique_PPI.csv")
+
+
+
+'''
+# First, I will build a network by using igraph (just show the reported and unreported PPIs no annatation)
+library("igraph")
+reported_PPI = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/multiple_validated_PPI.csv")
+name_exchange = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/Systematic_standard_protein.csv")
+PPI_env_reported = match_both_direction(PPI_env_count, reported_PPI[,1]) # 623
+PPI_env_split = split_string_vector(PPI_env_count[,1]) 
+a = name_exchange[match(PPI_env_split[,1], name_exchange[,1]),2]
+b = name_exchange[match(PPI_env_split[,2], name_exchange[,1]),2]
+type = rep(1, nrow(PPI_env_count))
+for(i in 1:nrow(PPI_env_count)){
+        if(PPI_env_count[i,1] %in% PPI_env_reported[,1]){
+                type[i] = 2
+        }
+}
+PPI_net = data.frame(a, b, type)
+#### Plot network
+net <- graph_from_data_frame(d= PPI_net, directed = F)
+net <- simplify(net, remove.multiple = T, remove.loops = T)
+deg <- igraph::degree(net, normalized = T)
+#deg_count <- log2(igraph::degree(net))
+#V(net)$size <- deg*50 # Node size stands for degree of protein
+#E(net)$width <- E(net)$weight * 4 # Edge thickness represents the dynamics
+edge_color = apple_colors[c(6, 7)]
+E(net)$color = edge_color[E(net)$type]
+l <- layout_with_dh(net)
+#plot(net, layout = l)
+pdf("~/Desktop/PPI_network.pdf", height = 5, width = 5)
+par(mar = c(2,1,0,0))
+plot(net,  vertex.frame.color = apple_colors[3], vertex.label.cex = 0.25,vertex.color = apple_colors[3], layout = l)
+legend(x =0.25, y = -1, c("Previously unreported", "Previously reported"), 
+       lty = c(1,1), col = apple_colors[c(6,7)], bty= "n", lwd = 2, cex = 0.8)
+dev.off()
+'''
