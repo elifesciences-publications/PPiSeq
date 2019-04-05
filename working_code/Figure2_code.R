@@ -425,6 +425,7 @@ text(median(barCenter), y = -16, labels = "Number of environments where a PPI is
 dev.off()
 
 ####################################
+'''
 ### Figure2D A network to show the enriched biological process for PPI network
 setwd("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/")
 PPI_env_summary = csvReader_T("PPI_environment_count_summary.csv")
@@ -455,9 +456,6 @@ PPI_env_four = PPI_env_count[which(as.numeric(PPI_env_count[,2]) >= 4),]
 four_env = PPI_unique_protein(PPI_env_four) # 800
 csvWriter(four_env, "unique_protein_from_PPI/Four_more_environment_unique_PPI.csv")
 
-
-
-'''
 # First, I will build a network by using igraph (just show the reported and unreported PPIs no annatation)
 library("igraph")
 reported_PPI = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/multiple_validated_PPI.csv")
@@ -491,3 +489,11 @@ legend(x =0.25, y = -1, c("Previously unreported", "Previously reported"),
        lty = c(1,1), col = apple_colors[c(6,7)], bty= "n", lwd = 2, cex = 0.8)
 dev.off()
 '''
+#######################################
+## Figure 2D make a barplot to show the ratio of coannations for PPIs that are 
+## detected in different number of environments
+## Use python code to make a dictionary of go term for each gene 
+## and then check the overlap co-annoations between two interacting partners
+## I will generate matrix data in python, and then make plot in R
+
+
