@@ -177,22 +177,24 @@ random_sample_one = function(DMSO_pos_high){
 # get all the replciates from PPI_lineages data
 #pos_PPI_high = PPI_lineages_select[which(PPI_lineages_select[,1] == random_sample_one(DMSO_pos_high)),] # YGR106C_YOR270C
 pos_PPI_high = PPI_lineages_select[which(PPI_lineages_select[,1] == "YGR106C_YOR270C"),]
-pos_PPI_high[,1] = "VOA1_VPH1"
+pos_PPI_high[,1] = "VOA1 x VPH1"
 #pos_PPI_medium = PPI_lineages_select[which(PPI_lineages_select[,1] == random_sample_one(DMSO_pos_medium)),] # YDR508C_YBR106W
 pos_PPI_medium = PPI_lineages_select[which(PPI_lineages_select[,1] == "YDR508C_YBR106W"),]
-pos_PPI_medium[,1] = "GNP1_SND3"
+pos_PPI_medium[,1] = "GNP1 x SND3"
 #pos_PPI_medium_low = PPI_lineages_select[which(PPI_lineages_select[,1] == random_sample_one(DMSO_pos_medium_low)),] # YGL077C_YGL203C
 pos_PPI_medium_low = PPI_lineages_select[which(PPI_lineages_select[,1] == "YGL077C_YGL203C"),] 
-pos_PPI_medium_low[,1] = "HNM1_KEX1"
+pos_PPI_medium_low[,1] = "HNM1 x KEX1"
 #pos_PPI_low = PPI_lineages_select[which(PPI_lineages_select[,1] == random_sample_one(DMSO_pos_low)),] # YIL035C_YGL019W
 pos_PPI_low = PPI_lineages_select[which(PPI_lineages_select[,1] == "YIL035C_YGL019W"),] # YIL038C_YNL091W
-pos_PPI_low[,1] = "CKA1_CKB1"
+pos_PPI_low[,1] = "CKA1 x CKB1"
 #neg_PPI_medium_low = PPI_lineages_select[which(PPI_lineages_select[,1] == random_sample_one(DMSO_neg_medium_low)),] # YDR086C_YPR028W
 neg_PPI_medium_low = PPI_lineages_select[which(PPI_lineages_select[,1] == "YDR086C_YPR028W"),]
-neg_PPI_medium_low[,1] = "SSS1_YOP1" # not reported in all other environments 
+neg_PPI_medium_low[,1] = "SSS1 x YOP1" # not reported in all other environments 
 #neg_PPI_low = PPI_lineages_select[which(PPI_lineages_select[,1] == random_sample_one(DMSO_neg_low)),] # YGL085W_YIL030C
 neg_PPI_low = PPI_lineages_select[which(PPI_lineages_select[,1] == "YGL085W_YIL030C"),]
-neg_PPI_low[,1] = "LCL3_SSM4" # not reported in all other environments
+neg_PPI_low[,1] = "LCL3 x SSM4" # not reported in all other environments
+
+ORF_fragments[,1] = "ORF x Null"
 
 all_data = rbind(ORF_fragments, PPI_pos_DHFR, pos_PPI_high, pos_PPI_medium, pos_PPI_medium_low, 
                  pos_PPI_low, neg_PPI_medium_low, neg_PPI_low, PPI_neg_DHFR)
@@ -201,51 +203,57 @@ pos_PPI_name = c(PPI_pos_DHFR[1,1], as.character(pos_PPI_high[1,1]), as.characte
                    as.character(pos_PPI_medium_low[1,1]), as.character(pos_PPI_low[1,1]))
 #Control_PPI_name = c(unique(PPI_neg_DHFR[1,1], neg_PPI_medium_low[1,1], neg_PPI_low[1,1]))
 color_label[which(all_data[,1] %in% pos_PPI_name)] = "Positive PPI"
-color_label[which(all_data[,1] == "ORF X DHFR fragment")] = "Negative control"
+#color_label[which(all_data[,1] == "ORF X DHFR fragment")] = "Negative control"
 
 PPI = all_data[,1]
 fitness = all_data[,3]
 color = color_label
 bar_plot_data = data.frame(PPI, fitness, color)
 bar_plot_data$PPI = factor(bar_plot_data$PPI, 
-                                levels = c("ORF X DHFR fragment","DHFR(+)", "VOA1_VPH1",
-                                           "GNP1_SND3", "HNM1_KEX1", "CKA1_CKB1",
-                                           "SSS1_YOP1", "LCL3_SSM4", "DHFR(-)"))
-bar_plot_data_control = bar_plot_data[which(bar_plot_data[,1] == "ORF X DHFR fragment"),]
-bar_plot_data_real = bar_plot_data[which(!bar_plot_data[,1] %in% bar_plot_data_control[,1]),]
+                                levels = c("ORF x Null","DHFR(-)", "LCL3 x SSM4","SSS1 x YOP1", 
+                                           "CKA1 x CKB1", "HNM1 x KEX1", "GNP1 x SND3", "VOA1 x VPH1", 
+                                           "DHFR(+)"))
+bar_plot_data_control = bar_plot_data[which(bar_plot_data[,1] == "ORF x Null"),]
+bar_plot_data_neg = bar_plot_data[which(bar_plot_data[,1] %in% c("DHFR(-)", "DHFR(+)")),]
+bar_plot_data_real = bar_plot_data[which(!bar_plot_data[,1] %in% unique(c(as.character(bar_plot_data_control[,1]),
+                                                                  as.character(bar_plot_data_neg[,1])))),]
 bar_plot_data_real$PPI = factor(bar_plot_data_real$PPI, 
-                           levels = c("DHFR(+)", "VOA1_VPH1",
-                                      "GNP1_SND3", "HNM1_KEX1", "CKA1_CKB1",
-                                      "SSS1_YOP1", "LCL3_SSM4", "DHFR(-)"))
+                           levels = c("LCL3 x SSM4","SSS1 x YOP1", 
+                                      "CKA1 x CKB1", "HNM1 x KEX1", "GNP1 x SND3", "VOA1 x VPH1"))
+
 library(ggplot2)
 
 ggplot()+
-        geom_point(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_real, alpha =0.3)+
+        geom_dotplot(aes(x = PPI, y = fitness, group = PPI, fill = color, col = color), bar_plot_data_real, 
+                     binaxis="y", stackdir="center",  binwidth = 0.04, alpha =0.5,show.legend = FALSE)+
+        geom_jitter(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_neg, width = 0.1, alpha = 0.5) +
         geom_violin(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_control, 
-                    draw_quantiles = c(0.25, 0.5, 0.75), show.legend = FALSE)+
-        geom_point(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_control, alpha = 0.1) +
-        #geom_violin(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_control) +
-        #geom_boxplot(col = apple_colors[8])+
-        scale_x_discrete(limits = c("ORF X DHFR fragment", "DHFR(+)", "VOA1_VPH1",
-                                    "GNP1_SND3", "HNM1_KEX1", "CKA1_CKB1",
-                                    "SSS1_YOP1", "LCL3_SSM4", "DHFR(-)")) +
+                     draw_quantiles = c(0.25, 0.5, 0.75), show.legend = FALSE)+
+        #geom_boxplot(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_control, 
+                    #show.legend = FALSE)+
+  
+        scale_x_discrete(limits = c("ORF x Null","DHFR(-)", "LCL3 x SSM4","SSS1 x YOP1", 
+                                    "CKA1 x CKB1", "HNM1 x KEX1", "GNP1 x SND3", "VOA1 x VPH1", 
+                                    "DHFR(+)")) +
         
         stat_summary(aes(x = PPI, y = fitness, group = PPI, col = color),bar_plot_data,
                      fun.y="mean", geom="point", col = apple_colors[11], shape = 23, size = 1)+
-        scale_color_manual(name = "", breaks = c('Positive PPI', "Negative PPI", "Negative control"),
-                           values  = apple_colors[c(6, 5,7)]) +
+        scale_color_manual(name = "", breaks = c("Negative PPI", 'Positive PPI'),
+                           values  = apple_colors[c(5,7)]) +
+        scale_fill_manual(name = "", breaks = c( "Negative PPI", 'Positive PPI'),
+                           values  = apple_colors[c(5,7)])+
         scale_y_continuous(name = "Fitness", 
                            limits=c(-1, 1.2),
                            breaks = seq(-1,1.2, by =0.2),
                            labels = seq(-1,1.2, by= 0.2))+
-        guides(color = guide_legend(override.aes = list(size = 1, alpha = 0.5)))+
+        guides(color = guide_legend(override.aes = list(size = 2, alpha = 0.5)))+
         theme(legend.key = element_blank(), legend.position = "top")+
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
         theme(axis.text.x = element_text(size = 10, color = "black", angle = 60, hjust =1),
         axis.title.x = element_blank(),axis.text.y.left = element_text(size = 10, color = "black")) + 
         theme(text = element_text(size=12))+ theme(plot.margin = unit(c(0.2,0.1,0.4,0.5), "cm"))
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure1C_Calling_PPIs_violin.pdf", width= 5, height = 5)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure1C_Calling_PPIs_violin_jitter_dot.pdf", width= 5, height = 5)
 
 ########################## Figure 1D and Figure 1E 
 ### Figure 1D: scatter plot to show the correlation between each pair of barcodes for the same PPI
