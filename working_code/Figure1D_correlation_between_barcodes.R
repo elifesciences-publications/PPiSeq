@@ -69,23 +69,8 @@ PPI_fit_all = rbind(PPI_fit_matrix_01, PPI_fit_matrix_02, PPI_fit_matrix_03,
                     PPI_fit_matrix_04, PPI_fit_matrix_05, PPI_fit_matrix_06) # 31068
 # Remove any pair with at least one value >= 0
 PPI_fit_final = PPI_fit_all[which(as.numeric(PPI_fit_all[,2]) != 0 & as.numeric(PPI_fit_all[,3]) != 0),] # 24887
-cor(as.numeric(PPI_fit_final[,2]), as.numeric(PPI_fit_final[,3])) # 0.7000878
+cor(as.numeric(PPI_fit_final[,2]), as.numeric(PPI_fit_final[,3]), method = "spearman") # 0.7128028
 
-'''
-######### Traditional method to plot correlation
-lm_PPI = lm(as.numeric(PPI_fit_final[,3]) ~ as.numeric(PPI_fit_final[,2]))
-predict_PPI = predict(lm_PPI)
-lm_matrix = cbind(as.numeric(PPI_fit_final[,2]), predict_PPI)
-lm_matrix = lm_matrix[order(lm_matrix[,2]),]
-### Scatter plot
-pdf("~/Desktop/Figure1D_correlation_two_replicates.pdf", width=5, height =5 )
-plot(as.numeric(PPI_fit_final[,2]), as.numeric(PPI_fit_final[,3]), xlim = c(-0.4, 1.6),
-ylim = c(-0.4, 1.6), col = rgb(1,0,0,0.3), xlab = "Fitness of replicate 1", 
-ylab = "Fitness of replicate 2", pch = 16)
-lines(lm_matrix[,1], lm_matrix[,2], col= apple_colors[11])
-text(1.3,-0.3, "r = 0.7", col= apple_colors[11])
-dev.off()
-'''
 ####### Use ggplot to make scatter plots and hexagon plot
 PPI = as.character(PPI_fit_final[,1])
 fit01 = as.numeric(PPI_fit_final[,2])
@@ -93,29 +78,6 @@ fit02 = as.numeric(PPI_fit_final[,3])
 PPI_fit_final_data = data.frame(PPI, fit01, fit02) # Transform the matrix into data.frame
 
 library(ggplot2)
-# scatter plot
-ggplot() +
-  geom_point(aes(x= fit01, y= fit02),PPI_fit_final_data, col = apple_colors[7], alpha = 0.3) +
-  #geom_smooth(aes(x = fit01, y = fit02), method='lm',se = FALSE, color = apple_colors[11], cex = 0.6) +
-  geom_smooth(aes(x = seq(0, 1.2, by = 0.2), y = seq(0, 1.2, by = 0.2)), method='lm',
-              se = FALSE, color = apple_colors[11], cex = 0.3, linetype = 2) +
-  annotate("text", x = 1, y = 1.2, label = "italic(r) == 0.7", parse = TRUE, size = 5) + 
-  #theme(legend.position =c(0.7, 0.12), legend.key=element_blank(), legend.title = element_blank())+
-  #theme(legend.key=element_blank(), legend.position = "top")+
-  scale_y_continuous(name = "Fitness of barcode 1",
-                     limits=c(0, 1.2),
-                     breaks=seq(0,1.2, by =0.2),
-                     labels = seq(0,1.2, by= 0.2)) +
-  scale_x_continuous(name = "Fitness of barcode 2", 
-                     limits=c(0, 1.2),
-                     breaks=seq(0,1.2, by =0.2),
-                     labels = seq(0,1.2, by= 0.2)) +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black",hjust =1),
-        axis.text.y.left = element_text(size = 10, color = "black"))
-ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1D_correlation_two_replicates_ggplot.pdf", width = 5, height = 5)
-
 ### Hexagon plot I think Hexagon plot is better than scatter plot
 ggplot() +
   geom_hex(aes(x= fit01, y= fit02, fill = log10(..count..)), PPI_fit_final_data, bins = 60)+
@@ -127,24 +89,24 @@ ggplot() +
   #add a line that contain equal fitness values
   geom_smooth(aes(x = seq(0, 1.2, by = 0.2), y = seq(0, 1.2, by = 0.2)), linetype =2,
               method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.2, y = 1.1, label = "italic(r) == 0.7",  parse = TRUE, col = apple_colors[11]) +
+  annotate("text", x = 0.3, y = 1.1, label = expression(paste("Spearman's ", italic(r), " = 0.71")),  parse = TRUE, col = apple_colors[11]) +
   
   scale_color_manual('', breaks = c("Positive PPI"),
                      values = apple_colors[8]) +
   
-  scale_y_continuous(name = "Fitness of barcode 2",
+  scale_y_continuous(name = "Fitness of replicate 2",
                      limits=c(0, 1.2),
                      breaks=seq(0,1.2, by =0.2),
                      labels = seq(0,1.2, by= 0.2)) +
-  scale_x_continuous(name = "Fitness of barcode 1", 
+  scale_x_continuous(name = "Fitness of replicate 1", 
                      limits=c(0, 1.2),
                      breaks=seq(0,1.2, by =0.2),
                      labels = seq(0,1.2, by= 0.2))+
-  theme(legend.position ="right", legend.key=element_blank(), legend.text=element_text(size=10)) +
+  theme(legend.position =c(0.9,0.2), legend.key=element_blank(), legend.text=element_text(size=10)) +
   #guides(fill=guide_legend(title="Log10(Count)")) + 
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   theme(axis.text.x = element_text(size = 10, color = "black", hjust =1),
         axis.text.y.left = element_text(size = 10, color = "black"))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1D_correlation_two_replicates_hexagonlot.pdf", height =4, width =5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1D_correlation_two_replicates_hexagonlot.pdf", height =5, width =5)
