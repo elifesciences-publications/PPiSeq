@@ -57,4 +57,4 @@ ggplot() +
   theme(axis.text.x = element_text(size = 10, color = "black", hjust =1),
         axis.text.y.left = element_text(size = 10, color = "black"))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1E_correlation_fitness_two_directions.pdf", width = 5, height = 5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1/Figure1E_correlation_fitness_two_directions.pdf", width = 5, height = 5)
