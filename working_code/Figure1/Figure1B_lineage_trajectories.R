@@ -135,6 +135,6 @@ PPI_lineages_final = do.call("rbind", list(PPI_lineages_high[sample(1:nrow(PPI_l
                                            PPI_lineages_low[sample(1:nrow(PPI_lineages_low), 1000),]))
 PPI_lineages_final_transform = transform_lineages(PPI_lineages_final, 1,2,3,4)
 
-Lineage_plot(PPI_lineages_final_transform, "Working_figure/DMSO_lineage_plot/Figure1B_6000_representative_lineages.pdf")
+Lineage_plot(PPI_lineages_final_transform, "Working_figure/Figure1/DMSO_lineage_plot/Figure1B_6000_representative_lineages.pdf")
 
 

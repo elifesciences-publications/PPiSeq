@@ -152,11 +152,11 @@ ggplot()+
                      breaks = seq(-1,1.2, by =0.2),
                      labels = seq(-1,1.2, by= 0.2))+
   guides(color = guide_legend(override.aes = list(size = 2, alpha = 0.5)))+
-  theme(legend.key = element_blank(), legend.position = "top")+
+  theme(legend.key = element_blank(), legend.position = c(0.8,0.2))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   theme(axis.text.x = element_text(size = 10, color = "black", angle = 60, hjust =1),
         axis.title.x = element_blank(),axis.text.y.left = element_text(size = 10, color = "black")) + 
   theme(text = element_text(size=12))+ theme(plot.margin = unit(c(0.2,0.1,0.4,0.5), "cm"))
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure1C_Calling_PPIs_violin_jitter_dot.pdf", width= 5, height = 5)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure1/Figure1C_Calling_PPIs_violin_jitter_dot.pdf", width= 5, height = 5)
 
