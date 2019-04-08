@@ -1,3 +1,22 @@
+###########################
+# Source some basic functions froma function.R in Github repository
+source_https <- function(u, unlink.tmp.certs = FALSE) {
+  # load package
+  require(RCurl)
+  # read script lines from website using a security certificate
+  if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
+  script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
+  if(unlink.tmp.certs) unlink("cacert.pem")
+  
+  # parase lines and evealuate in the global environement
+  eval(parse(text = script), envir= .GlobalEnv)
+}
+source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working_code/function.R", unlink.tmp.certs = TRUE)
+
+#Commonly used colors
+apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
+                 "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
+
 ################# Figure 2D Comparison among PPiSeq, DHFR_PCA, and BioGRID. 
 ### Make a venn diagram to show the overlap the current data with PCA and BIOGRID and fitness distributions for different parts
 # Generate BIOGRID databse that not contain PCA PPIs
@@ -51,6 +70,7 @@ PCA_PPI_matrix = cbind(PCA_PPI_unique_filter, 1:length(PCA_PPI_unique_filter)) #
 PCA_PPiseq = match_both_direction(PCA_PPI_matrix, as.character(DMSO_mean[,1])) #2310
 PCA_PPiseq_uncover = PCA_PPI_unique_filter[which(!PCA_PPI_unique_filter %in% PCA_PPiseq[,1])] # 425
 
+####### Check PPIs in DMSO environment
 #Get one direction of positive PPIs called by PPiSeq
 pos_PPI = DMSO_mean[which(DMSO_mean[,7] == "1"),]
 #Remove all the control strains
@@ -73,7 +93,7 @@ n23 = nrow(PCA_BIOGRID_overlap) # 652
 n13 = nrow(BIOGRID_PPiseq_overlap) # 656
 n123 = nrow(BIOGRID_PPiseq_PCA_overlap) #456
 library(VennDiagram)
-pdf("~//Dropbox/PPiSeq_02/Working_figure/Figure1G_draft_Venn diagram of overlapped PPIs among PPiseq, PCA, BIOGRID.pdf", width = 5, height =5)
+pdf("Working_figure/Figure2/Figure2D_draft_Venn diagram of overlapped PPIs among PPiseq, PCA, BIOGRID.pdf", width = 5, height =5)
 draw.triple.venn(area1, area2, area3, n12, n23, n13, n123, category = c("PPiSeq", "mDHFR-PCA", "BIOGRID data excluding mDHFR-PCA"), euler.d = TRUE,
                  scaled = TRUE, col = apple_colors[c(5,3,6)], fill = apple_colors[c(5,3,6)], cex = 1.5)
 dev.off()
@@ -86,3 +106,34 @@ a-c # 95260
 b-c # 328
 nrow(DMSO_mean) # 1459163
 # Manually draw the figure in keynote
+
+####### Check PPIs in all environment
+#Get one direction of positive PPIs called by PPiSeq
+pos_PPI = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv") # 13829
+pos_PPI_unique_filter = pos_PPI[,1] # Already remove control strains, duplicate PPIs
+
+BIOGRID_PPiseq_overlap = match_both_direction(BIOGRID_PPiseq, pos_PPI_unique_filter[,1])#867
+BIOGRID_PPiseq_PCA_overlap = match_both_direction(BIOGRID_PPiseq_overlap, as.character(PCA_PPiseq[,1])) #528
+PCA_BIOGRID_overlap = match_both_direction(PCA_PPiseq, BIOGRID_PPiseq[,1]) #652
+PCA_PPiseq_overlap = match_both_direction(PCA_PPiseq, pos_PPI_unique_filter[,1]) #1507
+
+area1 = nrow(pos_PPI_unique_filter) # 13829
+area2 = nrow(PCA_PPiseq) # 2310
+area3 = nrow(BIOGRID_PPiseq) # 11480
+n12 = nrow(PCA_PPiseq_overlap) # 1507
+n23 = nrow(PCA_BIOGRID_overlap) # 652
+n13 = nrow(BIOGRID_PPiseq_overlap) # 867
+n123 = nrow(BIOGRID_PPiseq_PCA_overlap) #528
+library(VennDiagram)
+pdf("Working_figure/Figure2/Figure2D_draft_all_Venn diagram of overlapped PPIs among PPiseq, PCA, BIOGRID.pdf", width = 5, height =5)
+draw.triple.venn(area1, area2, area3, n12, n23, n13, n123, category = c("PPiSeq", "mDHFR-PCA", "BIOGRID data excluding mDHFR-PCA"), euler.d = TRUE,
+                 scaled = TRUE, col = apple_colors[c(5,3,6)], fill = apple_colors[c(5,3,6)], cex = 1.5)
+dev.off()
+
+# Also include BIOGRID Uncovered, PCA Uncovered, and the intersection between them
+a = nrow(BIOGRID_PPI_uncover) # 95357
+b = length(PCA_PPiseq_uncover) # 425
+c = length(intersect(BIOGRID_PPI_uncover[,1], PCA_PPiseq_uncover)) # 97
+a-c # 95260
+b-c # 328
+nrow(DMSO_mean) # 1459163
