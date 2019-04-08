@@ -1,6 +1,4 @@
 ###########################
-#### This script is use to generate Figure 2, which show the identified PPI number
-#### across multiple environments, PPI network, validation rate, etc.
 # Source some basic functions froma function.R in Github repository
 source_https <- function(u, unlink.tmp.certs = FALSE) {
   # load package
@@ -65,7 +63,40 @@ for(i in 1:length(environment_number)){
 all_PPI_matrix_final = cbind(all_PPI_matrix[,1], environment_number, all_PPI_matrix[,2:10])
 csvWriter(all_PPI_matrix_final, "Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
 
-## make a pie plot for environment_number
+# Or make a barplot to show how many of them have been reproted
+setwd("~/Dropbox/PPiSeq_02/")
+all_PPI_matrix_final = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
+reported_PPI = csvReader_T("Working_data/multiple_validated_PPI.csv")
+matrix_PPI_env_rep = matrix(0, 2, 9)
+for(i in 1:9){
+  all = all_PPI_matrix_final[which(all_PPI_matrix_final[,2] == i),]
+  all_reported = match_both_direction(all,reported_PPI[,1])
+  all_unreported = all[which(!all[,1] %in% all_reported[,1]),]
+  matrix_PPI_env_rep[1,i] = nrow(all_reported)
+  matrix_PPI_env_rep[2,i] = nrow(all_unreported)
+}
+matrix_PPI_env_rep[1,] # 308 144 112 115 148 212 254 338 222
+all_PPI_count = matrix_PPI_env_rep[1,] + matrix_PPI_env_rep[2,]
+all_PPI_count # 8362 1356  655  535  555  664  570  619  513
+ratio = matrix_PPI_env_rep[1,]/all_PPI_count
+ratio # 0.03683329 0.10619469 0.17099237 0.21495327 0.26666667 0.31927711 0.44561404 0.54604200 0.43274854
+ratio_reported = c("3.7%", "10.6%", "17%", "21.5%", "26.7%", "31.9%", "44.6%", "54.6%", "43.3%")
+matrix_PPI_env_rep_reverse = matrix(0, nrow(matrix_PPI_env_rep), ncol(matrix_PPI_env_rep))
+matrix_PPI_env_rep_reverse[1,] = matrix_PPI_env_rep[2,]
+matrix_PPI_env_rep_reverse[2,] = matrix_PPI_env_rep[1,]
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2B_Number_environments_PPI_reproted.pdf", height = 5, width = 5)
+barCenter = barplot(matrix_PPI_env_rep_reverse, horiz=F, beside=F, ylim=c(0,10000), ylab="Number of PPIs",
+                    space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6),
+                    col= apple_colors[c(3,5)], axisnames=F, border=NA)
+legend("topright", legend=c("Previously reported", "Previously unreported"), 
+       fill=apple_colors[c(5,3)], bty="n", border=FALSE)
+text(x= barCenter, y = all_PPI_count + 300, labels = ratio_reported , 
+     cex=0.6, xpd = TRUE, col= apple_colors[5]) # add cumulative number
+text(x= barCenter, y = -500, labels = as.character(1:9), xpd = TRUE)
+text(median(barCenter), y = -1200, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
+dev.off()
+
+## Or make a pie plot for environment_number
 environment_count = data.frame(table(environment_number))
 ## Environment number per positive PPI
 
@@ -89,34 +120,3 @@ ggplot(environment_count, aes(x = factor(1), y = Freq, fill= environment_number)
 
 ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2B_PPI_environment_distribution.pdf", width =5 , height = 5)
 
-# Or make a barplot to show how many of them have been reproted
-all_PPI_matrix_final = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
-reported_PPI = csvReader_T("Working_data/multiple_validated_PPI.csv")
-matrix_PPI_env_rep = matrix(0, 2, 9)
-for(i in 1:9){
-  all = all_PPI_matrix_final[which(all_PPI_matrix_final[,2] == i),]
-  all_reported = match_both_direction(all,reported_PPI[,1])
-  all_unreported = all[which(!all[,1] %in% all_reported[,1]),]
-  matrix_PPI_env_rep[1,i] = nrow(all_reported)
-  matrix_PPI_env_rep[2,i] = nrow(all_unreported)
-}
-matrix_PPI_env_rep[1,] # 308 144 112 115 148 212 254 338 222
-all_PPI_count = matrix_PPI_env_rep[1,] + matrix_PPI_env_rep[2,]
-all_PPI_count # 8362 1356  655  535  555  664  570  619  513
-ratio = matrix_PPI_env_rep[1,]/all_PPI_count
-ratio # 0.03683329 0.10619469 0.17099237 0.21495327 0.26666667 0.31927711 0.44561404 0.54604200 0.43274854
-ratio_reported = c("3.7%", "10.6%", "17%", "21.5%", "26.7%", "31.9%", "44.6%", "54.6%", "43.3%")
-matrix_PPI_env_rep_reverse = matrix(0, nrow(matrix_PPI_env_rep), ncol(matrix_PPI_env_rep))
-matrix_PPI_env_rep_reverse[1,] = matrix_PPI_env_rep[2,]
-matrix_PPI_env_rep_reverse[2,] = matrix_PPI_env_rep[1,]
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2B_02_Number_environments_PPI_reproted.pdf", height = 5, width = 5)
-barCenter = barplot(matrix_PPI_env_rep_reverse, horiz=F, beside=F, ylim=c(0,10000), ylab="Number of PPIs",
-                    space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6),
-                    col= apple_colors[c(7,6)], axisnames=F, border=NA, cex.axis=0.8)
-legend("topright", legend=c("Previously reported", "Previously unreported"), 
-       fill=apple_colors[c(6,7)], bty="n", border=FALSE)
-text(x= barCenter, y = all_PPI_count + 300, labels = ratio_reported , 
-     cex=0.6, xpd = TRUE, col= apple_colors[6]) # add cumulative number
-text(x= barCenter, y = -500, labels = as.character(1:9), xpd = TRUE)
-text(median(barCenter), y = -1200, labels = "Number of environments where a PPI is identified", xpd = TRUE)
-dev.off()
