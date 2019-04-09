@@ -22,6 +22,7 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 # In another code, I get the positive PPIs out and put fitness values in different environments in the same row
 # DMSO, Forskolin, FK506, Raffinose, NaCl, H2O2, Doxorubicin, 16C, HU
 
+setwd("~/Dropbox/PPiSeq_02/")
 PPI_fit_norm = csvReader_T("Working_data/Positive_PPI_environment/Pos_PPI_normalized_fit.csv") # 14164
 PPI_dup = mark_duplicates_fast(PPI_fit_norm[,1]) #13430
 matrix = matrix(NA, nrow(PPI_dup), 2* ncol(PPI_fit_norm))
@@ -53,8 +54,12 @@ mean_fit = as.numeric(PPI_fit[match(PPI_env_count[,1], PPI_fit[,1]),2])
 PPI_env_fit = data.frame(PPI_env_count[,1], as.character(PPI_env_count[,2]), mean_fit)
 colnames(PPI_env_fit) = c("PPI", "Environment", "Fitness")
 PPI_env_fit$Environment = factor(PPI_env_fit$Environment, levels = as.character(1:9))
-
+## Get the number of PPIs for each environment
+table(PPI_env_fit$Environment)
+# 1:8326; 2:1356; 3:655; 4:535; 5:555; 6:664; 7:570; 8:619; 9:513
 ### All PPIs
+count = c("8326", "1356", "655", "535", "555", "664", "570", "619", "513")
+
 library(ggplot2)
 
 ggplot(PPI_env_fit, aes(x = Environment, y = Fitness, group = Environment))+
@@ -73,8 +78,9 @@ ggplot(PPI_env_fit, aes(x = Environment, y = Fitness, group = Environment))+
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   theme(axis.text.x = element_text(size = 10, color = "black"),
         axis.text.y.left = element_text(size = 10, color = "black"))+
-  xlab("Number of environments in which a PPI is observed")
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/SFigure2_Mean_fitness_PPI_different_envrionments_violin.pdf", width= 5, height = 5)
+  xlab("Number of environments in which a PPI is observed") + 
+  annotate("text", x = 1:9,  y = rep(0.1, 9), label = count)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/SFigure2A_mean_fit_PPI_different_group/SFigure2_Mean_fitness_PPI_different_envrionments_violin.pdf", width= 5, height = 5)
 
 ### Tease out the reported PPIs
 reported_PPI = csvReader_T("Working_data/multiple_validated_PPI.csv")
@@ -84,12 +90,16 @@ PPI_env_fit = data.frame(PPI_env_count_reported[,1], as.character(PPI_env_count_
 colnames(PPI_env_fit) = c("PPI", "Environment", "Fitness")
 PPI_env_fit$Environment = factor(PPI_env_fit$Environment, levels = as.character(1:9))
 
+table(PPI_env_fit$Environment)
+# 1:308; 2:144; 3:112; 4:115; 5:148; 6:212; 7:254; 8:338; 9:222
+### All PPIs
+count = c("308", "144", "112", "115", "148", "212", "254", "338", "222")
+
 ### Reported PPIs
 library(ggplot2)
-
 ggplot(PPI_env_fit, aes(x = Environment, y = Fitness, group = Environment))+
-  geom_boxplot(col = apple_colors[3])+
-  #geom_violin(draw_quantiles = c(0.25, 0.5, 0.75), col= apple_colors[5])+
+  #geom_boxplot(col = apple_colors[3])+
+  geom_violin(draw_quantiles = c(0.25, 0.5, 0.75), col= apple_colors[5])+
   #geom_point(col = apple_colors[3])
   
   stat_summary(aes(x = Environment, y = Fitness, group = Environment), PPI_env_fit,
@@ -103,6 +113,7 @@ ggplot(PPI_env_fit, aes(x = Environment, y = Fitness, group = Environment))+
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   theme(axis.text.x = element_text(size = 10, color = "black"),
         axis.text.y.left = element_text(size = 10, color = "black"))+
-  xlab("Number of environments in which a PPI is observed")
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/SFigure2_Mean_fitness_PPI_different_envrionments_box_reported.pdf", width= 5, height = 5)
+  xlab("Number of environments in which a PPI is observed") +
+  annotate("text", x = 1:9,  y = rep(0.1, 9), label = count)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/SFigure2A_mean_fit_PPI_different_group/SFigure2_Mean_fitness_PPI_different_envrionments_violin_reported.pdf", width= 5, height = 5)
 
