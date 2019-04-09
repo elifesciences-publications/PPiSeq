@@ -17,10 +17,9 @@ source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 
-### Figure 2F_check the fitness distribution for PPIs that are detected in different environments
+### Figure S2A_check the fitness distribution for PPIs that are detected in different environments
 # I have generated normalized fitness values in each environment. 
 # In another code, I get the positive PPIs out and put fitness values in different environments in the same row
-# DMSO, Forskolin, FK506, Raffinose, NaCl, H2O2, Doxorubicin, 16C, HU
 
 setwd("~/Dropbox/PPiSeq_02/")
 PPI_fit_norm = csvReader_T("Working_data/Positive_PPI_environment/Pos_PPI_normalized_fit.csv") # 14164
