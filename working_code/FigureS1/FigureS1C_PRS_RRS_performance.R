@@ -1,4 +1,3 @@
-############# This script contains the supplementary figures around Figure1
 # Source some basic functions froma function.R in Github repository
 source_https <- function(u, unlink.tmp.certs = FALSE) {
   # load package
@@ -13,15 +12,11 @@ source_https <- function(u, unlink.tmp.certs = FALSE) {
 }
 source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working_code/function.R", unlink.tmp.certs = TRUE)
 
-
-setwd("~/Dropbox/PPiSeq_02/")
-
 #Commonly used colors
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 
-
-################# Figure S1X The performance of PRS and RRS. That is comparable with Y2H an PCA.
+################# Figure S1C The performance of PRS and RRS. That is comparable with Y2H an PCA.
 setwd("~/Dropbox/PPiSeq_02/")
 DMSO_mean = csvReader_T("Paper_data/DMSO_mean_fitness_positive.csv") # 1459163
 DMSO_pos = DMSO_mean[which(DMSO_mean[,7] == "1"),] # 5211
@@ -39,7 +34,7 @@ RRS_percent = length(DMSO_pos_RRS_unique)/length(DMSO_RRS_unique) * 100
 PRS_percent #28.17
 RRS_percent #2.99
 
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure1F_PRS_RRS_barplot.pdf", width = 3, height =4)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/FigureS1/FigureS1C_PRS_RRS_barplot.pdf", width = 3, height =4)
 par(mar= c(3,4.5,1,1))
 name = c("PRS", "RRS")
 barCenter = barplot(c(PRS_percent, RRS_percent), horiz=F, beside=F, ylim = c(0,40),
