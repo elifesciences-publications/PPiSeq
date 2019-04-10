@@ -105,7 +105,7 @@ unrep_PPI_matrix[3,]# 132      89      57      41      41      38      34      4
 counts_label = c("2/7", "69/132", "5/10", "44/89", "19/21", "43/57",
                  "17/20", "37/41", "10/10", "37/41", "14/21", "33/38",
                  "33/38", "27/34", "34/36", "42/42", "22/22", "35/36")
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2C_Validation_bar_plot.pdf", width= 6, height=5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2C_Validation_bar_plot.pdf", width= 6, height=5)
 barCenter = barplot(ratio_all*100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
                     space= c(0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08,
                              0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08),
