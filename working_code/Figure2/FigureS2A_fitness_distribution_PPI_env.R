@@ -79,7 +79,7 @@ ggplot(PPI_env_fit, aes(x = Environment, y = Fitness, group = Environment))+
         axis.text.y.left = element_text(size = 10, color = "black"))+
   xlab("Number of environments in which a PPI is observed") + 
   annotate("text", x = 1:9,  y = rep(0.1, 9), label = count)
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/SFigure2A_mean_fit_PPI_different_group/SFigure2_Mean_fitness_PPI_different_envrionments_violin.pdf", width= 5, height = 5)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/SFigure2/SFigure2A_mean_fit_PPI_different_group/SFigure2_Mean_fitness_PPI_different_envrionments_violin.pdf", width= 5, height = 5)
 
 ### Tease out the reported PPIs
 reported_PPI = csvReader_T("Working_data/multiple_validated_PPI.csv")
@@ -114,5 +114,5 @@ ggplot(PPI_env_fit, aes(x = Environment, y = Fitness, group = Environment))+
         axis.text.y.left = element_text(size = 10, color = "black"))+
   xlab("Number of environments in which a PPI is observed") +
   annotate("text", x = 1:9,  y = rep(0.1, 9), label = count)
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/SFigure2A_mean_fit_PPI_different_group/SFigure2_Mean_fitness_PPI_different_envrionments_violin_reported.pdf", width= 5, height = 5)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/SFigure2/SFigure2A_mean_fit_PPI_different_group/SFigure2_Mean_fitness_PPI_different_envrionments_violin_reported.pdf", width= 5, height = 5)
 
