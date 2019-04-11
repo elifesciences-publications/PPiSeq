@@ -127,3 +127,30 @@ plot_37= feature_sort(PPI_env_list, gene_feature, features_chosen[37])
 plot_38 = feature_sort(PPI_env_list, gene_feature, features_chosen[38])
 grid.arrange(plot_32,  plot_33, plot_34, plot_35, plot_36, plot_37, plot_38, nrow= 3)
 dev.off()
+
+### Check the correlation between protein degree from our network with various gene features
+setwd("~/Dropbox/PPiSeq_02/")
+gene_feature = as.matrix(read.table("Working_data/geneFeatures_022415_EK.txt", header = T, sep = "\t")) # 6438, 39
+PPI_env_count = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
+protein_degree = protein_degree_count(PPI_env_count[,1]) # 2111
+gene_feature_matched = gene_feature[match(protein_degree[,1], gene_feature[,1]),]
+features = colnames(gene_feature)
+features_chosen = features[2:(length(features)-7)]
+degree = protein_degree[,2]
+co_efficient = rep(0, length(features_chosen))
+for(i in 1:length(features_chosen)){
+        feature_column = which(features == features_chosen[i])
+        feature_data = gene_feature_matched[, feature_column]
+        cor_matrix = data.frame(degree, feature_data) # 2111
+        cor_matrix_filter = na.omit(cor_matrix) # 2109
+        co_efficient[i] = cor(as.numeric(cor_matrix_filter[,1]), 
+                              as.numeric(cor_matrix_filter[,2]), method = 'spearman')
+        
+}
+pdf("Working_figure/Figure2/Figure2F_gene_features/Correlation_degree_gene_features.pdf", width = 5, height = 6)
+barCenter = barplot(co_efficient, horiz=T, beside=F, xlim=c(-0.3, 0.6), 
+                    space= rep(0.4, 31),
+                    xlab="Spearman correlation with degree of PPI network",
+                    axisnames=F, border=NA, cex.axis=0.8, col = apple_colors[5])
+text(-0.3, barCenter, labels= features_chosen, cex = 0.5, xpd = TRUE)
+dev.off()
