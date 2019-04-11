@@ -425,6 +425,14 @@ extract_repeat_PPI= function(x){
         return(repeat_PPI)
 }
 
+# Input binary protein protein interactions and output proteins and their degrees
+protein_degree_count = function(PPI){
+        all_PPI_gene = split_string_vector(PPI)
+        protein_degree = as.data.frame(table(as.character(c(all_PPI_gene[,1], all_PPI_gene[,2]))))
+        protein_degree_order= protein_degree[order(protein_degree[,2], decreasing = T),]
+        return(protein_degree_order)
+}
+
 ### Input: a vector of PPI; output: a matrix in which the first column is unique PPI, 
 ### and the second column is the oppsite PPI of the first column. If no opposite PPI, the second column is Zero
 
