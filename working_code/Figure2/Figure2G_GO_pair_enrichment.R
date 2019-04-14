@@ -23,21 +23,48 @@ setwd("~/Dropbox/PPiSeq_02")
 ## Cellular Compartment
 network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_CC.csv",
                              sep = "\t", header = T))
-dim(network_density)
+rownames(network_density) = colnames(network_density)
+# dendrogram
+library(ggdendro)
+
+hc = hclust(dist(network_density), method="ward.D")
+
+dendr = dendro_data(hc, type= "rectangle")
+clust = cutree(hc, k = 3) 
+clust.df <- data.frame(label=names(clust), cluster=factor(clust))
+dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
+#### Plot the dendrogram
+ggplot() + 
+        geom_segment(data=segment(dendr), aes(x=x, y=y, xend=xend, yend=yend)) + 
+        geom_text(data=label(dendr), aes(x, y, label=label, hjust=0, color=cluster), 
+                  size=2) +
+        coord_flip() + scale_y_reverse(expand=c(0.2, 0)) + 
+        theme(axis.line.y=element_blank(),
+              axis.ticks.y=element_blank(),
+              axis.text.y=element_blank(),
+              axis.title.y=element_blank(),
+              panel.background=element_rect(fill="white"),
+              panel.grid=element_blank(),
+              legend.position = "bottom")
+ggsave("Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/Dendrogram_CC_GO_pair_cluster.pdf", width = 5, height = 5)
+label_GO = label(dendr)
+GO_order = label_GO[order(label_GO$x),]
+
 GO = colnames(network_density)
 network_density_vector = as.vector(network_density)
 dataf = data.frame(rowv = rep(GO, each = 22),
                    columnv = rep(GO, 22),
                    network_density, 
-                   Network_density = as.numeric(network_density_vector))
+                   Network_density = as.numeric(network_density_vector)
+                   )
+
 library(ggplot2)
-ggplot(dataf, aes(y = rowv,
-                  x = columnv)) +        ## global aes
-        #geom_tile(aes(fill = circlefill)) +         ## to get the rect filled
-        geom_point(aes(size =Network_density, color = Network_density), show.legend = FALSE)  +    ## geom_point for circle illusion
-        scale_color_gradient(low = "yellow",  
-                            high = apple_colors[7])+       ## color of the corresponding aes
-        scale_size(range = c(0.5,3))+             ## to tune the size of circles
+ggplot() + 
+        geom_point(aes(x = rowv, y = columnv, size =Network_density, color = Network_density), dataf, show.legend = FALSE)  + 
+        scale_color_gradient(low = "yellow", high = apple_colors[7])+  
+        scale_x_discrete(limits = GO_order$label) + 
+        scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
+        scale_size(range = c(0.5,3))+ ## to tune the size of circles
         theme(legend.position ="right", legend.key=element_blank(), legend.text=element_blank()) +
         #guides(fill=guide_legend(title="Log10(Count)")) + 
         theme(panel.background = element_blank(), axis.ticks=element_blank(),
