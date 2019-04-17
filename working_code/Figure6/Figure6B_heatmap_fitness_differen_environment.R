@@ -17,10 +17,12 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 #### Make a heatmap to show different groups of PPIs
 setwd("~/Dropbox/PPiSeq_02/")
-PPI_heatmap = dataFrameReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment.csv")
-install.packages("pheatmap")
+PPI_heatmap = dataFrameReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_primary.csv")
+PPI_count = dataFrameReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
+#install.packages("pheatmap")
 library(pheatmap)
 library(RColorBrewer)
+PPI_heatmap$Environment_number = PPI_count[match(as.character(PPI_heatmap$PPI), as.character(PPI_count[,1])),2]
 PPI_heatmap_order = PPI_heatmap[order(PPI_heatmap$Environment_number, decreasing=F),]
 heatmap_matrix = PPI_heatmap_order[,4:12]
 colnames(heatmap_matrix) = c("SD", "H2O2", "Hydroxyurea", "Doxorubicin",
@@ -34,11 +36,11 @@ color_scale = c("white", colorRampPalette(brewer.pal(9,"YlGnBu"))(n=99))
 fit_heatmap = pheatmap(heatmap_matrix, cluster_rows = TRUE, cluster_cols = TRUE, show_rownames=FALSE,
          annotation_row = row_ann, show_colnames=T, col = color_scale)
 
-save_pheatmap_pdf <- function(x, filename, width=5, height=5) {
+save_pheatmap_pdf <- function(x, filename, width=6, height=5) {
         pdf(filename, width = width, height = height)
         grid::grid.newpage()
         grid::grid.draw(x$gtable)
         dev.off()
 }
 
-save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure6/Consider_neg_PPI_zero/Figure6B_fitness_environment.pdf")
+save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure6/Figure6B_fitness_environment_primary.pdf")
