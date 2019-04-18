@@ -1,4 +1,21 @@
-#######################################
+###########################
+# Source some basic functions froma function.R in Github repository
+source_https <- function(u, unlink.tmp.certs = FALSE) {
+  # load package
+  require(RCurl)
+  # read script lines from website using a security certificate
+  if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
+  script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
+  if(unlink.tmp.certs) unlink("cacert.pem")
+  
+  # parase lines and evealuate in the global environement
+  eval(parse(text = script), envir= .GlobalEnv)
+}
+source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working_code/function.R", unlink.tmp.certs = TRUE)
+
+#Commonly used colors
+apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
+                 "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 ## Figure2C A barplot to show the validation rate
 setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_PPI/Combine_TECAN/")
 ### Combine all the chosen PPIs 
@@ -88,19 +105,19 @@ unrep_PPI_matrix[3,]# 132      89      57      41      41      38      34      4
 counts_label = c("2/7", "69/132", "5/10", "44/89", "19/21", "43/57",
                  "17/20", "37/41", "10/10", "37/41", "14/21", "33/38",
                  "33/38", "27/34", "34/36", "42/42", "22/22", "35/36")
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2C_Validation_bar_plot.pdf", width= 6, height=5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2C_Validation_bar_plot.pdf", width= 6, height=5)
 barCenter = barplot(ratio_all*100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
                     space= c(0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08,
                              0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08),
-                    col= apple_colors[6:7] , axisnames=F, border=NA, cex.axis=0.8)
-legend(-0.5,120, legend=c("Previously reported", "Previously unreported"),fill=apple_colors[6:7], cex=0.8, bty="n",
+                    col= apple_colors[c(5,3)] , axisnames=F, border=NA, cex.axis=0.8)
+legend(-0.5,120, legend=c("Previously reported", "Previously unreported"),fill=apple_colors[c(5,3)], cex=0.8, bty="n",
        border=FALSE, xpd = TRUE)
 text(x= barCenter, y = ratio_all*100 + 2, labels = counts_label, cex=0.5, xpd = TRUE)
 env_num_loc = rep(0, 9)
 for(i in 1:9){
   env_num_loc[i] = mean(barCenter[(2*i-1):(2*i)])
 }
-text(x = env_num_loc, y = -8, labels = as.character(1:9), cex = 0.8, xpd = TRUE)
-text(median(barCenter), y = -16, labels = "Number of environments where a PPI is identified", xpd = TRUE)
+text(x = env_num_loc, y = -8, labels = as.character(1:9), xpd = TRUE)
+text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
 dev.off()
 

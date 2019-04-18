@@ -1,4 +1,3 @@
-
 # Source some basic functions froma function.R in Github repository
 source_https <- function(u, unlink.tmp.certs = FALSE) {
         # load package
@@ -145,12 +144,9 @@ H2O2_other = match_both_direction(H2O2_unique, H2O2_remove[,1]) #3788
 H2O2_specific = H2O2_unique[which(!H2O2_unique[,1] %in% H2O2_other[,1]),] #862
 
 DMSO_other = match_both_direction(DMSO_unique, DMSO_remove[,1]) #4063
-nrow(DMSO_other)
 DMSO_specific = DMSO_unique[which(!DMSO_unique[,1] %in% DMSO_other[,1]),] #723
-nrow(DMSO_specific)
 
 HU_other = match_both_direction(HU_unique, HU_remove[,1]) #4026
-
 HU_specific = HU_unique[which(!HU_unique[,1] %in% HU_other[,1]),] #1910
 
 ## Add the environment specific PPI number into the matrix
@@ -164,53 +160,74 @@ csvWriter(PPI_count_matrix_add, "Working_data/Positive_PPI_environment/Count_sum
 
 PPI_count_matrix_add[order(as.numeric(PPI_count_matrix_add[,3])),1]
 # "Forskolin" "FK506"     "Raffinose" "DMSO"      "NaCl"      "H2O2"      "Dox"       "Cold_16C"  "HU"
+# Put DMSO into the first position
+# "DMSO", "Forskolin", "FK506", "Raffinose", "NaCl", "H2O2", "Dox", "Cold_16C", "HU"
 # Make a barplot to show the cumulative number of PPIs across different environments
-Forskolin_FK506_merge = mark_duplicates_fast(unique(c(Forskolin_unique[,1], FK506_unique[,1])))
-Forskolin_FK506_Raffinose_merge = mark_duplicates_fast(unique(c(Forskolin_FK506_merge[,1], Raffinose_unique[,1])))
-Forskolin_FK506_Raffinose_DMSO_merge = mark_duplicates_fast(unique(c(Forskolin_FK506_Raffinose_merge[,1], DMSO_unique[,1])))
-Forskolin_FK506_Raffinose_DMSO_NaCl_merge = mark_duplicates_fast(unique(c(Forskolin_FK506_Raffinose_DMSO_merge[,1], NaCl_unique[,1])))
-Forskolin_FK506_Raffinose_DMSO_NaCl_H2O2_merge = mark_duplicates_fast(unique(c(Forskolin_FK506_Raffinose_DMSO_NaCl_merge[,1], 
-                                                                               H2O2_unique[,1])))
-Forskolin_FK506_Raffinose_DMSO_NaCl_H2O2_Dox_merge = 
-        mark_duplicates_fast(unique(c(Forskolin_FK506_Raffinose_DMSO_NaCl_H2O2_merge[,1], Dox_unique[,1])))
-Forskolin_FK506_Raffinose_DMSO_NaCl_H2O2_Dox_Cold_merge = 
-        mark_duplicates_fast(unique(c(Forskolin_FK506_Raffinose_DMSO_NaCl_H2O2_Dox_merge[,1], cold_unique[,1])))
+DMSO_Forskolin_merge = mark_duplicates_fast(unique(c(DMSO_unique[,1], Forskolin_unique[,1]))) # 5438
+DMSO_Forskolin_single_merge = mark_duplicates_fast(unique(DMSO_specific[,1], Forskolin_specific[,1])) # 723
 
-Forskolin_FK506_Raffinose_DMSO_NaCl_H2O2_Dox_Cold_HU_merge = 
-        mark_duplicates_fast(unique(c(Forskolin_FK506_Raffinose_DMSO_NaCl_H2O2_Dox_Cold_merge[,1], HU_unique[,1])))
+DMSO_Forskolin_FK506_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_merge[,1], FK506_unique[,1]))) #5921
+DMSO_Forskolin_FK506_single_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_single_merge[,1], FK506_specific[,1]))) #972
 
-PPI_matrix = matrix(0, 2, 9)
-PPI_matrix[1,] = c(nrow(Forskolin_specific), nrow(FK506_specific), nrow(Raffinose_specific),
-                   nrow(DMSO_specific), nrow(NaCl_specific), nrow(H2O2_specific),
-                   nrow(Dox_specific), nrow(cold_specific), nrow(HU_specific))
-cumulative_count = c(nrow(Forskolin_unique), nrow(Forskolin_FK506_merge), nrow(Forskolin_FK506_Raffinose_merge),
-                     nrow(Forskolin_FK506_Raffinose_DMSO_merge), nrow(Forskolin_FK506_Raffinose_DMSO_NaCl_merge),
-                     nrow(Forskolin_FK506_Raffinose_DMSO_NaCl_H2O2_merge), nrow(Forskolin_FK506_Raffinose_DMSO_NaCl_H2O2_Dox_merge),
-                     nrow(Forskolin_FK506_Raffinose_DMSO_NaCl_H2O2_Dox_Cold_merge),
-                     nrow(Forskolin_FK506_Raffinose_DMSO_NaCl_H2O2_Dox_Cold_HU_merge))
+DMSO_Forskolin_FK506_Raffinose_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_FK506_merge[,1], Raffinose_unique[,1]))) #6779
+DMSO_Forskolin_FK506_Raffinose_single_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_FK506_single_merge[,1], Raffinose_specific[,1])))#1666
 
-PPI_matrix[2,] = as.numeric(cumulative_count) - as.numeric(PPI_matrix[2,])
-colnames(PPI_matrix) = c("Forskolin", "FK506", "Raffinose", "DMSO", "NaCl", 
-                   "H2O2", "Doxorubicin", "16C", "Hydroxyurea")
-cumulative_count # 3901  4547  5695  6779  7623  8633  9940 11919 13829
-PPI_matrix[1,]  # 171   249    694   723   735   862   1132  1886  1910 (Environment sepcific PPIs)
-c(nrow(Forskolin_unique), nrow(FK506_unique), nrow(Raffinose_unique), nrow(DMSO_unique),
-  nrow(NaCl_unique), nrow(H2O2_unique), nrow(Dox_unique), nrow(cold_unique), nrow(HU_unique))
-# 3901 3196 4019 4786 2592 4650 3315 3102 5936 # number of PPIs in each environment
+DMSO_Forskolin_FK506_Raffinose_NaCl_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_FK506_Raffinose_merge[,1], NaCl_unique[,1]))) #7623
+DMSO_Forskolin_FK506_Raffinose_NaCl_single_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_FK506_Raffinose_single_merge[,1], 
+                                                                                 NaCl_specific[,1]))) #2401
 
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2A_Number_PPIs_across_environments.pdf", height = 5, width = 5)
-barCenter = barplot(PPI_matrix, horiz=F, beside=F, ylim=c(0,20000), ylab="Cumulative number of PPIs",
-                    space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6),
-                    col= apple_colors[c(1,2)], axisnames=F, border=NA, cex.axis=0.8)
-legend("topleft", legend=c("Single environment", "Multiple environments"), 
-       fill=apple_colors[c(1,2)], cex=0.8, bty="n", border=FALSE)
-#text(x= barCenter, y = as.numeric(cumulative_count) + 1200, 
-     #labels = as.character(cumulative_count) , cex=0.8, xpd = TRUE) # add cumulative number
+DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_FK506_Raffinose_NaCl_merge[,1], 
+                                                                               H2O2_unique[,1]))) #8633
+DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_single_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_FK506_Raffinose_NaCl_single_merge[,1], 
+                                                                                 H2O2_specific[,1]))) #3623
 
-#text(x= barCenter-0.3, y = -500, 
-     #labels = c("171/3901", "249/3196", "694/4019", "723/4786","735/2529", "862/4650", "1132/3315", "1886/3102", "1910/5936"), 
-     #cex=0.6, xpd = TRUE, srt= 45, adj =1) # add environment specific PPI number/ PPIs detected in that environment
-text(x= barCenter, y = -500, labels = colnames(PPI_matrix), srt= 45, adj = 1, cex=0.8, xpd = TRUE)
+DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_merge[,1], 
+                                                                               Dox_unique[,1]))) #9940
+DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_single_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_single_merge[,1], 
+                                                                                      Dox_specific[,1]))) #4395
+
+DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_cold_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_merge[,1], 
+                                                                                   cold_unique[,1])))#11919
+DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_cold_single_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_single_merge[,1], 
+                                                                                          cold_specific[,1]))) #6281
+
+DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_cold_HU_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_cold_merge[,1], 
+                                                                                        HU_unique[,1]))) # 13829
+DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_cold_HU_single_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_cold_single_merge[,1], 
+                                                                                               HU_specific[,1]))) #8191
+PPI_matrix = matrix(0, 3, 9)
+PPI_matrix[1,] = c(nrow(DMSO_specific), nrow(Forskolin_specific), nrow(FK506_specific), nrow(Raffinose_specific),
+                   nrow(NaCl_specific), nrow(H2O2_specific), nrow(Dox_specific), nrow(cold_specific), nrow(HU_specific))
+cumulative_count = c(nrow(DMSO_unique), nrow(DMSO_Forskolin_merge), nrow(DMSO_Forskolin_FK506_merge), nrow(DMSO_Forskolin_FK506_Raffinose_merge),
+                     nrow(DMSO_Forskolin_FK506_Raffinose_NaCl_merge), nrow(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_merge),
+                     nrow(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_merge), 
+                     nrow(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_cold_merge),
+                     nrow(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_cold_HU_merge))
+cumulative_single_count = c(nrow(DMSO_specific), nrow(DMSO_Forskolin_single_merge), nrow(DMSO_Forskolin_FK506_single_merge), 
+                            nrow(DMSO_Forskolin_FK506_Raffinose_single_merge),
+                            nrow(DMSO_Forskolin_FK506_Raffinose_NaCl_single_merge), 
+                            nrow(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_single_merge),
+                            nrow(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_single_merge),
+                            nrow(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_cold_single_merge),
+                            nrow(DMSO_Forskolin_FK506_Raffinose_NaCl_H2O2_Dox_cold_HU_single_merge))
+
+PPI_matrix[2,] = as.numeric(cumulative_single_count) - as.numeric(PPI_matrix[1,])
+PPI_matrix[3,] = as.numeric(cumulative_count) - as.numeric(cumulative_single_count)
+
+colnames(PPI_matrix) = c("SD", "Forskolin", "FK506", "Raffinose",  "NaCl", "H2O2", "Doxorubicin", "16 \u00B0C", "Hydroxyurea")
+csvWriter(PPI_matrix, "Working_data/Positive_PPI_environment/Count_summary_02.csv")
+
+pdf("Working_figure/Figure2/Figure2A_Number_PPIs_across_environments.pdf", height = 5, width = 5)
+barCenter = barplot(PPI_matrix, horiz=F, beside=F,  ylab="Cumulative number of PPIs",
+                    space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6), yaxt="n", ylim = c(0,15000),
+                    col= apple_colors[c(7,3,5)], axisnames=F, border=NA)
+axis(2,at = c(seq(0, 18000, by = 3000)))
+legend("topleft", legend=c("Multiple environments","Unique to another environment","Unique to this environment"), 
+       fill=apple_colors[c(5,3,7)],  bty="n", border=FALSE)
+
+text(x= barCenter, y = -500, labels = c("SD", "Forskolin", "FK506", "Raffinose",  "NaCl", 
+                                        expression('H'[2]* 'O'[2]), "Doxorubicin", "16 \u00B0C", "Hydroxyurea"), 
+     srt= 45, adj = 1, xpd = TRUE)
 dev.off()
 
 
