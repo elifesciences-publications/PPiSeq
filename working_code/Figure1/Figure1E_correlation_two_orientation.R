@@ -38,14 +38,14 @@ cor(fitness_two_data[,2], fitness_two_data[,3], method = "spearman") # 0.514
 
 library(ggplot2)
 ggplot() +
-  geom_point(aes(x= fit_01, y= fit_02), col = apple_colors[7], alpha = 0.8) +
+  geom_point(aes(x= fit_01, y= fit_02), col = apple_colors[7], alpha = 0.5) +
   geom_smooth(aes(x = seq(0.2, 1, by= 0.2), y = seq(0.2, 1, by = 0.2)), 
               method='lm',se = FALSE, color = apple_colors[11], cex = 0.4, linetype = 2) +
-  scale_y_continuous(name = "Fitness of ORF1-DHFR[1,2] X ORF2-DHFR[3]",
+  scale_y_continuous(name = "Fitness of ORF2-DHFR[1,2] X ORF1-DHFR[3]",
                      limits=c(0.2, 1),
                      breaks=seq(0.2,1, by =0.2),
                      labels = seq(0.2,1, by= 0.2)) +
-  scale_x_continuous(name = "Fitness of ORF2-DHFR[1,2] X ORF1-DHFR[3]", 
+  scale_x_continuous(name = "Fitness of ORF1-DHFR[1,2] X ORF2-DHFR[3]", 
                      limits=c(0.2, 1),
                      breaks=seq(0.2,1, by =0.2),
                      labels = seq(0.2,1, by= 0.2)) +
@@ -57,4 +57,4 @@ ggplot() +
   theme(axis.text.x = element_text(size = 10, color = "black", hjust =1),
         axis.text.y.left = element_text(size = 10, color = "black"))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1/Figure1E_correlation_fitness_two_directions.pdf", width = 5, height = 5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1/Figure1E_correlation_fitness_two_directions.pdf", width = 4, height = 4)
