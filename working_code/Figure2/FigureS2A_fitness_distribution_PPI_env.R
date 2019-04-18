@@ -19,7 +19,8 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 
 ### Figure S2A_check the fitness distribution for PPIs that are detected in different environments
 # I have generated normalized fitness values in each environment. 
-# In another code, I get the positive PPIs out and put fitness values in different environments in the same row
+# In another code (~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/Combine_pos_norm_fit.R, 
+# I get the positive PPIs out and put fitness values in different environments in the same row
 
 setwd("~/Dropbox/PPiSeq_02/")
 PPI_fit_norm = csvReader_T("Working_data/Positive_PPI_environment/Pos_PPI_normalized_fit.csv") # 14164
