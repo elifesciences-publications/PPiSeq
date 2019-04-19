@@ -424,9 +424,7 @@ extract_repeat_PPI= function(x){
         }
         return(repeat_PPI)
 }
-
 # Input binary protein protein interactions and output proteins and their degrees
-
 # Input binary PPIs, output proteins and their degrees in the network
 protein_degree_count = function(PPI){
         all_PPI_gene = split_string_vector(PPI)
