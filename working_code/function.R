@@ -3,8 +3,7 @@ csvReader_T <- function(csv_file){
 }
 
 csvReader_F <- function(csv_file){
-        return(as.matrix(read.csv(csv_file, header = F)))
-        }
+        return(as.matrix(read.csv(csv_file, header = F)))}
 
 tableReader_T <- function(csv_file){
         return(read.table(csv_file, header= T, sep= ","))
