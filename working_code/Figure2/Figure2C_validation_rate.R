@@ -55,7 +55,7 @@ all_Tecan_rep = match_both_direction(all_Tecan, reported_PPI[,1]) # 185
 all_Tecan_unrep = all_Tecan[which(!all_Tecan[,1] %in% all_Tecan_rep[,1]),] # 510
 #split validated PPIs into different groups
 PPI_group = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
-length(which(all_Tecan[,1] %in% PPI_group[,1])) # 695 all in
+length(which(all_Tecan[,1] %in% PPI_group[,1])) # 672 all in
 
 rep_PPI_matrix = matrix(0, 4,9)
 unrep_PPI_matrix = matrix(0, 4, 9)
@@ -99,10 +99,10 @@ ratio_all = c(ratio_rep[1], ratio_unrep[1], ratio_rep[2], ratio_unrep[2],
               ratio_rep[9], ratio_unrep[9])
 rep_PPI_matrix[1,] #2       5      19      17      10      14      33      34      22 
 rep_PPI_matrix[3,] #7      10      21      20      10      21      38      36      22 
-unrep_PPI_matrix[1,]#69      44      43      37      37      33      27      42      35 
-unrep_PPI_matrix[3,]# 132      89      57      41      41      38      34      42      36 
+unrep_PPI_matrix[1,]#48    43      43      37      37      33      27      42      35 
+unrep_PPI_matrix[3,]#110   88      57      41      41      38      34      42      36 
 
-counts_label = c("2/7", "69/132", "5/10", "44/89", "19/21", "43/57",
+counts_label = c("2/7", "48/110", "5/10", "43/88", "19/21", "43/57",
                  "17/20", "37/41", "10/10", "37/41", "14/21", "33/38",
                  "33/38", "27/34", "34/36", "42/42", "22/22", "35/36")
 pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2C_Validation_bar_plot.pdf", width= 6, height=5)
