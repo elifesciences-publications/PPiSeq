@@ -33,8 +33,8 @@ FK506_pos = csvReader_T("Working_data/Positive_PPI_environment/FK506_Pos_PPI_rea
 PPI_list = list(DMSO_pos[,1], H2O2_pos[,1], HU_pos[,1], Dox_pos[,1], Forskolin_pos[,1],
                 Raffinose_pos[,1], NaCl_pos[,1], cold_pos[,1], FK506_pos[,1]) # store PPIs of one environment as an element in a list
 all_PPI = unique(c(DMSO_pos[,1], H2O2_pos[,1], HU_pos[,1], Dox_pos[,1], Forskolin_pos[,1],
-                   Raffinose_pos[,1], NaCl_pos[,1], cold_pos[,1], FK506_pos[,1])) #14564
-all_PPI_unique = mark_duplicates_fast(all_PPI) # 13829
+                   Raffinose_pos[,1], NaCl_pos[,1], cold_pos[,1], FK506_pos[,1])) #13050
+all_PPI_unique = mark_duplicates_fast(all_PPI) # 12333
 all_PPI_matrix = matrix(0, nrow(all_PPI_unique), 10)
 all_PPI_matrix[,1] = all_PPI_unique[,1]
 colnames(all_PPI_matrix)= c("PPI","DMSO", "H2O2", "HU", "Dox", "Forskolin", "Raffinose", "NaCl", "16C", "FK506")
@@ -75,17 +75,17 @@ for(i in 1:9){
   matrix_PPI_env_rep[1,i] = nrow(all_reported)
   matrix_PPI_env_rep[2,i] = nrow(all_unreported)
 }
-matrix_PPI_env_rep[1,] # 308 144 112 115 148 212 254 338 222
+matrix_PPI_env_rep[1,] # 276 135 110 115 147 210 254 338 222
 all_PPI_count = matrix_PPI_env_rep[1,] + matrix_PPI_env_rep[2,]
-all_PPI_count # 8362 1356  655  535  555  664  570  619  513
+all_PPI_count # 6941 1300  640  534  554  662  570  619  513
 ratio = matrix_PPI_env_rep[1,]/all_PPI_count
-ratio # 0.03683329 0.10619469 0.17099237 0.21495327 0.26666667 0.31927711 0.44561404 0.54604200 0.43274854
-ratio_reported = c("3.7%", "10.6%", "17%", "21.5%", "26.7%", "31.9%", "44.6%", "54.6%", "43.3%")
+ratio # 0.03976372 0.10384615 0.17187500 0.21535581 0.26534296 0.31722054 0.44561404 0.54604200 0.43274854
+ratio_reported = c("4.0%", "10.4%", "17.2%", "21.5%", "26.5%", "31.7%", "44.6%", "54.6%", "43.3%")
 matrix_PPI_env_rep_reverse = matrix(0, nrow(matrix_PPI_env_rep), ncol(matrix_PPI_env_rep))
 matrix_PPI_env_rep_reverse[1,] = matrix_PPI_env_rep[2,]
 matrix_PPI_env_rep_reverse[2,] = matrix_PPI_env_rep[1,]
 pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2B_Number_environments_PPI_reproted.pdf", height = 5, width = 5)
-barCenter = barplot(matrix_PPI_env_rep_reverse, horiz=F, beside=F, ylim=c(0,10000), ylab="Number of PPIs",
+barCenter = barplot(matrix_PPI_env_rep_reverse, horiz=F, beside=F, ylim=c(0,8000), ylab="Number of PPIs",
                     space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6),
                     col= apple_colors[c(3,5)], axisnames=F, border=NA)
 legend("topright", legend=c("Previously reported", "Previously unreported"), 
@@ -118,5 +118,5 @@ ggplot(environment_count, aes(x = factor(1), y = Freq, fill= environment_number)
                     breaks = 1:9,
                     labels = 1:9)
 
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2B_PPI_environment_distribution.pdf", width =5 , height = 5)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2B_PPI_environment_distribution.pdf", width =5 , height = 5)
 

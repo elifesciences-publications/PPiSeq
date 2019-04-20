@@ -18,10 +18,10 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 ######### Figure 1E: scatter plot to show the correlation between mean fitness values of the same PPI with two directions
 setwd("~/Dropbox/PPiSeq_02/")
 DMSO_mean = csvReader_T("Paper_data/DMSO_mean_fitness_positive.csv") # 1459163
-DMSO_pos = DMSO_mean[which(DMSO_mean[,7] == "1"),] # 5211
+DMSO_pos = DMSO_mean[which(DMSO_mean[,7] == "1"),] # 5069
 # first find these PPIs that have two orientations in our data (check function of mark_duplicates_fast)
-DMSO_pos_two = mark_duplicates_fast(DMSO_pos[,1]) # 4819  The second column are the opposite orientation (0 if none)
-pos_PPI_two_direction = DMSO_pos_two[which(DMSO_pos_two[,2] != 0),] # 392
+DMSO_pos_two = mark_duplicates_fast(DMSO_pos[,1]) # 4287  The second column are the opposite orientation (0 if none)
+pos_PPI_two_direction = DMSO_pos_two[which(DMSO_pos_two[,2] != 0),] # 391
 fitness_two= matrix(0, nrow(pos_PPI_two_direction), 2)
 for(i in 1:nrow(fitness_two)){
   fitness_two[i,1] = DMSO_pos[which(DMSO_pos[,1] == pos_PPI_two_direction[i,1]),3]
@@ -57,4 +57,4 @@ ggplot() +
   theme(axis.text.x = element_text(size = 10, color = "black", hjust =1),
         axis.text.y.left = element_text(size = 10, color = "black"))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1/Figure1E_correlation_fitness_two_directions.pdf", width = 4, height = 4)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1/Figure1E_correlation_fitness_two_directions.pdf", width = 5, height = 5)

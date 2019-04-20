@@ -27,9 +27,9 @@ PPI_PRS = DMSO_mean[grep("Pos_PPI", DMSO_mean[,1]),1] #108
 PPI_pos = DMSO_mean[grep("positive_DHFR", DMSO_mean[,1]),1] # 1
 PPI_neg = DMSO_mean[grep("negative_non_DHFR", DMSO_mean[,1]),1] # 1
 PPI_control = c(PPI_PRS, PPI_RRS, PPI_pos, PPI_neg)
-DMSO_pos = DMSO_mean[which(DMSO_mean[,7] == "1"),] # 5211
-DMSO_pos_select = DMSO_pos[which(!DMSO_pos[,1] %in% PPI_control),] #5178
-PPI_lineages_select= PPI_lineages[which(PPI_lineages[,1] %in% DMSO_pos_select[,1]),] #18411
+DMSO_pos = DMSO_mean[which(DMSO_mean[,7] == "1"),] # 5069
+DMSO_pos_select = DMSO_pos[which(!DMSO_pos[,1] %in% PPI_control),] #5036
+PPI_lineages_select= PPI_lineages[which(PPI_lineages[,1] %in% DMSO_pos_select[,1]),] #18016
 
 # put the fitness values of replicates onto the same row
 PPI_unique= unique(DMSO_pos_select[,1])
@@ -68,8 +68,8 @@ PPI_fit_matrix_06 = PPI_indiv_matrix[,c(1, 6,7)]
 PPI_fit_all = rbind(PPI_fit_matrix_01, PPI_fit_matrix_02, PPI_fit_matrix_03,
                     PPI_fit_matrix_04, PPI_fit_matrix_05, PPI_fit_matrix_06) # 31068
 # Remove any pair with at least one value >= 0
-PPI_fit_final = PPI_fit_all[which(as.numeric(PPI_fit_all[,2]) != 0 & as.numeric(PPI_fit_all[,3]) != 0),] # 24887
-cor(as.numeric(PPI_fit_final[,2]), as.numeric(PPI_fit_final[,3]), method = "spearman") # 0.7128028
+PPI_fit_final = PPI_fit_all[which(as.numeric(PPI_fit_all[,2]) != 0 & as.numeric(PPI_fit_all[,3]) != 0),] # 24490
+cor(as.numeric(PPI_fit_final[,2]), as.numeric(PPI_fit_final[,3]), method = "spearman") # 0.7181939
 
 ####### Use ggplot to make scatter plots and hexagon plot
 PPI = as.character(PPI_fit_final[,1])
@@ -89,7 +89,7 @@ ggplot() +
   #add a line that contain equal fitness values
   geom_smooth(aes(x = seq(0, 1.2, by = 0.2), y = seq(0, 1.2, by = 0.2)), linetype =2,
               method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.3, y = 1.1, label = expression(paste("Spearman's ", italic(r), " = 0.71")),  parse = TRUE, col = apple_colors[11]) +
+  annotate("text", x = 0.3, y = 1.1, label = expression(paste("Spearman's ", italic(r), " = 0.72")),  parse = TRUE, col = apple_colors[11]) +
   
   scale_color_manual('', breaks = c("Positive PPI"),
                      values = apple_colors[8]) +
