@@ -19,26 +19,13 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 
 # Figure2E coannotation rate for different groups of PPIs
 setwd("~/Dropbox/PPiSeq_02/")
-# first extract all the negative PP-pairs from all environments
-DMSO = csvReader_T("Paper_data/DMSO_mean_fitness_positive.csv")[,1]
-H2O2 = csvReader_T("Paper_data/H2O2_mean_fitness_positive.csv")[,1]
-HU = csvReader_T("Paper_data/Hydroxyurea_mean_fitness_positive.csv")[,1]
-Dox = csvReader_T("Paper_data/Doxorubicin_mean_fitness_positive.csv")[,1]
-Forskolin = csvReader_T("Paper_data/Forskolin_mean_fitness_positive.csv")[,1]
-Raffinose = csvReader_T("Paper_data/Raffinose_mean_fitness_positive.csv")[,1]
-NaCl = csvReader_T("Paper_data/NaCl_mean_fitness_positive.csv")[,1]
-cold = csvReader_T("Paper_data/Cold_16C_mean_fitness_positive.csv")[,1]
-FK506 = csvReader_T("Paper_data/FK506_mean_fitness_positive.csv")[,1]
+## Write out all PPIs covered by PPiSeq in all environments
+PPI_all = csvReader_T("Working_data/Positive_PPI_environment/All_PPI_environments_normalized_fit.csv")
+PPI_all_matrix = cbind(PPI_all[,1], rep(1, nrow(PPI_all)))
+colnames(PPI_all_matrix) = c("PPI", "no_meaning")
+csvWriter(PPI_all_matrix, "Working_data/Positive_PPI_environment/All_PPI_for_coannotation.csv")
 
-all_PPI = unique(c(DMSO, H2O2, HU, Dox, Forskolin, Raffinose, NaCl, cold, FK506)) # 1593177
-all_PPI_dup = mark_duplicates_fast(all_PPI) # 1469024
-pos_PPI = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
-all_PPI_pos = match_both_direction(all_PPI_dup, pos_PPI[,1]) # 13829
-all_PPI_neg = all_PPI_dup[which(!all_PPI_dup[,1] %in% all_PPI_pos[,1]),] # 1455195
-all_PPI_neg[,2] = 1 # make the count be 1
-csvWriter(all_PPI_neg, "Working_data/Positive_PPI_environment/Neg_PPIs_all_environment.csv")
-
-### check the annotation for these negative PPIs
+### Run python code to check the annotation for positive PPIs and all PPIs
 
 #### Create a matrix for the coannotation rate
 PPI_coannotation_MF = csvReader_T("Working_data/Positive_PPI_environment/GO_coannotation/PPI_environment_coannotation_MF.csv")
@@ -62,18 +49,18 @@ for(i in 1:9){
         
 }
 
-# Check the coannotation rate for negative PPIs
-PPI_negative_MF = csvReader_T("Working_data/Positive_PPI_environment/GO_coannotation/PPI_neg_coannotation_MF.csv")
-PPI_negative_BP = csvReader_T("Working_data/Positive_PPI_environment/GO_coannotation/PPI_neg_coannotation_BP.csv")
-PPI_negative_CC = csvReader_T("Working_data/Positive_PPI_environment/GO_coannotation/PPI_neg_coannotation_CC.csv")
+# Check the coannotation rate for all PPIs (neg + pos)
+PPI_all_MF = csvReader_T("Working_data/Positive_PPI_environment/GO_coannotation/PPI_all_neg_pos_coannotation_MF.csv")
+PPI_all_BP = csvReader_T("Working_data/Positive_PPI_environment/GO_coannotation/PPI_all_neg_pos_coannotation_BP.csv")
+PPI_all_CC = csvReader_T("Working_data/Positive_PPI_environment/GO_coannotation/PPI_all_neg_pos_coannotation_CC.csv")
 
-PPI_neg_co_CC = length(which(PPI_negative_CC[,3] == "1")) # 971461
-PPI_neg_co_BP = length(which(PPI_negative_BP[,3] == "1")) # 133768
-PPI_neg_co_MF = length(which(PPI_negative_MF[,3] == "1")) # 179303
+PPI_all_co_CC = length(which(PPI_all_CC[,3] == "1")) # 1075009
+PPI_all_co_BP = length(which(PPI_all_BP[,3] == "1")) # 139624
+PPI_all_co_MF = length(which(PPI_all_MF[,3] == "1")) # 119164
 
-neg_coannotation_CC = PPI_neg_co_CC/nrow(PPI_negative_CC) # 0.6675813
-neg_coannotation_BP = PPI_neg_co_BP/nrow(PPI_negative_BP) # 0.09192445
-neg_coannotation_MF = PPI_neg_co_MF/nrow(PPI_negative_MF) # 0.1232158
+all_coannotation_CC = PPI_all_co_CC/nrow(PPI_all_CC) # 0.6748457
+all_coannotation_BP = PPI_all_co_BP/nrow(PPI_all_BP) # 0.08765011
+all_coannotation_MF = PPI_all_co_MF/nrow(PPI_all_MF) # 0.07480618
 
 coannotation_matrix = coannotation_matrix[2:4,]
 co_rate = as.numeric(c(coannotation_matrix[,1], coannotation_matrix[,2], coannotation_matrix[,3],
@@ -86,11 +73,11 @@ barCenter = barplot(co_rate*100, horiz=F, beside=F, ylim=c(0,100), ylab="Fractio
                              0.4, 0.08, 0.08, 0.4, 0.08, 0.08, 0.4, 0.08, 0.08,
                              0.4, 0.08, 0.08, 0.4, 0.08, 0.08, 0.4, 0.08, 0.08),
                     col= apple_colors[c(5,3,7)] , axisnames=F, border=NA, cex.axis=0.8)
-lines(1:32, rep(neg_coannotation_CC*100, 32), lty = 2, col = apple_colors[11], lwd = 1.5)
-lines(1:32, rep(neg_coannotation_BP*100, 32), lty = 2, col = apple_colors[11], lwd = 1.5)
-lines(1:32, rep(neg_coannotation_MF*100, 32), lty = 2, col = apple_colors[11], lwd = 1.5)
-text(c(33,33,33), c(neg_coannotation_CC*100, (neg_coannotation_BP*100-1), (neg_coannotation_MF*100 + 1)),
-     labels = c("CC", "BP", "MF"), col = apple_colors[11], xpd = TRUE, cex = 0.8)
+lines(1:32, rep(all_coannotation_CC*100, 32), lty = 2, col = apple_colors[11], lwd = 1.5)
+lines(1:32, rep(all_coannotation_BP*100, 32), lty = 2, col = apple_colors[11], lwd = 1.5)
+lines(1:32, rep(all_coannotation_MF*100, 32), lty = 2, col = apple_colors[11], lwd = 1.5)
+text(c(33,33,33), c(all_coannotation_CC*100, (all_coannotation_BP*100+2), (all_coannotation_MF*100 -2)),
+     labels = c("CC", "BP", "MF"), col = apple_colors[c(5,3,7)], xpd = TRUE, cex = 0.8)
 legend(-0.5,110, legend=c("Cellular compartment (CC)", "Biological process (BP)", "Molecular function (MF)"),
        fill=apple_colors[c(5,3,7)], cex=0.8, bty="n",border=FALSE, xpd = TRUE)
 
@@ -99,5 +86,5 @@ for(i in 1:9){
         env_num_loc[i] = mean(barCenter[(3*i-2):(3*i)])
 }
 text(x = env_num_loc, y = -8, labels = as.character(1:9), xpd = TRUE)
-text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is observed", xpd = TRUE)
+text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
 dev.off()
