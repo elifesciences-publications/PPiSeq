@@ -125,6 +125,13 @@ for(i in 1:length(network_density_vector)){
         z_score[i] = (as.numeric(network_density_vector[i]) - mean)/sd
 }
 
+### Calculate the p-value based on 1000 random networks
+p_value = rep(0, length(network_density_vector))
+for(i in 1:length(network_density_vector)){
+        m_real = network_density_vector[i]
+        m_random = as.numeric(density_CC_random[i,])
+        p_value[i] = t.test(m_random, m_real, var.equal = TRUE, alternative = "less")$p.value
+}
 # dendrogram
 library(ggplot2)
 library(ggdendro)
@@ -150,20 +157,21 @@ ggplot() +
 ggsave("Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/Dendrogram_CC_GO_pair_cluster.pdf", width = 5, height = 5)
 label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),]
-
+Network_density = as.numeric(network_density_vector)
 dataf = data.frame(rowv,columnv,
                    Network_density = as.numeric(network_density_vector),
-                   label = z_score)
+                   label = p_value)
 #library(grid)
 #text_high <- textGrob("Network density", gp=gpar(fontsize=8, fontface="bold"))
 library(ggplot2)
 ggplot() + 
         geom_point(aes(x = rowv, y = columnv, size =Network_density, color = label), dataf)  + 
-        scale_color_gradientn(name = "Z-score",colors = apple_colors[c(5,3,7)])+  
+        scale_color_gradientn(name = "P value", colors = apple_colors[c(7,10)], limits = c(0, 0.1),
+                              oob = scales::squish)+  
         scale_x_discrete(limits = GO_order$label) + 
         scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
-        scale_size(name = "Network density", breaks = seq(0.01, 0.04, by = 0.01), 
-                   label =as.character(seq(0.01,0.04, by = 0.01)), 
+        scale_size(name = "Network density", breaks = c(0, 0.015, 0.03, 0.044), 
+                   label =as.character(c(0, 0.015, 0.03, 0.044)), 
                    range = c(0, 3))+ ## to tune the size of circles
         guides(fill=guide_legend(nrow=2,byrow=TRUE))+
         theme(legend.position= "right",legend.key = element_blank(),
@@ -177,7 +185,7 @@ ggplot() +
         theme(axis.text.x = element_text(size = 8, color = apple_colors[11], angle = 45, hjust =1),
               axis.text.y.left = element_text(size = 8, color = "black"), axis.title = element_blank())
 #ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/heatmap_density_CC_PPI_network.pdf", 
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/heatmap_density_CC_PPI_network_p.value.pdf", 
        width = 7, height = 5)
 
 ###### Make a heatmap for positive count
@@ -185,19 +193,18 @@ network_pos_count = csvReader_T("Working_data/Positive_PPI_environment/PPI_pair_
 colnames(network_pos_count) = gsub("\\.", " ", colnames(network_pos_count))
 GO = colnames(network_pos_count)
 network_count_vector = as.vector(network_pos_count)
-
+Network_count = as.numeric(network_count_vector)
 dataC = data.frame(rowv = rep(GO, each = 22),
                    columnv = rep(GO, 22),
-                   Network_count = as.numeric(network_count_vector)
-)
+                   Network_count = as.numeric(network_count_vector))
 Network_count = as.numeric(network_count_vector)
-count_label = c("10", "200", "800", "2000", "4000")
+count_label = c("0", "200", "800", "2000", "4000", "8214")
 library(ggplot2)
 ggplot() + 
         geom_point(aes(x = rowv, y = columnv, size =Network_count), col= apple_colors[5], dataC)  + 
         scale_x_discrete(limits = GO_order$label) + 
         scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
-        scale_size(name = "Number of PPIs", breaks = c(10, 200, 800, 2000, 4000), 
+        scale_size(name = "Number of PPIs", breaks = c(10, 200, 800, 2000, 4000, 8214), 
                    label = count_label, 
                    range = c(0, 4))+
         theme(legend.position ="right", legend.key = element_blank(), 
@@ -216,8 +223,8 @@ network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PP
 colnames(network_density) = gsub("\\.", " ", colnames(network_density))
 network_density_vector = as.vector(network_density) # by column
 GO_BP = colnames(network_density)
-rowv = rep(GO_BP, each = 102)
-columnv = rep(GO_BP, 102)
+rowv = rep(GO_BP, each = 99)
+columnv = rep(GO_BP, 99)
 GO_GO_name_order = paste(rowv, columnv, sep= "_")### This name will be used to match the summary or random network
 
 #### extract density from each random network and put them as a column into a matrix
@@ -245,9 +252,26 @@ for(i in 1:length(network_density_vector)){
         z_score[i] = (as.numeric(network_density_vector[i]) - mean)/sd
 }
 
+### Calculate the p-value based on 1000 random networks
+p_value = rep(0, length(network_density_vector)) 
+for(i in 1:length(network_density_vector)){
+        m_real = as.numeric(network_density_vector[i])
+        m_random = as.numeric(density_BP_random[i,])
+        if(m_real == 0){
+                p_value[i] = 1
+        }
+        else if(sum(m_random) == 0){
+                p_value[i] = 0
+        }
+        else{
+                p_value[i] = t.test(m_random, m_real, var.equal = TRUE, alternative = "less")$p.value 
+        }
+       
+}
+
 # dendrogram
 library(ggdendro)
-#rownames(network_density) = as.character(1:98)
+rownames(network_density) = colnames(network_density)
 hc = hclust(dist(network_density), method="ward.D")
 
 dendr = dendro_data(hc, type= "rectangle")
@@ -273,19 +297,22 @@ ggsave("Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/Dendrogram_BP_GO_
 label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),] # order the BP GO term by the cluster analysis
 
+Network_density = as.numeric(network_density_vector) # 0.11764
 dataf = data.frame(rowv,columnv,
                    Network_density = as.numeric(network_density_vector),
-                   label = z_score)
+                   label = p_value)
 #library(grid)
 #text_high <- textGrob("Network density", gp=gpar(fontsize=8, fontface="bold"))
 library(ggplot2)
 ggplot() + 
         geom_point(aes(x = rowv, y = columnv, size =Network_density, color = label), dataf)  + 
-        scale_color_gradientn(name = "Z-score",colors = apple_colors[c(5,3,7)])+  
+        scale_color_gradientn(name = "P value", colors = apple_colors[c(7,10)], limits = c(0, 0.1),
+                              oob = scales::squish) +
+        #scale_color_gradientn(name = "P value",colors = apple_colors[c(5,3,7)])+  
         scale_x_discrete(limits = GO_order$label) + 
         scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
-        scale_size(name = "Network density", breaks = seq(0.01, 0.04, by = 0.01), 
-                   label =as.character(seq(0.01,0.04, by = 0.01)), 
+        scale_size(name = "Network density", breaks = c(0, 0.01, 0.03, 0.05, 0.07, 0.09, 0.117), 
+                   label =as.character(c(0, 0.01, 0.03, 0.05, 0.07, 0.09, 0.117)), 
                    range = c(0, 3))+ ## to tune the size of circles
         guides(fill=guide_legend(nrow=2,byrow=TRUE))+
         theme(legend.position= "right",legend.key = element_blank(),
@@ -299,27 +326,27 @@ ggplot() +
         theme(axis.text.x = element_text(size = 8, color = apple_colors[11], angle = 45, hjust =1),
               axis.text.y.left = element_text(size = 8, color = "black"), axis.title = element_blank())
 #ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/heatmap_density_CC_PPI_network.pdf", 
-       width = 7, height = 5)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/heatmap_density_BP_PPI_network.pdf", 
+       width = 16, height = 13)
 
 ###### Make a heatmap for positive count
-network_pos_count = csvReader_T("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_CC_matrix.csv")
+network_pos_count = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_BP_matrix.txt", header=T, sep = "\t"))
 colnames(network_pos_count) = gsub("\\.", " ", colnames(network_pos_count))
-GO = colnames(network_pos_count)
+GO = colnames(network_pos_count) # 99
 network_count_vector = as.vector(network_pos_count)
 
-dataC = data.frame(rowv = rep(GO, each = 22),
-                   columnv = rep(GO, 22),
+dataC = data.frame(rowv = rep(GO, each = 99),
+                   columnv = rep(GO, 99),
                    Network_count = as.numeric(network_count_vector)
 )
-Network_count = as.numeric(network_count_vector)
-count_label = c("10", "200", "800", "2000", "4000")
+Network_count = as.numeric(network_count_vector) # 267
+count_label = c("0", "50", "100", "150", "200", "267")
 library(ggplot2)
 ggplot() + 
         geom_point(aes(x = rowv, y = columnv, size =Network_count), col= apple_colors[5], dataC)  + 
         scale_x_discrete(limits = GO_order$label) + 
         scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
-        scale_size(name = "Number of PPIs", breaks = c(10, 200, 800, 2000, 4000), 
+        scale_size(name = "Number of PPIs", breaks = c(0,50,100,150,200,267), 
                    label = count_label, 
                    range = c(0, 4))+
         theme(legend.position ="right", legend.key = element_blank(), 
@@ -328,17 +355,65 @@ ggplot() +
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
         theme(axis.text.x = element_text(size = 8, color = "black", angle = 45, hjust =1),
               axis.text.y.left = element_text(size = 8, color = "black"), axis.title = element_blank())
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/heatmap_pos_count_CC_PPI_network.pdf", width = 7, height = 5)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/heatmap_pos_count_BP_PPI_network.pdf", width = 16, height = 13)
 
 ########################################
 ## Molecular function
 setwd("~/Dropbox/PPiSeq_02")
-network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_MF.txt",
+network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_MF_matrix.txt",
                                        sep = "\t", header = T))
-network_density[which(network_density == 2)] = 0 # No any possible PPIs will be 2. Here I set it up to be zero
+colnames(network_density) = gsub("\\.", " ", colnames(network_density))
+network_density_vector = as.vector(network_density) # by column
+GO_MF = colnames(network_density)
+rowv = rep(GO_MF, each = 41)
+columnv = rep(GO_MF, 41)
+GO_GO_name_order = paste(rowv, columnv, sep= "_")### This name will be used to match the summary or random network
+
+#### extract density from each random network and put them as a column into a matrix
+all_count= as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_MF_new.txt",sep = "\t", header = T))
+all_count_name = paste(all_count[,1], all_count[,2], sep = "_")
+#all_count_name[which(!all_count_name %in% GO_GO_name_order)][1]
+all_count_name = gsub("-", " ", all_count_name)
+all_count_name = gsub(",", " ", all_count_name)
+order_all_count = all_count[match(GO_GO_name_order, all_count_name), 3]
+#overlap = intersect(all_count_name, GO_GO_name_order)
+
+random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/random_network/random_network_density/random_network_MF_pos_count_"
+density_MF_random = rep(0, length(GO_GO_name_order))
+for (i in 1:1000){
+        random_name = paste(random_name_front, as.character(i), ".txt", sep = "")
+        random_density = extract_random_density(order_all_count, random_name, GO_GO_name_order)
+        density_MF_random = cbind(density_MF_random, random_density)
+}
+density_MF_random = density_MF_random[,2:ncol(density_MF_random)]
+
+### Calculate the z_score based on 1000 random networks
+#z_score = rep(0, length(network_density_vector))
+#for(i in 1:length(network_density_vector)){
+        #mean = mean(as.numeric(na.omit(density_BP_random[i,])))
+        #sd = sd(as.numeric(na.omit(density_BP_random[i,])))
+        #z_score[i] = (as.numeric(network_density_vector[i]) - mean)/sd
+#}
+
+### Calculate the p-value based on 1000 random networks
+p_value = rep(0, length(network_density_vector)) 
+for(i in 1:length(network_density_vector)){
+        m_real = as.numeric(network_density_vector[i])
+        m_random = as.numeric(density_MF_random[i,])
+        if(m_real == 0){
+                p_value[i] = 1
+        }
+        else if(sum(m_random) == 0){
+                p_value[i] = 0
+        }
+        else{
+                p_value[i] = t.test(m_random, m_real, var.equal = TRUE, alternative = "less")$p.value 
+        }
+        
+}
+
+
 rownames(network_density) = colnames(network_density)
-GO_BP_index = cbind(1:nrow(network_density), rownames(network_density))
-write.csv(GO_BP_index, "Working_data/Positive_PPI_environment/PPI_pair_GO/MF_GO_index.csv", quote =F, row.names = F)
 # dendrogram
 library(ggdendro)
 #rownames(network_density) = as.character(1:98)
@@ -366,89 +441,59 @@ ggsave("Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/Dendrogram_MF_GO_
 
 label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),] # order the BP GO term by the cluster analysis
-setwd("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/PPI_pair_GO/random_network/random_network_density/")
-network_density = as.matrix(read.table("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_MF.txt",
-                                       sep = "\t", header = T))
-network_density[which(network_density == 2)] = 0 # No any possible PPIs will be 2. Here I set it up to be zero
-GO_file_name_front = "random_network_MF_density_"
-quantile = c(0.025, 0.5, 0.975)
-random_network_quantile = function(network_density, GO_file_name_front, quantile){
-        density_CC_random = rep(0, nrow(network_density) * ncol(network_density))
-        for (i in 1:100){
-                density_CC_name = paste(GO_file_name_front, as.character(i), ".txt", sep = "")
-                CC_matrix = as.matrix(read.table(density_CC_name, sep = "\t", header = T))
-                vector_density = as.vector(CC_matrix)
-                density_CC_random = cbind(density_CC_random, vector_density)
-        }
-        density_CC_random = density_CC_random[,2:ncol(density_CC_random)]
-        #mean_density_CC_random = rowMeans(density_CC_random)
-        density_CC_quantile = matrix(0, nrow(density_CC_random), 3)
-        for(i in 1:nrow(density_CC_quantile)){
-                density_CC_quantile[i,] = quantile(density_CC_random[i,], probs = quantile)
-        }  
-        return(density_CC_quantile)
-}
-density_CC_quantile = random_network_quantile(network_density, GO_file_name_front, quantile)
 
-GO = colnames(network_density)
-network_density_vector = as.vector(network_density)
-random_comp = rep("No", length(network_density_vector))
-random_comp[which(network_density_vector >= density_CC_quantile[,3])] = "High"
-
-Network_density = as.numeric(network_density_vector)
-dataf = data.frame(rowv = rep(GO, each = 41),
-                   columnv = rep(GO, 41),
+dataf = data.frame(rowv = rep(GO_MF, each = 41),
+                   columnv = rep(GO_MF, 41),
                    Network_density = as.numeric(network_density_vector),
-                   label = random_comp)
-#library(grid)
-#text_high <- textGrob("Network density", gp=gpar(fontsize=8, fontface="bold"))
+                   label = p_value)
+Network_density = as.numeric(network_density_vector)
+max(Network_density) # 0.1222807
 library(ggplot2)
 ggplot() + 
         geom_point(aes(x = rowv, y = columnv, size =Network_density, color = label), dataf)  + 
-        #scale_color_gradient2(low = apple_colors[5], high = apple_colors[7])+
-        scale_color_manual(name = "", values = apple_colors[c(7,10)], breaks = c("NA", "NA"))+  
+        scale_color_gradientn(name = "P value", colors = apple_colors[c(7,10)], limits = c(0, 0.1),
+                              oob = scales::squish) +
+        #scale_color_gradientn(name = "P value",colors = apple_colors[c(5,3,7)])+  
         scale_x_discrete(limits = GO_order$label) + 
         scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
-        scale_size(name = "Network density", breaks = seq(0, 0.12, by = 0.04), 
-                   label =as.character(seq(0,0.12, by = 0.04)), 
-                   range = c(0, 2))+ ## to tune the size of circles
-        theme(legend.position= "top",legend.key = element_blank(),
+        scale_size(name = "Network density", breaks = c(0, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12), 
+                   label =as.character(c(0, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12)), 
+                   range = c(0, 3))+ ## to tune the size of circles
+        guides(fill=guide_legend(nrow=2,byrow=TRUE))+
+        theme(legend.position= "right",legend.key = element_blank(),
               legend.text = element_text(size = 8, color = apple_colors[11])) +
-        #guides(fill=guide_legend(ncol = 2))+
-        #annotation_custom(grob = text_high,xmin= 10,xmax=13,ymin=23.5,ymax=24.5)  +
-        #coord_cartesian(clip = 'off')+# This focuses the x-axis on the range of interest
+        
         theme(panel.background = element_blank(), axis.ticks=element_blank(),
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
-        theme(axis.text.x = element_text(size = 6, color = apple_colors[11], angle = 90, hjust =1),
-              axis.text.y.left = element_text(size = 6, color = "black"), axis.title = element_blank())
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/heatmap_density_MF_PPI_network.pdf", width = 6, height = 6)
+        theme(axis.text.x = element_text(size = 8, color = apple_colors[11], angle = 45, hjust =1),
+              axis.text.y.left = element_text(size = 8, color = "black"), axis.title = element_blank())
 
-###### Make a heatmap for all count
-network_all_count = as.matrix(read.table("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_MF.txt",
-                                         sep = "\t", header = T))
-
-GO = colnames(network_all_count)
-network_count_vector = as.vector(network_all_count)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/heatmap_density_MF_PPI_network.pdf", 
+       width = 11, height = 7)
+###### Make a heatmap for positive count
+network_pos_count = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_MF_matrix.txt", header=T, sep = "\t"))
+colnames(network_pos_count) = gsub("\\.", " ", colnames(network_pos_count))
+GO = colnames(network_pos_count) # 41
+network_count_vector = as.vector(network_pos_count)
 
 dataC = data.frame(rowv = rep(GO, each = 41),
                    columnv = rep(GO, 41),
                    Network_count = as.numeric(network_count_vector)
 )
-Network_count = as.numeric(network_count_vector)
-count_label = c(expression('10'), expression('10'^3), expression('10'^5))
+Network_count = as.numeric(network_count_vector) # 393
+count_label = c("0", "80", "160", "240", "320", "393")
 library(ggplot2)
 ggplot() + 
         geom_point(aes(x = rowv, y = columnv, size =Network_count), col= apple_colors[5], dataC)  + 
         scale_x_discrete(limits = GO_order$label) + 
         scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
-        scale_size(name = "Protein protein pair count", breaks = c(10, 1e3, 1e5), 
+        scale_size(name = "Number of PPIs", breaks = c(0,80,160,240,320,393), 
                    label = count_label, 
-                   range = c(0, 3))+
-        theme(legend.position ="bottom", legend.key = element_blank(), 
+                   range = c(0, 4))+
+        theme(legend.position ="right", legend.key = element_blank(), 
               legend.text = element_text(size = 8, color = apple_colors[11])) +
         theme(panel.background = element_blank(), axis.ticks=element_blank(),
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
-        theme(axis.text.x = element_text(size = 5, color = "black", angle = 90, hjust =1),
-              axis.text.y.left = element_text(size = 5, color = "black"), axis.title = element_blank())
-
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/heatmap_all_count_MF_PPI_network.pdf", width = 6, height = 6)
+        theme(axis.text.x = element_text(size = 8, color = "black", angle = 45, hjust =1),
+              axis.text.y.left = element_text(size = 8, color = "black"), axis.title = element_blank())
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/heatmap_pos_count_MF_PPI_network.pdf", width = 11, height = 7)
