@@ -81,7 +81,7 @@ text(-0.65, barCenter, labels= rownames(f_cor)[o], cex = 0.8, xpd = TRUE)
 dev.off()
 
 #Comparison by degree of some major features
-fs = c(17, 15, 8, 18, 3, 2, 1)
+fs = c(17, 15, 18, 8,  3,  2, 1)
 fc = f_cor[fs, 10:8]
 fc_ci_lower = f_cor_ci_lower[fs, 10:8]
 fc_ci_upper = f_cor_ci_upper[fs, 10:8]
