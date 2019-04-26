@@ -50,18 +50,8 @@ error.bar <- function(x, y, upper, lower=upper, length=0.1,...){
   arrows(x-lower,y, x+upper, y, angle=0, code=3, length=length, ...)
 }
 
-i = ncol(f_cor)
-barCenter = barplot(f_cor[o, i], horiz=T, beside=F, xlim=c(-0.6, 0.4), 
-                    xlab="Spearman correlation with protein interaction dynamicity",
-                    axisnames=F, border=NA, cex.axis=0.7, col = apple_colors[1])
-arrows( f_cor_ci_lower[o, i], barCenter, f_cor_ci_upper[o, i], barCenter, angle = 90, lwd = 1.5, code = 3, length = 0.05)
-text(-0.65, barCenter, labels= rownames(f_cor)[o], cex = 0.8, xpd = TRUE)
 
-
-
-#x = as.data.frame(f_cor)
-#x$features = features_chosen
-
+#A bunch of plots, broken up by degree
 for(i in 1:ncol(f_cor)){
   o = order(f_cor[,i], decreasing = F)
   par(mar= c(5,5,1,1))
@@ -73,6 +63,39 @@ for(i in 1:ncol(f_cor)){
   text(-0.6, barCenter, labels= rownames(f_cor)[o], cex = 0.8, xpd = TRUE)
   dev.off()
 }
+
+#The main plot using all data
+i = ncol(f_cor)
+o = order(f_cor[,i], decreasing = F)
+
+pdf(file = "Working_figure/Figure6/Figure6X1_feature_by_degree_main.pdf")
+par(mar= c(5,8,1,1))
+barCenter = barplot(f_cor[o, i], horiz=T, beside=F, xlim=c(-0.6, 0.3), 
+                    xlab="Spearman correlation with protein interaction dynamicity",
+                    axisnames=F, border=NA, cex.axis=1, col = apple_colors[1])
+arrows( f_cor_ci_lower[o, i], barCenter, f_cor_ci_upper[o, i], barCenter, angle = 90, lwd = 1.5, code = 3, length = 0.05)
+text(-0.65, barCenter, labels= rownames(f_cor)[o], cex = 0.8, xpd = TRUE)
+dev.off()
+
+#Comparison by degree of some major features
+fs = c(17, 15, 3, 2, 1)
+f_cor = f_cor[fs, 10:8]
+f_cor_ci_lower = f_cor_ci_lower[fs, 10:8]
+f_cor_ci_upper = f_cor_ci_upper[fs, 10:8]
+pdf(file = "Working_figure/Figure6/Figure6X1_feature_by_degree_main_comparison.pdf")
+par(mar= c(5,8,1,1))
+barCenter = barplot(t(f_cor), horiz=T, beside=T, xlim=c(-0.6, 0.4), 
+                    xlab="Spearman correlation with protein interaction dynamicity",
+                    axisnames=F, border=NA, cex.axis=1, col = apple_colors[3:5])
+arrows( t(f_cor_ci_lower), barCenter, t(f_cor_ci_upper), barCenter, angle = 90, lwd = 1.5, code = 3, length = 0.05)
+text(-0.65, barCenter[2,], labels= rownames(f_cor), cex = 1, xpd = TRUE)
+legend(.2, 5, c("0-3", "4-14", "15+"), bty = "n", title = "PPI degree", 
+       fill = apple_colors[5:3])
+dev.off()
+
+#x = as.data.frame(f_cor)
+#x$features = features_chosen
+
 
 
 
