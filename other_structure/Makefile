@@ -1,17 +1,23 @@
 .PHONY: all setup \
 	tecan_analysis \
-	prcomp_analysis 
+	prcomp_analysis \
+	networkx_pickles
 
-all: setup tecan_analysis prcomp_analysis
+input_data_csv = $(shell find data -maxdepth 1 -name "*PPI*.csv")
+networkx_pickles = $(subst data,tmp,$(subst _PPI_barcodes_fitness_counts.csv,.nxp,$(input_data_csv)))
 
 tecan_analysis: output/validations_statistic_against_properties.png
 prcomp_analysis: 
+networkx_pickles: $(networkx_pickles)
+
+all: setup tecan_analysis prcomp_analysis
 
 setup:
 	mkdir -p tmp
 	mkdir -p output
 
-rscript=singularity exec shub://darachm/singularity_r_for_darach:v.0.0.2
+rscript = singularity exec shub://darachm/singularity_r_for_darach:v0.0.2 Rscript
+python3 = singularity exec shub://darachm/singularity_python3_for_darach:latest python3
 
 # RData object for moving between names easily
 tmp/NameIDList.RData: scripts/makingLists.R data/SGD_features_170601.tab
@@ -24,7 +30,7 @@ tmp/all_environments_counts.RData: \
 	$(rscript) $<
 tmp/all_environments_scores_and_stats.RData: \
 		scripts/reading_stats_to_rdata.R \
-		data/*mean_fitness*.csv
+		$(networkx_pickles) 
 	$(rscript) $<
 tmp/all_environments_all_biological_ppi_mean_fitness.RData: \
 		scripts/averaging_all_fitnesses.R \
@@ -47,3 +53,7 @@ output/prcomp_of_samples_pc12345678.svg: \
 		tmp/all_environments_counts.RData \
 		tmp/NameIDList.RData
 	$(rscript) $< 
+
+tmp/%.nxp: data/%_PPI_barcodes_fitness_counts.csv \
+		scripts/convert_csv_to_networkx_graph.py
+	$(python3) $(word 2,$^) $(word 1,$^) $@
