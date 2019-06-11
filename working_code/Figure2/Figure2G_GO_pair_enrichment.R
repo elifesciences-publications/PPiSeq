@@ -57,8 +57,8 @@ transform_list_matrix = function(all_count_name, pos_count_name, output_pos_coun
 # Cellular compartment
 all_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_CC_new.txt"
 pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_CC_new.txt"
-output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_CC_matrix.csv"
-output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_CC_matrix.csv"
+output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_CC_matrix.txt"
+output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_CC_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 # Biological process
 all_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
@@ -76,7 +76,8 @@ transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_d
 
 ########### Make a plot to show the enrichment of GO_GO pairs 
 # Cellular compartment
-network_density = csvReader_T("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_CC_matrix.csv")
+network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_CC_matrix.txt", 
+                                       sep = "\t", header = T))
 colnames(network_density) = gsub("\\.", " ", colnames(network_density))
 network_density_vector = as.vector(network_density) # by column
 
@@ -126,11 +127,17 @@ for(i in 1:length(network_density_vector)){
 }
 
 ### Calculate the p-value based on 1000 random networks
+### Permutation test
+library(coin)
 p_value = rep(0, length(network_density_vector))
 for(i in 1:length(network_density_vector)){
         m_real = network_density_vector[i]
         m_random = as.numeric(density_CC_random[i,])
-        p_value[i] = t.test(m_random, m_real, var.equal = TRUE, alternative = "less")$p.value
+        density_all = c(m_real, m_random)
+        density_name = c("real", rep("random", 1000))
+        matrix_compare = cbind.data.frame(density_name, density_all)
+        permutation=oneway_test(density_all~density_name, matrix_compare) # permutation test
+        p_value[i] =  permutation@distribution@pvalue(permutation@statistic@teststatistic)
 }
 # dendrogram
 library(ggplot2)
@@ -189,7 +196,8 @@ ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichme
        width = 7, height = 5)
 
 ###### Make a heatmap for positive count
-network_pos_count = csvReader_T("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_CC_matrix.csv")
+network_pos_count = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_CC_matrix.txt",
+                                         sep = "\t", header = T))
 colnames(network_pos_count) = gsub("\\.", " ", colnames(network_pos_count))
 GO = colnames(network_pos_count)
 network_count_vector = as.vector(network_pos_count)
@@ -264,7 +272,11 @@ for(i in 1:length(network_density_vector)){
                 p_value[i] = 0
         }
         else{
-                p_value[i] = t.test(m_random, m_real, var.equal = TRUE, alternative = "less")$p.value 
+                density_all = c(m_real, m_random)
+                density_name = c("real", rep("random", 1000))
+                matrix_compare = cbind.data.frame(density_name, density_all)
+                permutation=oneway_test(density_all~density_name, matrix_compare) # permutation test
+                p_value[i] =  permutation@distribution@pvalue(permutation@statistic@teststatistic)
         }
        
 }
@@ -407,7 +419,11 @@ for(i in 1:length(network_density_vector)){
                 p_value[i] = 0
         }
         else{
-                p_value[i] = t.test(m_random, m_real, var.equal = TRUE, alternative = "less")$p.value 
+                density_all = c(m_real, m_random)
+                density_name = c("real", rep("random", 1000))
+                matrix_compare = cbind.data.frame(density_name, density_all)
+                permutation=oneway_test(density_all~density_name, matrix_compare) # permutation test
+                p_value[i] =  permutation@distribution@pvalue(permutation@statistic@teststatistic)
         }
         
 }
