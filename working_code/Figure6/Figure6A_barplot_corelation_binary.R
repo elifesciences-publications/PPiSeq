@@ -64,6 +64,7 @@ for(i in 1:length(variation_score)){
         variation_score[i] = sd(fitness)/mean(fitness)
         environment_number[i] = length(which(fitness != 0))
 }
+save(variation_score, file = "Working_data/Positive_PPI_environment/variation_score.Rfile") #for quick retrieval
 # Include the variation score into the matrix, and output the matrix
 PPI_norm_matrix_final = cbind(PPI_norm_matrix[,1],environment_number, variation_score,
                               PPI_norm_matrix[,2:10])
@@ -101,6 +102,7 @@ for(i in 1:length(protein_unique)){
                                  which(PP_pair[,2] == protein_unique[i])))
         vScore_protein[i,2] = mean(as.numeric(variation_score[index_protein,3]))
 }
+save(vScore_protein, file = "Working_data/Positive_PPI_environment/vScore_protein.Rfile") #for quick retrieval
 gene_feature = as.matrix(read.table("Working_data/geneFeatures_022415_EK.txt", header = T, sep = "\t")) # 6438, 39
 
 gene_feature_matched = gene_feature[match(vScore_protein[,1], gene_feature[,1]),]
