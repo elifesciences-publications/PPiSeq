@@ -4,11 +4,12 @@
 	networkx_pickles
 
 input_data_csv = $(shell find data -maxdepth 1 -name "*PPI*.csv")
-networkx_pickles = $(subst data,tmp,$(subst _PPI_barcodes_fitness_counts.csv,.nxp,$(input_data_csv)))
+networkx_raw_pickles = $(subst data,tmp,$(subst _PPI_barcodes_fitness_counts.csv,_raw.nxp,$(input_data_csv)))
+networkx_mean_pickles = $(subst data,tmp,$(subst _PPI_barcodes_fitness_counts.csv,_mean.nxp,$(input_data_csv)))
 
 tecan_analysis: output/validations_statistic_against_properties.png
 prcomp_analysis: 
-networkx_pickles: $(networkx_pickles)
+networkx_pickles: $(networkx_mean_pickles) $(networkx_raw_pickles)
 
 all: setup tecan_analysis prcomp_analysis
 
@@ -54,6 +55,10 @@ output/prcomp_of_samples_pc12345678.svg: \
 		tmp/NameIDList.RData
 	$(rscript) $< 
 
-tmp/%.nxp: data/%_PPI_barcodes_fitness_counts.csv \
-		scripts/convert_csv_to_networkx_graph.py
-	$(python3) $(word 2,$^) $(word 1,$^) $@
+tmp/%_mean.nxp: scripts/convert_csv_to_networkx_graph.py \
+		data/%_mean_fitness_positive.csv
+	$(python3) $(word 1,$^) $(word 2,$^) $@ --type mean
+
+tmp/%_raw.nxp: scripts/convert_csv_to_networkx_graph.py \
+		data/%_PPI_barcodes_fitness_counts.csv
+	$(python3) $(word 1,$^) $(word 2,$^) $@ --type raw
