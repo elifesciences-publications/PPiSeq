@@ -223,6 +223,8 @@ ggplot() +
               axis.text.y.left = element_text(size = 8, color = "black"), axis.title = element_blank())
 ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/heatmap_pos_count_CC_PPI_network.pdf", width = 7, height = 5)
 
+
+
 ########################################
 ## Biological process
 setwd("~/Dropbox/PPiSeq_02")
