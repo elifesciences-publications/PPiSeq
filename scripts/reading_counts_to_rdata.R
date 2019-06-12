@@ -11,6 +11,7 @@ countz <- tibble(
     mutate(
         filenames=sub("data\\/(.*)_PPI_.*","\\1",filenames)
         ) %>%
+    mutate(Fitness_estimation_error=Fitness_estimaion_error) %>%
     unnest()
 
 saveRDS(countz,"tmp/all_environments_counts.RData")

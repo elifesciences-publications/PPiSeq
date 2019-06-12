@@ -1,13 +1,11 @@
 library(tidyverse)
 library(egg)
 
-wdtweak <- ""
+# setwd("../")
 
-# wdtweak <- "../"
+counts <- readRDS("tmp/all_environments_counts.RData")
 
-stats <- readRDS(str_c(wdtweak,"tmp/all_environments_scores_and_stats.RData"))
-
-tecan_datar <- read_csv(str_c(wdtweak,"tmp/tecan_validation_statistics.csv")) 
+tecan_datar <- read_csv("tmp/tecan_validation_statistics.csv")
 
 #
 #
@@ -16,14 +14,19 @@ tecan_datar <- read_csv(str_c(wdtweak,"tmp/tecan_validation_statistics.csv"))
 #
 
 validation_datar <- 
-    left_join(tecan_datar,datar%>%filter(filenames=="DMSO"),by="PPI") %>% 
+    left_join(
+        tecan_datar,
+        counts%>%filter(filenames=="DMSO") 
+        ,
+        by="PPI"
+        ) %>% 
     group_by(PPI,`p-value`,one_tail_Q,statistic) %>%
     summarize(
         MeanFitness=mean(Fitness),MinFitness=min(Fitness),
         MaxFitness=max(Fitness),
-        MeanFitness_error=mean(Fitness_estimaion_error),
-        MinFitness_error=min(Fitness_estimaion_error),
-        MaxFitness_error=max(Fitness_estimaion_error),
+        MeanFitness_error=mean(Fitness_estimation_error),
+        MinFitness_error=min(Fitness_estimation_error),
+        MaxFitness_error=max(Fitness_estimation_error),
         MinLog10Counts=max(
             log10(c(Counts_G0,Counts_G3,Counts_G6,Counts_G9,Counts_G12,Counts_G18)),
             na.rm=T),
@@ -153,7 +156,7 @@ g <- full_join(validation_rates,ppiz,by="environments") %>%
     ylab("Count")+xlab("Environments observed in")
 g
 
-ggsave(str_c(wdtweak,"output/ppi_counts_adjusted_by_validation.png"),
+ggsave("output/ppi_counts_adjusted_by_validation.png",
     g,
     width=6,height=4)
 
