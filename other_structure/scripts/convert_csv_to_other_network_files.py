@@ -49,8 +49,6 @@ else:
     raise()
 
 networkx.write_gpickle(g,args.output_file_base+".nxp")
-
-with open(args.output_file_base+".cyjson", "w") as f:
-    json.dump(networkx.cytoscape_data(g), f)
-
+networkx.write_graphml(g,args.output_file_base+".graphml")
+networkx.write_pajeck(g,args.output_file_base+".net")
 
