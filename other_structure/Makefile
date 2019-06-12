@@ -1,15 +1,18 @@
 .PHONY: all setup \
 	tecan_analysis \
 	prcomp_analysis \
-	networkx_pickles
+	networkx
 
 input_data_csv = $(shell find data -maxdepth 1 -name "*PPI*.csv")
 networkx_raw_pickles = $(subst data,tmp,$(subst _PPI_barcodes_fitness_counts.csv,_raw.nxp,$(input_data_csv)))
+networkx_raw_json = $(subst data,tmp,$(subst _PPI_barcodes_fitness_counts.csv,_raw.cyjson,$(input_data_csv)))
 networkx_mean_pickles = $(subst data,tmp,$(subst _PPI_barcodes_fitness_counts.csv,_mean.nxp,$(input_data_csv)))
+networkx_mean_json = $(subst data,tmp,$(subst _PPI_barcodes_fitness_counts.csv,_mean.cyjson,$(input_data_csv)))
 
 tecan_analysis: output/validations_statistic_against_properties.png
 prcomp_analysis: 
-networkx_pickles: $(networkx_mean_pickles) $(networkx_raw_pickles)
+networkx: $(networkx_mean_pickles) $(networkx_mean_json) \
+	$(networkx_raw_pickles) $(networkx_raw_json)
 
 all: setup tecan_analysis prcomp_analysis
 
@@ -57,8 +60,16 @@ output/prcomp_of_samples_pc12345678.svg: \
 
 tmp/%_mean.nxp: scripts/convert_csv_to_networkx_graph.py \
 		data/%_mean_fitness_positive.csv
-	$(python3) $(word 1,$^) $(word 2,$^) $@ --type mean
+	$(python3) $(word 1,$^) $(word 2,$^) $(subst .nxp,,$@) --type mean
+
+tmp/%_mean.cyjson: scripts/convert_csv_to_networkx_graph.py \
+		data/%_mean_fitness_positive.csv
+	$(python3) $(word 1,$^) $(word 2,$^) $(subst .cyjson,,$@) --type mean
 
 tmp/%_raw.nxp: scripts/convert_csv_to_networkx_graph.py \
 		data/%_PPI_barcodes_fitness_counts.csv
-	$(python3) $(word 1,$^) $(word 2,$^) $@ --type raw
+	$(python3) $(word 1,$^) $(word 2,$^) $(subst .nxp,,$@) --type raw
+
+tmp/%_raw.cyjson: scripts/convert_csv_to_networkx_graph.py \
+		data/%_PPI_barcodes_fitness_counts.csv
+	$(python3) $(word 1,$^) $(word 2,$^) $(subst .cyjson,,$@) --type raw
