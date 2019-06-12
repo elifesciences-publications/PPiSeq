@@ -67,15 +67,21 @@ output/prcomp_of_samples_pc12345678.svg: \
 #
 #
 
-tmp/%_mean.nxp: scripts/convert_csv_to_other_network_files.py
+tmp/%_mean.nxp: scripts/convert_csv_to_other_network_files.py \
 		data/%_mean_fitness_positive.csv
 	$(python3) $(word 1,$^) $(word 2,$^) $(subst .nxp,,$@) --type mean
 	# type is mean, as opposed to making networks of the raw multigraph 
 	# 	(each barcode data independently)
-tmp/%_mean.graphml: scripts/convert_csv_to_other_network_files.py
+tmp/%_mean.graphml: scripts/convert_csv_to_other_network_files.py \
 		data/%_mean_fitness_positive.csv
 	$(python3) $(word 1,$^) $(word 2,$^) $(subst .graphml,,$@) --type mean
-tmp/%_mean.net: scripts/convert_csv_to_other_network_files.py
+tmp/%_mean.net: scripts/convert_csv_to_other_network_files.py \
 		data/%_mean_fitness_positive.csv
 	$(python3) $(word 1,$^) $(word 2,$^) $(subst .net,,$@) --type mean
+
+#
+#
+#
+#
+#
 
