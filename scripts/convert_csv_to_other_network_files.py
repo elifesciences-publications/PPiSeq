@@ -50,5 +50,5 @@ else:
 
 networkx.write_gpickle(g,args.output_file_base+".nxp")
 networkx.write_graphml(g,args.output_file_base+".graphml")
-networkx.write_pajeck(g,args.output_file_base+".net")
+networkx.write_pajek(g,args.output_file_base+".net")
 
