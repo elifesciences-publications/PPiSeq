@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
 
-# This expects this schema:
-# raw
-# PPI,Number_of_Barcodes,Barcode_sequences,Fitness,Fitness_estimaion_error,Counts_G0,Counts_G6,Counts_G12,Counts_G18
-# or 
-# mean
-# PPI,Number_of_barcodes,Mean_fitness,SD,P_value,FDR_adjusted_P_value,Positive
-
 import argparse
 import csv
 import networkx as nx
@@ -38,3 +31,4 @@ for nxp_path in args.network_pickles:
                 )
 
 nx.write_gpickle(g,args.output_base+".nxp")
+nx.write_graphml(g,args.output_base+".graphml")
