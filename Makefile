@@ -21,7 +21,7 @@ setup:
 	mkdir -p tmp
 	mkdir -p output
 
-rscript = singularity exec shub://darachm/singularity_r_for_darach:v0.0.2 Rscript
+rscript = singularity exec shub://darachm/singularity_r_for_darach:v0.0.3 Rscript
 python3 = singularity exec shub://darachm/singularity_python3_for_darach:latest python3
 
 # RData object for moving between names easily
@@ -50,7 +50,7 @@ tmp/tecan_validation_statistics.csv: \
 	$(rscript) $<
 output/validations_statistic_against_properties.png: \
 		scripts/analyze_tecan.R \
-		tmp/all_environments_scores_and_stats.RData \
+		tmp/all_environments_counts.RData \
 		tmp/tecan_validation_statistics.csv
 	$(rscript) $<
 

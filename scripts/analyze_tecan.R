@@ -4,6 +4,7 @@ library(egg)
 # setwd("../")
 
 counts <- readRDS("tmp/all_environments_counts.RData")
+stats <- readRDS("tmp/all_environments_scores_and_stats.RData")
 
 tecan_datar <- read_csv("tmp/tecan_validation_statistics.csv")
 
