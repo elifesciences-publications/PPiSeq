@@ -28,7 +28,7 @@ parser.add_argument("--type",type=str,
 args = parser.parse_args()
 
 if args.type == "raw":
-    g = networkx.MultiGraph()
+    g = networkx.MultiDiGraph()
     with open(args.input_csv,'r') as f:
         c = csv.reader(f,delimiter=',')
         next(c)
@@ -36,12 +36,12 @@ if args.type == "raw":
             idz = i[0].split("_")
             g.add_edge(idz[0],idz[1],fitness=i[3],error=i[4])
 elif args.type == "mean":
-    g = networkx.Graph()
+    g = networkx.DiGraph()
     with open(args.input_csv,'r') as f:
         c = csv.reader(f,delimiter=',')
         next(c)
         for i in c:
-            if i[6] == "0":
+            if i[6] == 0:
                 continue
             idz = i[0].split("_")
             g.add_edge(idz[0],idz[1],fitness=i[2],error=i[3],fdr=i[5])

@@ -24,7 +24,7 @@ parser.add_argument("--output_base",type=str,
     )
 args = parser.parse_args()
 
-g = nx.MultiDiGraph()
+g = nx.MultiGraph()
 for nxp_path in args.network_pickles:
     condition_name = os.path.splitext(os.path.basename(nxp_path))[0]
     ingraph = nx.read_gpickle(nxp_path)
