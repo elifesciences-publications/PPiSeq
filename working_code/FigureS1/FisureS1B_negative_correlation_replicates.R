@@ -15,7 +15,7 @@ source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working
 #Commonly used colors
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
-
+###
 setwd("~/Dropbox/PPiSeq_02/")
 PPI_lineages = dataFrameReader_T("Paper_data/DMSO_PPI_barcodes_fitness_counts.csv")
 DMSO_mean = csvReader_T("Paper_data/DMSO_mean_fitness_positive.csv") # 1459163
