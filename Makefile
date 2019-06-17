@@ -88,3 +88,10 @@ tmp/%_mean.net: scripts/convert_csv_to_other_network_files.py \
 tmp/condition_multigraph.nxp: scripts/make_conditions_multigraph.py \
 		$(networks_mean_pickles)
 	$(python3) $^ --output_base $(subst .nxp,,$@)
+tmp/condition_multigraph.net: scripts/make_conditions_multigraph.py \
+		$(networks_mean_pickles)
+	$(python3) $^ --output_base $(subst .net,,$@)
+
+
+tmp/ppi_entropy_per_protein.txt: scripts/make_conditions_multigraph.py tmp/condition_multigraph.nxp
+	$(python3) $^ 
