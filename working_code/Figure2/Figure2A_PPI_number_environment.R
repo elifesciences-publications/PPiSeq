@@ -235,7 +235,57 @@ text(x= barCenter, y = -500, labels = c("SD", "Forskolin", "FK506", "NaCl", "Raf
      srt= 45, adj = 1, xpd = TRUE)
 dev.off()
 
+########## Separate the specific and cumulative PPIs just using two output file 
+########## (Count_summary_01 and Count_summary_02)
+setwd("~/Dropbox/PPiSeq_02/")
+sum_01 = dataFrameReader_T("Working_data/Positive_PPI_environment/Count_summary.csv")
+sum_02 = dataFrameReader_T("Working_data/Positive_PPI_environment/Count_summary_02.csv")
+sum_temp = t(sum_01)[2:3,]
+sum_temp[2,] = as.numeric(sum_temp[2,])
+sum_03 = matrix(0, 2,9)
+sum_03[1,] = as.character(sum_02[1,])
+sum_03[2,] = sum_temp[1,match(sum_03[1,], sum_temp[2,])]
+sum_03[2,] = as.numeric(sum_03[2,]) - as.numeric(sum_03[1,]) # Not unique to that environment
+sum_04 = matrix(0,2,9)
+sum_04[1,] = as.numeric(sum_02[1,]) + as.numeric(sum_02[2,]) # cumulative PPIs found in one environment
+sum_04[2,] = as.numeric(sum_02[3,]) # cumulative all overlapped PPIs
+# Combine sum_03 and sum_04 to make the final matrix for the plot
+sum_05 = matrix(0, 2, 18)
+for(i in 1:ncol(sum_03)){
+  sum_05[,(2*i-1)]= sum_03[,i]
+  sum_05[,(2*i)] = sum_04[,i]
+}
+Name = c("SD","SD_cum" , "Forskolin", "Forskolin_cum", "FK506","FK506_cum" ,
+         "NaCl", "NaCl_cum","Raffinose", "Raffinose_cum", "Hydroxyurea","Hydroxyurea_cum",
+         "H2O2","H2O2_cum", "Doxorubicin", "Doxorubicin_cum", "16 \u00B0C", "16 \u00B0C-cum")
+colnames(sum_05) = Name
+csvWriter(sum_05, "Working_data/Positive_PPI_environment/Count_summary_03.csv")
 
+## Make a barplot
+setwd("~/Dropbox/PPiSeq_02/")
+count_03 = csvReader_T("Working_data/Positive_PPI_environment/Count_summary_03.csv")
 
+pdf("Working_figure/Figure2/Figure2A_Number_PPIs_across_environments_new.pdf", height = 5, width = 5)
+par(mar = c(4,4,2,1))
+barCenter = barplot(count_03[1,], horiz=F, beside=F,  ylab="Number of PPIs",
+                    space= c(0.6, 0.2, 0.6, 0.2, 0.6, 0.2, 0.6, 0.2, 0.6, 0.2,
+                             0.6, 0.2, 0.6, 0.2, 0.6, 0.2, 0.6, 0.2), yaxt="n", ylim = c(0,18000),
+                    col= rep(apple_colors[c(1,5)],9), axisnames=F, border=NA)
+barplot(count_03[2,], offset= count_03[1,], add = T, horiz=F, beside=F,  ylab="Number of PPIs",
+        space= c(0.6, 0.2, 0.6, 0.2, 0.6, 0.2, 0.6, 0.2, 0.6, 0.2,
+                 0.6, 0.2, 0.6, 0.2, 0.6, 0.2, 0.6, 0.2), yaxt="n", ylim = c(0,18000),
+        col= rep(apple_colors[c(2,3)],9), axisnames=F, border=NA)
+axis(2,at = c(seq(0, 18000, by = 3000)))
+legend(x = 0, y = 18000, legend=c("Unique to this environment", "Detected in >= 2 environments",
+                           "Unique to one environment (cumulative)", 
+                           "Detected in >= 2 environments (cumulative)"), 
+       fill=apple_colors[c(1,2, 5,3)],  bty="n", border=FALSE)
 
-
+center = rep(0, 9)
+for(i in 1:9){
+        center[i] = mean(barCenter[(2*i-1): (2*i)])
+}
+text(x= center, y = -500, labels = c("SD", "Forskolin", "FK506", "NaCl", "Raffinose", "Hydroxyurea",  
+                                        expression('H'[2]* 'O'[2]), "Doxorubicin", "16 \u00B0C"), 
+     srt= 45, adj = 1, xpd = TRUE)
+dev.off()
