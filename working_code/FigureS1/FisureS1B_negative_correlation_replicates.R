@@ -15,7 +15,7 @@ source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working
 #Commonly used colors
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
-
+###
 setwd("~/Dropbox/PPiSeq_02/")
 PPI_lineages = dataFrameReader_T("Paper_data/DMSO_PPI_barcodes_fitness_counts.csv")
 DMSO_mean = csvReader_T("Paper_data/DMSO_mean_fitness_positive.csv") # 1459163
@@ -24,10 +24,25 @@ PPI_RRS = DMSO_mean[grep("Neg_PPI", DMSO_mean[,1]),1] #97
 PPI_PRS = DMSO_mean[grep("Pos_PPI", DMSO_mean[,1]),1] #108
 PPI_pos = DMSO_mean[grep("positive_DHFR", DMSO_mean[,1]),1] # 1
 PPI_neg = DMSO_mean[grep("negative_non_DHFR", DMSO_mean[,1]),1] # 1
-PPI_control = c(PPI_PRS, PPI_RRS, PPI_pos, PPI_neg)
-DMSO_neg = DMSO_mean[which(DMSO_mean[,7] == "0"),] # 1453952
-DMSO_neg_select = DMSO_neg[which(!DMSO_neg[,1] %in% PPI_control),] #1453778
-PPI_lineages_select= PPI_lineages[which(PPI_lineages[,1] %in% DMSO_neg_select[,1]),] #4859629
+PPI_control = c(PPI_PRS, PPI_RRS, PPI_pos, PPI_neg) # 207
+DMSO_neg = DMSO_mean[which(DMSO_mean[,7] == "0"),] # 1454094
+DMSO_neg_select = DMSO_neg[which(!DMSO_neg[,1] %in% PPI_control),] #1453920
+# Remove the protein pairs that contain promiscuous proteins
+promiscuous_protein = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/Promiscuous_PPIs/Promiscuous_protein_summary.csv")
+promiscuous_protein_chosen = promiscuous_protein[which(as.numeric(promiscuous_protein[,2])>=2),1]
+remove_PPI_protein = function(DMSO_pos, promiscuous_protein_chosen){
+        check = rep(0, nrow(DMSO_pos))
+        PPI = split_string_vector(DMSO_pos[,1])
+        for(i in 1:nrow(DMSO_pos)){
+                if (PPI[i,1] %in% promiscuous_protein_chosen | PPI[i,2] %in% promiscuous_protein_chosen){
+                        check[i] = 1
+                }
+        }
+        DMSO_pos_filter = DMSO_pos[which(check != 1),]
+        return(DMSO_pos_filter)
+}
+DMSO_neg_select_final = remove_PPI_protein(DMSO_neg_select, promiscuous_protein_chosen) #1443011
+PPI_lineages_select= PPI_lineages[which(PPI_lineages[,1] %in% DMSO_neg_select_final[,1]),] #4826788
 
 # put the fitness values of replicates onto the same row
 PPI_unique= unique(DMSO_neg_select[,1])
@@ -54,7 +69,7 @@ for (i in 1:length(PPI_unique)){
     index = index + 2
   }
 }
-colnames(PPI_indiv_matrix)= c("PPI", "Barcodes", "Mean_fitness","fit01", "fit02", "fit03", "fit04") # 1453778
+colnames(PPI_indiv_matrix)= c("PPI", "Barcodes", "Mean_fitness","fit01", "fit02", "fit03", "fit04") # 1453920
 
 # Transfer this matrix into a matrix containing 3 colums: PPI, rep_01, rep_02
 PPI_fit_matrix_01 = PPI_indiv_matrix[,c(1, 4,5)]
@@ -64,10 +79,10 @@ PPI_fit_matrix_04 = PPI_indiv_matrix[,c(1, 5,6)]
 PPI_fit_matrix_05 = PPI_indiv_matrix[,c(1, 5,7)]
 PPI_fit_matrix_06 = PPI_indiv_matrix[,c(1, 6,7)]
 PPI_fit_all = rbind(PPI_fit_matrix_01, PPI_fit_matrix_02, PPI_fit_matrix_03,
-                    PPI_fit_matrix_04, PPI_fit_matrix_05, PPI_fit_matrix_06) # 8722668
+                    PPI_fit_matrix_04, PPI_fit_matrix_05, PPI_fit_matrix_06) # 8723520
 # Remove any pair with at least one value >= 0
-PPI_fit_final = PPI_fit_all[which(as.numeric(PPI_fit_all[,2]) != 0 & as.numeric(PPI_fit_all[,3]) != 0),] # 6176581
-cor(as.numeric(PPI_fit_final[,2]), as.numeric(PPI_fit_final[,3]), method = "spearman") # 0.1524494
+PPI_fit_final = PPI_fit_all[which(as.numeric(PPI_fit_all[,2]) != 0 & as.numeric(PPI_fit_all[,3]) != 0),] # 6134972
+cor(as.numeric(PPI_fit_final[,2]), as.numeric(PPI_fit_final[,3]), method = "spearman") # 0.07817529
 
 ####### Use ggplot to make scatter plots and hexagon plot
 PPI = as.character(PPI_fit_final[,1])
