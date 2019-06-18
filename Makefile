@@ -1,7 +1,24 @@
 .PHONY: all setup \
+	clean analyses \
 	tecan_analysis \
 	prcomp_analysis \
-	networks
+	networks \
+	nextflow 
+
+scripts/nextflow: 
+	curl -s https://get.nextflow.io | bash
+	mv nextflow scripts/nextflow
+
+nextflow: scripts/nextflow \
+		scripts/run_analyses_pipeline.nf \
+		scripts/run_analyses_pipeline.nfconfig
+	unset SINGULARITY_CACHEDIR && \
+	$< run scripts/run_analyses_pipeline.nf \
+		-c scripts/run_analyses_pipeline.nfconfig \
+		-resume
+
+clean:
+	rm -r work .nextflow* reports tmp
 
 input_data_csv = $(shell find data -maxdepth 1 -name "*PPI*.csv")
 mean_csvs = $(shell find data -maxdepth 1 -name "*_mean_fitness_positive.csv")
@@ -95,3 +112,4 @@ tmp/condition_multigraph.net: scripts/make_conditions_multigraph.py \
 
 tmp/ppi_entropy_per_protein.txt: scripts/make_conditions_multigraph.py tmp/condition_multigraph.nxp
 	$(python3) $^ 
+
