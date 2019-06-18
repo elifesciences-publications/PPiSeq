@@ -1,1 +1,8 @@
 .DS_Store
+.nextflow*
+tmp
+work
+singularity_containers
+data
+reports
+output
