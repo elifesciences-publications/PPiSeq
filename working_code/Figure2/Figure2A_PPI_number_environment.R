@@ -165,7 +165,7 @@ PPI_count_matrix_add[order(as.numeric(PPI_count_matrix_add[,3])),1]
 # "DMSO", "Forskolin", "FK506", "NaCl", "Raffinose", "HU", "H2O2", "Dox", "Cold_16C"
 # Make a barplot to show the cumulative number of PPIs across different environments
 DMSO_Forskolin_merge = mark_duplicates_fast(unique(c(DMSO_unique[,1], Forskolin_unique[,1]))) # 5287
-DMSO_Forskolin_single_merge = mark_duplicates_fast(unique(DMSO_specific[,1], Forskolin_specific[,1])) # 607
+DMSO_Forskolin_single_merge = mark_duplicates_fast(unique(c(DMSO_specific[,1], Forskolin_specific[,1]))) # 768
 
 DMSO_Forskolin_FK506_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_merge[,1], FK506_unique[,1]))) #5764
 DMSO_Forskolin_FK506_single_merge = mark_duplicates_fast(unique(c(DMSO_Forskolin_single_merge[,1], 
@@ -250,14 +250,16 @@ sum_04 = matrix(0,2,9)
 sum_04[1,] = as.numeric(sum_02[1,]) + as.numeric(sum_02[2,]) # cumulative PPIs found in one environment
 sum_04[2,] = as.numeric(sum_02[3,]) # cumulative all overlapped PPIs
 # Combine sum_03 and sum_04 to make the final matrix for the plot
-sum_05 = matrix(0, 2, 18)
-for(i in 1:ncol(sum_03)){
-  sum_05[,(2*i-1)]= sum_03[,i]
-  sum_05[,(2*i)] = sum_04[,i]
-}
-Name = c("SD","SD_cum" , "Forskolin", "Forskolin_cum", "FK506","FK506_cum" ,
-         "NaCl", "NaCl_cum","Raffinose", "Raffinose_cum", "Hydroxyurea","Hydroxyurea_cum",
-         "H2O2","H2O2_cum", "Doxorubicin", "Doxorubicin_cum", "16 \u00B0C", "16 \u00B0C-cum")
+#sum_05 = matrix(0, 2, 18)
+#for(i in 1:ncol(sum_03)){
+  #sum_05[,(2*i-1)]= sum_03[,i]
+  #sum_05[,(2*i)] = sum_04[,i]
+#}
+Name = c("SD", "Forskolin","FK506", "NaCl", "Raffinose",  "Hydroxyurea",
+         "H2O2","Doxorubicin", "16 \u00B0C", "SD_cum" , "Forskolin_cum",
+         "FK506_cum" , "NaCl_cum","Raffinose_cum", "Hydroxyurea_cum", 
+         "H2O2_cum", "Doxorubicin_cum", "16 \u00B0C-cum")
+sum_05 = cbind(sum_03, sum_04)
 colnames(sum_05) = Name
 csvWriter(sum_05, "Working_data/Positive_PPI_environment/Count_summary_03.csv")
 
@@ -266,26 +268,24 @@ setwd("~/Dropbox/PPiSeq_02/")
 count_03 = csvReader_T("Working_data/Positive_PPI_environment/Count_summary_03.csv")
 
 pdf("Working_figure/Figure2/Figure2A_Number_PPIs_across_environments_new.pdf", height = 5, width = 5)
-par(mar = c(4,4,2,1))
+par(mar = c(6,4,2,1))
 barCenter = barplot(count_03[1,], horiz=F, beside=F,  ylab="Number of PPIs",
-                    space= c(0.6, 0.2, 0.6, 0.2, 0.6, 0.2, 0.6, 0.2, 0.6, 0.2,
-                             0.6, 0.2, 0.6, 0.2, 0.6, 0.2, 0.6, 0.2), yaxt="n", ylim = c(0,18000),
-                    col= rep(apple_colors[c(1,5)],9), axisnames=F, border=NA)
+                    space= c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.6,
+                             0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2), yaxt="n", ylim = c(0,15000),
+                    col= rep(apple_colors[1],18), axisnames=F, border=NA)
 barplot(count_03[2,], offset= count_03[1,], add = T, horiz=F, beside=F,  ylab="Number of PPIs",
-        space= c(0.6, 0.2, 0.6, 0.2, 0.6, 0.2, 0.6, 0.2, 0.6, 0.2,
-                 0.6, 0.2, 0.6, 0.2, 0.6, 0.2, 0.6, 0.2), yaxt="n", ylim = c(0,18000),
-        col= rep(apple_colors[c(2,3)],9), axisnames=F, border=NA)
-axis(2,at = c(seq(0, 18000, by = 3000)))
-legend(x = 0, y = 18000, legend=c("Unique to this environment", "Detected in >= 2 environments",
-                           "Unique to one environment (cumulative)", 
-                           "Detected in >= 2 environments (cumulative)"), 
+        space= c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.6,
+                 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2), yaxt="n", ylim = c(0,15000),
+        col= rep(apple_colors[2],18), axisnames=F, border=NA)
+axis(2,at = c(seq(0, 15000, by = 3000)))
+legend(x = 0, y = 15000, legend=c("Unique to this environment", "Detected in >= 2 environments"), 
        fill=apple_colors[c(1,2, 5,3)],  bty="n", border=FALSE)
 
-center = rep(0, 9)
-for(i in 1:9){
-        center[i] = mean(barCenter[(2*i-1): (2*i)])
-}
-text(x= center, y = -500, labels = c("SD", "Forskolin", "FK506", "NaCl", "Raffinose", "Hydroxyurea",  
-                                        expression('H'[2]* 'O'[2]), "Doxorubicin", "16 \u00B0C"), 
+text(x= barCenter, y = -500, cex =0.8,
+     labels = rep(c("SD", "Forskolin", "FK506", "NaCl", "Raffinose", "Hydroxyurea",
+                    expression('H'[2]* 'O'[2]), "Doxorubicin", "16 \u00B0C"),2), 
      srt= 45, adj = 1, xpd = TRUE)
+Center = c(mean(barCenter[1:9]) +1.5, mean(barCenter[10:18]) + 1.5)
+text(x= Center, y = -3500, cex = 1.1,
+     labels = c("Individual", "Cumulative"), adj = 1, xpd = TRUE)
 dev.off()
