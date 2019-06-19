@@ -379,15 +379,18 @@ bad_wells = c(64:93)
 )
 
 
-z <- bind_rows(list_to_proc) %>% nest(bad_wells,.key="bad_wells") %>%
+z <- bind_rows(list_to_proc) %>% 
+    nest(bad_wells,.key="bad_wells") %>%
     mutate(bad_wells=map(bad_wells,function(x){list(x$bad_wells)})) %>% 
     mutate(datar=pmap(
             list(
-                str_c("data/tecan_validation_assays/tecan_data/",
+                str_c("",
                     data_file_name_01), 
-                str_c("data/tecan_validation_assays/tecan_data/",
+                str_c("",
+                #str_c("data/tecan_validation_assays/tecan_data/",
                     data_file_name_02), 
-                str_c("data/tecan_validation_assays/plate_strain_map/",
+                str_c("",
+                #str_c("data/tecan_validation_assays/plate_strain_map/",
                     map_name), 
                 time_window_01, time_window_02, 
                 bad_wells),
@@ -395,6 +398,6 @@ z <- bind_rows(list_to_proc) %>% nest(bad_wells,.key="bad_wells") %>%
         ) %>% unnest(datar) %>%
     select(PPI,`p-value`,one_tail_Q,statistic,ends_with("MTX"),ends_with("substract"))
 
-write_csv(z,"tmp/tecan_validation_statistics.csv")
+write_csv(z,"tecan_validation_statistics.csv")
 
 
