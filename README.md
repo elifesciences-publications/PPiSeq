@@ -21,3 +21,9 @@ run in a shell:
 Run in shell:
 
     find ~/Dropbox/PPiSeq_02/Working_data/networks/*.nxp | xargs -I '{}' sh -c 'python3 working_code/analyzing_network_properties.py {} --figure_base ~/Dropbox/PPiSeq_02/Working_data/networks/$(basename {} .nxp) --stats_base ~/Dropbox/PPiSeq_02/Working_data/networks/$(basename {} .nxp)'
+
+### make multigraph across all conditions
+
+Run in shell:
+
+    find ~/Dropbox/PPiSeq_02/Working_data/networks/*.nxp | xargs -I '{}' sh -c 'python3 working_code/make_conditions_multigraph.py {} --output_base ~/Dropbox/PPiSeq_02/Working_data/networks/conditions_multigraph'
