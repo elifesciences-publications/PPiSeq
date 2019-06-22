@@ -12,18 +12,15 @@ import csv
 
 def csvprinter(obj,header,filename):
     """
-    This prints obj to a file using the stats_base argument as a prefix then 
-    the name_suffix to end the file. header is a tuple of column names.
+    This prints a list of tuples to a file, as named.
+    `header` is a tuple of column names.
     Prints a CSV to that file.
     """
     if filename:
         with open(filename,"w") as f:
             writer = csv.writer(f)
             writer.writerow(header)
-            if type(obj) == type(list()):
-                writer.writerows(obj)
-            if type(obj) == type(dict()):
-                writer.writerows([ (i,obj[i]) for i in obj])
+            writer.writerows(obj)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_nxp",type=str,
@@ -44,12 +41,14 @@ multi_net = nx.read_gpickle(args.input_nxp)
 # calculate variability of interactions within environments
 # sum these up in different ways, and spit them out
 
-entropy_by_node = dict()
-entropy_by_edge = dict()
+consistency_by_node = dict()
+#entropy_by_edge = dict()
 
 conditions = set()
 for e in multi_net.edges():
-    [ conditions.add(val['condition']) for i,val in multi_net.get_edge_data(e[0],e[1]).items()]
+    [ conditions.add(val['condition']) 
+        for i,val in multi_net.get_edge_data(e[0],e[1]).items()
+        ]
 print("I see conditions: ", conditions)
 
 def normed_by_sum(inz):
@@ -58,17 +57,28 @@ def normed_by_sum(inz):
 def normed_by_max(inz):
     return(inz/np.max(inz))
 
+def calc_entropy(inz):
+    tmp = -inz*np.log2(inz)
+    return sum(tmp[-np.isnan(tmp)])
+
 for u in multi_net.adj:
     u_array = pd.DataFrame(0,index=multi_net.adj[u].keys(),columns=conditions)
     for v in multi_net.adj[u]:
         for i,edge in multi_net.adj[u][v].items():
             u_array.loc[v,edge['condition']] = float(edge['fitness'])
     u_array_by_node = u_array.copy()
-    u_array_by_node = u_array_by_node / u_array_by_node.values.sum()
-    frac_active = u_array_by_node.apply(np.sum,axis=0)
-    entropy_by_node[u] = frac_active.apply(lambda x: -x*np.log2(x) ).sum()
+    #u_array_by_node = u_array_by_node / u_array_by_node.values.sum()
+    u_array_by_node = u_array_by_node.apply(normed_by_sum,axis=1)
+    u_array_by_node = u_array_by_node.apply(normed_by_sum,axis=0)
+    consistency_per_target = u_array_by_node.apply(calc_entropy,axis=1)
+    consistency_by_node[u] = consistency_per_target.mean()
 
-csvprinter(entropy_by_node,("YORF","entropy_across_conditions"),args.output_base+"_node_entropy.csv")
+csvprinter(
+    [ (i,consistency_by_node[i]) for i in consistency_by_node],
+    ("YORF","consistency_across_conditions"),
+    args.output_base+"_node_consistency.csv"
+    )
+
 
 #    by_condition = {}
 #    all_partners = []
