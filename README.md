@@ -32,4 +32,4 @@ Run in shell:
 
 Run in shell:
 
-    python3 working_code/calculating_variability.py ~/Dropbox/PPiSeq_02/Working_data/networks/conditions_multigraph.nxp --output_base ~/Dropbox/PPiSeq_02/Working_data/networks/node_variability.csv
+    python3 working_code/calculating_variability.py ~/Dropbox/PPiSeq_02/Working_data/networks/conditions_multigraph.nxp --output_base ~/Dropbox/PPiSeq_02/Working_data/networks/multigraph
