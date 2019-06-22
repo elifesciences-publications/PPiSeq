@@ -1,0 +1,31 @@
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+gene_features <- read_tsv("~/Dropbox/PPiSeq_02/Working_data/geneFeatures_022415_EK.txt") %>% 
+    rename(YORF=X1)
+consistency <- read_csv("~/Dropbox/PPiSeq_02/Working_data/networks/multigraph_node_consistency.csv")
+```
+
+```{r}
+left_join(consistency,gene_features,by="YORF") %>%
+    { summary(
+        glm(data=.[,-1],
+            formula=consistency_across_conditions~
+                `Yeast conservation`+
+                `Coexpression degree`+
+                `Number of complexes`+
+                `Number of unique domains`+
+                `dN/dS`+
+                `Protein disorder`+
+                `Gasch expression variance (environ)`+
+                `Protein abundance`+
+                `Essential`+
+                `Complex member`+
+                `Duplicated`
+                ,
+            )) 
+    }
+```

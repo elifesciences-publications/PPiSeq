@@ -33,3 +33,9 @@ Run in shell:
 Run in shell:
 
     python3 working_code/calculating_variability.py ~/Dropbox/PPiSeq_02/Working_data/networks/conditions_multigraph.nxp --output_base ~/Dropbox/PPiSeq_02/Working_data/networks/multigraph
+
+### model how consistency of linkage patterns vary with respect to gene features:
+
+Run in shell:
+
+    Rscript 'rmarkdown::render("working_code/variability_modeling.Rmd")'
