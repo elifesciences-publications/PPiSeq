@@ -16,11 +16,12 @@ run in a shell:
 
 (with networkx installed via `pip3`)
 
-### calculate network properties, make hairball network displays
+### calculate network properties, write json of topological properties
 
 Run in shell:
 
-    find ~/Dropbox/PPiSeq_02/Working_data/networks/*.nxp | xargs -I '{}' sh -c 'python3 working_code/analyzing_network_properties.py {} --figure_base ~/Dropbox/PPiSeq_02/Working_data/networks/$(basename {} .nxp) --stats_base ~/Dropbox/PPiSeq_02/Working_data/networks/$(basename {} .nxp)'
+    find ~/Dropbox/PPiSeq_02/Working_data/networks/*.nxp | xargs -I '{}' sh -c 'python3 working_code/analyzing_network_properties.py {} --figure_base ~/Dropbox/PPiSeq_02/Working_data/networks/ --stats_base ~/Dropbox/PPiSeq_02/Working_data/networks/'
+
 
 ### make multigraph across all conditions
 
