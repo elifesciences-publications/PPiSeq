@@ -18,12 +18,22 @@ ppi = x #detected PPIs across all environments
 #make fitness matrix in each environment
 x = unique(ppi[,1])
 y = unique(ppi[,2])
+#reorder by compartment
+load(file="~/Dropbox/PPiSeq_02/Working_data/GOSlim_CC.Rfile" ) #cc, compartment for each ORF
+xc = cc[x]
+names(xc) = x
+x = names(sort(xc))
+yc = cc[y]
+names(yc) = y
+y = names(sort(yc))
+#make matrix
 z = matrix(NA, length(x), length(y))
 rownames(z) = x
 colnames(z) = y
 l = list(z, z, z, z, z, z, z, z, z)
 names(l) = colnames(fit)
 for(i in 1:nrow(ppi)){
+  if(ppi[i,1] %in% x & ppi[i,2] %in% y){ 
     l[[1]][ppi[i,1], ppi[i,2]] = fit[i,1]
     l[[2]][ppi[i,1], ppi[i,2]] = fit[i,2]
     l[[3]][ppi[i,1], ppi[i,2]] = fit[i,3]
@@ -33,9 +43,27 @@ for(i in 1:nrow(ppi)){
     l[[7]][ppi[i,1], ppi[i,2]] = fit[i,7]
     l[[8]][ppi[i,1], ppi[i,2]] = fit[i,8]
     l[[9]][ppi[i,1], ppi[i,2]] = fit[i,9]
+  }
 }
 fitness_by_env_list = l
 save(fitness_by_env_list, file = "~/Dropbox/PPiSeq_02/Working_data/fitness_by_env_list.Rfile")
+#calculate breaks for plotting
+u = unique(sort(xc))
+bb = 1:(length(u) + 1) #bait bins
+bb[1] = 0
+for(i in 1:length(u)){
+  bb[i + 1] = max(which(sort(xc) == u[i]))
+}
+bcc = u
+u = unique(sort(yc))
+pb = 1:(length(u) + 1) #prey bins
+pb[1] = 0
+for(i in 1:length(u)){
+  pb[i + 1] = max(which(sort(yc) == u[i]))
+}
+pcc = u
+cc_bins = list(bait_cellular_component = bcc, bait_bins = bb, prey_cellular_component = pcc, prey_bins = pb)
+save(cc_bins, file = "~/Dropbox/PPiSeq_02/Working_data/cc_bins.Rfile")
 
 #make a big matrix for bait
 x = NULL
