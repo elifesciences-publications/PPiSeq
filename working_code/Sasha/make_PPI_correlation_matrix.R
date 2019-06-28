@@ -46,6 +46,7 @@ for(i in 1:nrow(ppi)){
   }
 }
 fitness_by_env_list = l
+names(fitness_by_env_list) = c( "DMSO", "H2O2", "Hydroxyurea", "Doxorubicin","Forskolin","Raffinose", "NaCl", "16C","FK506")
 save(fitness_by_env_list, file = "~/Dropbox/PPiSeq_02/Working_data/fitness_by_env_list.Rfile")
 #calculate breaks for plotting
 u = unique(sort(xc))
