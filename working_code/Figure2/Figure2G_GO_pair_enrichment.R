@@ -164,6 +164,9 @@ ggplot() +
 ggsave("Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/Dendrogram_CC_GO_pair_cluster.pdf", width = 5, height = 5)
 label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),]
+
+GO_order = read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_CC_order.txt",
+                      header = T, sep = "\t")
 Network_density = as.numeric(network_density_vector)
 dataf = data.frame(rowv,columnv,
                    Network_density = as.numeric(network_density_vector),
@@ -175,8 +178,8 @@ ggplot() +
         geom_point(aes(x = rowv, y = columnv, size =Network_density, color = label), dataf)  + 
         scale_color_gradientn(name = "P value", colors = apple_colors[c(7,10)], limits = c(0, 0.1),
                               oob = scales::squish)+  
-        scale_x_discrete(limits = GO_order$label) + 
-        scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
+        scale_x_discrete(limits = GO_order$x) + 
+        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
         scale_size(name = "Network density", breaks = c(0, 0.015, 0.03, 0.044), 
                    label =as.character(c(0, 0.015, 0.03, 0.044)), 
                    range = c(0, 3))+ ## to tune the size of circles
@@ -236,9 +239,9 @@ ggplot(compare_matrix, aes(x = GO_pair, y = density, group = GO_pair, col = GO_p
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
         theme(axis.text.x = element_text(size = 10, color = "black"), axis.title.x= element_blank(),
-              axis.text.y.left = element_text(size = 10, color = "black")) +
+              axis.text.y.left = element_text(size = 10, color = "black")) 
         
-        ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/Violin_CC_same_different.pdf", width= 5, height =5)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/Violin_CC_same_different.pdf", width= 5, height =5)
 
 
 ###### Make a heatmap for positive count
@@ -256,8 +259,8 @@ count_label = c("0", "200", "800", "2000", "4000", "8214")
 library(ggplot2)
 ggplot() + 
         geom_point(aes(x = rowv, y = columnv, size =Network_count), col= apple_colors[5], dataC)  + 
-        scale_x_discrete(limits = GO_order$label) + 
-        scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
+        scale_x_discrete(limits = GO_order$x) + 
+        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
         scale_size(name = "Number of PPIs", breaks = c(10, 200, 800, 2000, 4000, 8214), 
                    label = count_label, 
                    range = c(0, 4))+
@@ -505,6 +508,9 @@ ggsave("Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/Dendrogram_MF_GO_
 label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),] # order the BP GO term by the cluster analysis
 
+GO_order = read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_MF_order.txt",
+                      header = T, sep = "\t")
+
 dataf = data.frame(rowv = rep(GO_MF, each = 41),
                    columnv = rep(GO_MF, 41),
                    Network_density = as.numeric(network_density_vector),
@@ -517,8 +523,8 @@ ggplot() +
         scale_color_gradientn(name = "P value", colors = apple_colors[c(7,10)], limits = c(0, 0.1),
                               oob = scales::squish) +
         #scale_color_gradientn(name = "P value",colors = apple_colors[c(5,3,7)])+  
-        scale_x_discrete(limits = GO_order$label) + 
-        scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
+        scale_x_discrete(limits = GO_order$x) + 
+        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
         scale_size(name = "Network density", breaks = c(0, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12), 
                    label =as.character(c(0, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12)), 
                    range = c(0, 3))+ ## to tune the size of circles
@@ -594,8 +600,8 @@ count_label = c("0", "80", "160", "240", "320", "393")
 library(ggplot2)
 ggplot() + 
         geom_point(aes(x = rowv, y = columnv, size =Network_count), col= apple_colors[5], dataC)  + 
-        scale_x_discrete(limits = GO_order$label) + 
-        scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
+        scale_x_discrete(limits = GO_order$x) + 
+        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
         scale_size(name = "Number of PPIs", breaks = c(0,80,160,240,320,393), 
                    label = count_label, 
                    range = c(0, 4))+
@@ -609,7 +615,7 @@ ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichme
 
 
 ################################ Make plots with the original BP GO terms
-
+setwd("~/Dropbox/PPiSeq_02/")
 # Biological process
 all_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
 pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/BP_primary/Network_pos_count_PPI_BP_new.txt"
@@ -643,15 +649,8 @@ for (i in 1:1000){
 }
 density_BP_random = density_BP_random[,2:ncol(density_BP_random)]
 
-### Calculate the z_score based on 1000 random networks
-z_score = rep(0, length(network_density_vector))
-for(i in 1:length(network_density_vector)){
-        mean = mean(as.numeric(na.omit(density_BP_random[i,])))
-        sd = sd(as.numeric(na.omit(density_BP_random[i,])))
-        z_score[i] = (as.numeric(network_density_vector[i]) - mean)/sd
-}
-
 ### Calculate the p-value based on 1000 random networks
+library(coin)
 p_value = rep(0, length(network_density_vector)) 
 for(i in 1:length(network_density_vector)){
         m_real = as.numeric(network_density_vector[i])
@@ -697,8 +696,8 @@ ggplot() +
 #ggsave("~/Desktop/Dendrogram_BP_GO_pair_cluster.pdf", width = 6, height = 10)
 ggsave("Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/Dendrogram_BP_GO_pair_cluster_primary.pdf", width = 6, height = 10)
 
-label_GO = label(dendr)
-GO_order = label_GO[order(label_GO$x),] # order the BP GO term by the cluster analysis
+GO_order = read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_BP_order.txt",
+                      header = T, sep = "\t")
 
 Network_density = as.numeric(network_density_vector) # 0.11764
 dataf = data.frame(rowv,columnv,
@@ -713,8 +712,8 @@ ggplot() +
         scale_color_gradientn(name = "P value", colors = apple_colors[c(7,10)], limits = c(0, 0.1),
                               oob = scales::squish) +
         #scale_color_gradientn(name = "P value",colors = apple_colors[c(5,3,7)])+  
-        scale_x_discrete(limits = GO_order$label) + 
-        scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
+        scale_x_discrete(limits = GO_order$x) + 
+        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
         scale_size(name = "Network density", breaks = c(0, 0.01, 0.03, 0.05, 0.07, 0.09, 0.117), 
                    label =as.character(c(0, 0.01, 0.03, 0.05, 0.07, 0.09, 0.117)), 
                    range = c(0, 3))+ ## to tune the size of circles
@@ -794,8 +793,8 @@ count_label = c("0", "50", "100", "150", "200", "290")
 library(ggplot2)
 ggplot() + 
         geom_point(aes(x = rowv, y = columnv, size =Network_count), col= apple_colors[5], dataC)  + 
-        scale_x_discrete(limits = GO_order$label) + 
-        scale_y_discrete(limits = GO_order$label) +## color of the corresponding aes
+        scale_x_discrete(limits = GO_order$x) + 
+        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
         scale_size(name = "Number of PPIs", breaks = c(0,50,100,150,200,290), 
                    label = count_label, 
                    range = c(0, 4))+
@@ -807,10 +806,3 @@ ggplot() +
               axis.text.y.left = element_text(size = 8, color = "black"), axis.title = element_blank())
 ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2G_PPI_pair_GO_enrichment/heatmap_pos_count_BP_PPI_network_primary.pdf", width = 16, height = 13)
 
-
-##### Write a function to extract the network density of Homo GO dimer, and compare them with the remaining ones
-# Cellular Compartment
-network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_CC_matrix.txt", 
-                                       sep = "\t", header = T))
-antidiag = diag(network_density[,ncol(network_density):1])
-diag(network_density)
