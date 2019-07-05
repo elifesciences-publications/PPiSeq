@@ -87,11 +87,11 @@ matrix_PPI_env_rep_reverse[2,] = matrix_PPI_env_rep[1,]
 pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2B_Number_environments_PPI_reproted.pdf", height = 5, width = 5)
 barCenter = barplot(matrix_PPI_env_rep_reverse, horiz=F, beside=F, ylim=c(0,8000), ylab="Number of PPIs",
                     space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6),
-                    col= apple_colors[c(3,5)], axisnames=F, border=NA)
+                    col= apple_colors[c(2,1)], axisnames=F, border=NA)
 legend("topright", legend=c("Previously reported", "Previously unreported"), 
-       fill=apple_colors[c(5,3)], bty="n", border=FALSE)
+       fill=apple_colors[c(1,2)], bty="n", border=FALSE)
 text(x= barCenter, y = all_PPI_count + 300, labels = ratio_reported , 
-     cex=0.6, xpd = TRUE, col= apple_colors[5]) # add cumulative number
+     cex=0.6, xpd = TRUE, col= apple_colors[1]) # add cumulative number
 text(x= barCenter, y = -500, labels = as.character(1:9), xpd = TRUE)
 text(median(barCenter), y = -1200, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
 dev.off()

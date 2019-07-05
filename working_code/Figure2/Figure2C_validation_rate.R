@@ -90,13 +90,15 @@ csvWriter_rownames(unrep_PPI_matrix, "Unreported_validation_matrix.csv")
 
 ### Make barplot to show the percentage
 ### put the reported and unreported on to the same figure
-ratio_rep = rep_PPI_matrix[4,]
-ratio_unrep = unrep_PPI_matrix[4,]
-ratio_all = c(ratio_rep[1], ratio_unrep[1], ratio_rep[2], ratio_unrep[2], 
+rep_PPI_matrix = dataFrameReader_T("Reported_validation_matrix.csv")
+unrep_PPI_matrix = dataFrameReader_T("Unreported_validation_matrix.csv")
+ratio_rep = rep_PPI_matrix[4,-1]
+ratio_unrep = unrep_PPI_matrix[4,-1]
+ratio_all = as.numeric(c(ratio_rep[1], ratio_unrep[1], ratio_rep[2], ratio_unrep[2], 
               ratio_rep[3], ratio_unrep[3], ratio_rep[4], ratio_unrep[4],
               ratio_rep[5], ratio_unrep[5], ratio_rep[6], ratio_unrep[6],
               ratio_rep[7], ratio_unrep[7], ratio_rep[8], ratio_unrep[8],
-              ratio_rep[9], ratio_unrep[9])
+              ratio_rep[9], ratio_unrep[9]))
 rep_PPI_matrix[1,] #2       5      19      17      10      14      33      34      22 
 rep_PPI_matrix[3,] #7      10      21      20      10      21      38      36      22 
 unrep_PPI_matrix[1,]#48    43      43      37      37      33      27      42      35 
@@ -109,8 +111,8 @@ pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2C_Validation_bar_plot.pdf
 barCenter = barplot(ratio_all*100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
                     space= c(0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08,
                              0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08),
-                    col= apple_colors[c(5,3)] , axisnames=F, border=NA, cex.axis=0.8)
-legend(-0.5,120, legend=c("Previously reported", "Previously unreported"),fill=apple_colors[c(5,3)], cex=0.8, bty="n",
+                    col= apple_colors[c(1,2)] , axisnames=F, border=NA, cex.axis=0.8)
+legend(-0.5,120, legend=c("Previously reported", "Previously unreported"),fill=apple_colors[c(1,2)], cex=0.8, bty="n",
        border=FALSE, xpd = TRUE)
 text(x= barCenter, y = ratio_all*100 + 2, labels = counts_label, cex=0.5, xpd = TRUE)
 env_num_loc = rep(0, 9)
