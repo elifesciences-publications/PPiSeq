@@ -90,6 +90,7 @@ csvWriter_rownames(unrep_PPI_matrix, "Unreported_validation_matrix.csv")
 
 ### Make barplot to show the percentage
 ### put the reported and unreported on to the same figure
+setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_PPI/Combine_TECAN/")
 rep_PPI_matrix = dataFrameReader_T("Reported_validation_matrix.csv")
 unrep_PPI_matrix = dataFrameReader_T("Unreported_validation_matrix.csv")
 ratio_rep = rep_PPI_matrix[4,-1]
@@ -111,8 +112,8 @@ pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2C_Validation_bar_plot.pdf
 barCenter = barplot(ratio_all*100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
                     space= c(0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08,
                              0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08),
-                    col= apple_colors[c(1,2)] , axisnames=F, border=NA, cex.axis=0.8)
-legend(-0.5,120, legend=c("Previously reported", "Previously unreported"),fill=apple_colors[c(1,2)], cex=0.8, bty="n",
+                    col= apple_colors[c(7,5)] , axisnames=F, border=NA, cex.axis=0.8)
+legend(-0.5,120, legend=c("Previously reported", "Previously unreported"),fill=apple_colors[c(7,5)], cex=0.8, bty="n",
        border=FALSE, xpd = TRUE)
 text(x= barCenter, y = ratio_all*100 + 2, labels = counts_label, cex=0.5, xpd = TRUE)
 env_num_loc = rep(0, 9)
