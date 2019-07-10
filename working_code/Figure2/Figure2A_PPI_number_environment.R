@@ -289,3 +289,39 @@ Center = c(mean(barCenter[1:9]) +1.5, mean(barCenter[10:18]) + 1.5)
 text(x= Center, y = -3500, cex = 1.1,
      labels = c("Individual", "Cumulative"), adj = 1, xpd = TRUE)
 dev.off()
+
+######### Third version of the figure (Only plot the number of PPIs in each environment) 
+######### and then make line plots for all possible combinations
+# Barplot for PPI number in each environment and show number of PPIs in each bin (found in 1-9 environments)
+setwd("~/Dropbox/PPiSeq_02/")
+count_summary = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv") # 12333
+environment_matrix = matrix(0, 9, 9)
+colnames(environment_matrix) = colnames(count_summary)[3:11]
+rownames(environment_matrix) = as.character(1:9)
+for(i in 3:11){
+        PPI_chosen= count_summary[which(count_summary[,i] == "1"),]
+        counts = as.data.frame(table(PPI_chosen[,2]))
+        environment_matrix[,i-2] = counts$Freq
+}
+environment_matrix_order = environment_matrix[,c(1,5,9,7,6,3,2,4,8)]
+csvWriter_rownames(environment_matrix_order, "Working_data/Positive_PPI_environment/Count_summary_04_each_environment.csv")
+library(RColorBrewer)
+#col_purple = colorRampPalette(apple_colors[c(5,6,7)])(9)
+col_purple = brewer.pal(9,"Set3")
+pdf("Working_figure/Figure2/Figure2A_Number_PPIs_across_environments_half_new.pdf", height = 5, width = 5)
+par(mar = c(4,4,2,1))
+barCenter = barplot(environment_matrix_order, horiz=F, beside=F,  ylab="Number of PPIs",
+                    space= c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2), yaxt="n", ylim = c(0,6000),
+                    col= col_purple, axisnames=F, border=NA)
+
+axis(2,at = c(seq(0, 6000, by = 1000)))
+legend(0, 6500, legend=as.character(1:9), title = c("Number of environments in which a PPI is detected"),
+       fill=col_purple,  bty="n", border=FALSE, xpd = TRUE, ncol = 3)
+
+text(x= barCenter, y = -150, cex =0.8,
+     labels = rep(c("SD", "Forskolin", "FK506", "NaCl", "Raffinose", "Hydroxyurea",
+                    expression('H'[2]* 'O'[2]), "Doxorubicin", "16 \u00B0C"),2), 
+     srt= 45, adj = 1, xpd = TRUE)
+
+dev.off()
+

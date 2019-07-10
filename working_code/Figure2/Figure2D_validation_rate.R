@@ -108,12 +108,14 @@ unrep_PPI_matrix[3,]#110   88      57      41      41      38      34      42   
 counts_label = c("2/7", "48/110", "5/10", "43/88", "19/21", "43/57",
                  "17/20", "37/41", "10/10", "37/41", "14/21", "33/38",
                  "33/38", "27/34", "34/36", "42/42", "22/22", "35/36")
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2C_Validation_bar_plot.pdf", width= 6, height=5)
+library(RColorBrewer)
+col_chosen = brewer.pal(3,"Dark2")[1:2]
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2D_Validation_bar_plot.pdf", width= 6, height=5)
 barCenter = barplot(ratio_all*100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
                     space= c(0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08,
                              0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08),
-                    col= apple_colors[c(7,5)] , axisnames=F, border=NA, cex.axis=0.8)
-legend(-0.5,120, legend=c("Previously reported", "Previously unreported"),fill=apple_colors[c(7,5)], cex=0.8, bty="n",
+                    col= col_chosen , axisnames=F, border=NA, cex.axis=0.8)
+legend(-0.5,120, legend=c("Previously reported", "Previously unreported"),fill=col_chosen, cex=0.8, bty="n",
        border=FALSE, xpd = TRUE)
 text(x= barCenter, y = ratio_all*100 + 2, labels = counts_label, cex=0.5, xpd = TRUE)
 env_num_loc = rep(0, 9)

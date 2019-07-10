@@ -99,7 +99,7 @@ n23 = nrow(PCA_BIOGRID_overlap) # 674
 n13 = nrow(BIOGRID_PPiseq_overlap) # 654
 n123 = nrow(BIOGRID_PPiseq_PCA_overlap) #455
 library(VennDiagram)
-pdf("Working_figure/Figure2/Figure2D_draft_Venn diagram of overlapped PPIs among PPiseq, PCA, BIOGRID.pdf", width = 5, height =5)
+pdf("Working_figure/Figure2/Figure2E_draft_Venn diagram of overlapped PPIs among PPiseq, PCA, BIOGRID.pdf", width = 5, height =5)
 draw.triple.venn(area1, area2, area3, n12, n23, n13, n123, category = c("PPiSeq", "mDHFR-PCA", "BIOGRID data excluding mDHFR-PCA"), euler.d = TRUE,
                  scaled = TRUE, col = apple_colors[c(5,3,6)], fill = apple_colors[c(5,3,6)], cex = 1.5)
 dev.off()
@@ -132,7 +132,7 @@ n23 = nrow(PCA_BIOGRID_overlap) # 674
 n13 = nrow(BIOGRID_PPiseq_overlap) # 884
 n123 = nrow(BIOGRID_PPiseq_PCA_overlap) #532
 library(VennDiagram)
-pdf("Working_figure/Figure2/Figure2D_draft_all_Venn diagram of overlapped PPIs among PPiseq, PCA, BIOGRID.pdf", width = 5, height =5)
+pdf("Working_figure/Figure2/Figure2E_draft_all_Venn diagram of overlapped PPIs among PPiseq, PCA, BIOGRID.pdf", width = 5, height =5)
 draw.triple.venn(area1, area2, area3, n12, n23, n13, n123, category = c("PPiSeq", "mDHFR-PCA", "BIOGRID data excluding mDHFR-PCA"), euler.d = TRUE,
                  scaled = TRUE, col = apple_colors[c(5,3,6)], fill = apple_colors[c(5,3,6)], cex = 1.5)
 dev.off()
