@@ -11,13 +11,117 @@ compartment.colors = c(apple_colors, apple_colors, apple_colors, apple_colors, a
                        apple_colors, apple_colors)
 env.colors = rainbow(9, s = 0.5)
 names(env.colors) = names(fitness_by_env_list)
-names(fitness_by_env_list) = c( "DMSO", "H2O2", "Hydroxyurea", "Doxorubicin","Forskolin","Raffinose", "NaCl", "16C","FK506")
 env_names = names(fitness_by_env_list)
+bcomp.names = cc_bins[[1]]
 
 
-env = env_names[1]
-m = fitness_by_env_list[[which(names(fitness_by_env_list) == env)]]
-n = ppi_by_env_list[[which(names(ppi_by_env_list) == env)]]
+
+
+#Compare background fitness of bait with or without a PPI in that compartment
+neg_fitness_by_comp = ppi_by_env_list #this will be the fitness values in each compartment for all bait that do not have a PPI in that env
+for(j in 1:length(ppi_by_env_list)){
+  neg_fitness_by_comp_env = list()
+  env =  env_names[j]
+  m = fitness_by_env_list[[which(names(fitness_by_env_list) == env)]]
+  n = ppi_by_env_list[[which(names(ppi_by_env_list) == env)]]
+  pdf(file = paste("~/Dropbox/PPiSeq_02/Working_figure/Sasha/density_plot_compartment_", env, ".pdf", sep = ""), height = 14, width = 14)
+  par(mfrow = c(4,4))
+  plot(1, type="n", xlab="", ylab="", xlim=c(0, 10), ylim=c(0, 10), axes=FALSE,ann=FALSE)
+  legend(0, 10, c("No PPIs within this compartment", "At least one PPI within this compartment"), fill = c( rgb(1,0,0,0.2), rgb(0,0,1,0.2) ))
+  for(i in 1:length(bcomp.names)){
+    comp = bcomp.names[i]
+    if(comp %in% cc_bins$prey_cellular_component){
+      prey.bins = cc_bins$prey_bins[which(cc_bins$prey_cellular_component == comp):(which(cc_bins$prey_cellular_component == comp)+1) ]
+      mc = m[,(prey.bins[1]+1):prey.bins[2]]
+      nc = n[,(prey.bins[1]+1):prey.bins[2]]
+      pos.int = apply(nc, 1, sum, na.rm = T) # Number of interactions in that environment
+      mc[which(nc == 1)] = NA #remove all discovered interactions from the calculation
+      p = mc[which(pos.int > 0), ]
+      ne = mc[which(pos.int == 0), ]
+      pos = density(p[!is.na(p)])
+      neg = density(ne[!is.na(ne)])
+      neg_fitness_by_comp_env[[i]] = ne[!is.na(ne)]
+      plot(neg, main = comp, xlab = "Fitness", xlim = c(-0.4, 0.4), ylim = c(0,10))
+      polygon(neg, col = rgb(1,0,0,0.2))
+      points(pos, type = 'l')
+      polygon(pos, col = rgb(0,0,1,0.2))
+      legend(-0.4, 6, c(round(mean(ne, na.rm = T), digits = 3),round( mean(p, na.rm = T), digits = 3)), 
+             fill = c( rgb(1,0,0,0.2), rgb(0,0,1,0.2)), title = "mean")
+    }
+  }
+  names(neg_fitness_by_comp_env) = cc_bins$bait_cellular_component[1:13]
+  neg_fitness_by_comp[[j]] = neg_fitness_by_comp_env
+  dev.off()
+}
+save(neg_fitness_by_comp, file = "~/Dropbox/PPiSeq_02/Working_data/neg_fitness_by_comp.Rfile")
+
+
+#Compare background fitness of bait with or without a PPI in any compartment
+pdf(file = "~/Dropbox/PPiSeq_02/Working_figure/Sasha/density_plot_compartment_control.pdf", height = 14, width = 14)
+par(mfrow = c(4,4))
+plot(1, type="n", xlab="", ylab="", xlim=c(0, 10), ylim=c(0, 10), axes=FALSE,ann=FALSE)
+legend(0, 10, c("No PPIs within any compartment", "At least one PPI within any compartment"), fill = c( rgb(1,0,0,0.2), rgb(0,0,1,0.2) ))
+for(i in 1:length(bcomp.names)){
+  comp = bcomp.names[i]
+  env = env_names[1]
+  prey.bins = cc_bins$prey_bins[which(cc_bins$prey_cellular_component == comp):(which(cc_bins$prey_cellular_component == comp)+1) ]
+  mc = m[,(prey.bins[1]+1):prey.bins[2]]
+  nc = n[,(prey.bins[1]+1):prey.bins[2]]
+  pos.int = apply(n, 1, sum, na.rm = T) # Number of interactions in any environment
+  mc[which(nc == 1)] = NA #remove all discovered interactions from the calculation
+  p = mc[which(pos.int > 0), ]
+  ne = mc[which(pos.int == 0), ]
+  pos = density(p[!is.na(p)])
+  neg = density(ne[!is.na(ne)])
+  plot(neg, main = comp, xlab = "Fitness", xlim = c(-0.4, 0.4))
+  polygon(neg, col = rgb(1,0,0,0.2))
+  points(pos, type = 'l')
+  polygon(pos, col = rgb(0,0,1,0.2))
+  legend(-0.4, 6, c(round(mean(ne, na.rm = T), digits = 3),round( mean(p, na.rm = T), digits = 3)), fill = c( rgb(1,0,0,0.2), rgb(0,0,1,0.2)), title = "mean")
+}
+dev.off()
+
+
+#Get a p-value for each bait in each compartment vs. negative
+comp_pvalue_list = list()
+for(k in 1:length(env_names)){
+  env =  env_names[k]
+  m = fitness_by_env_list[[which(names(fitness_by_env_list) == env)]]
+  x = matrix(NA, nrow(m),  sum(cc_bins$bait_cellular_component %in% cc_bins$prey_cellular_component))
+  colnames(x) = cc_bins$bait_cellular_component[cc_bins$bait_cellular_component %in% cc_bins$prey_cellular_component]
+  rownames(x) = rownames(ppi_by_env_list[[1]])
+  for(i in 1:nrow(x)){
+    for(j in 1:ncol(x)){
+      comp = colnames(x)[j]
+      bait = rownames(x)[i]
+      prey.bins = cc_bins$prey_bins[which(cc_bins$prey_cellular_component == comp):(which(cc_bins$prey_cellular_component == comp)+1) ]
+      test = m[bait,(prey.bins[1]+1):prey.bins[2]]
+      neg = neg_fitness_by_comp[[env]][[comp]]
+      if(sum(!is.na(test))>1){
+        x[i,j] = t.test(test, neg, alternative = "greater", na.action = "omit")[[3]]
+      }
+    }
+  }
+  comp_pvalue_list[[k]] = x
+}
+names(comp_pvalue_list) = env_names
+save(comp_pvalue_list, file = "~/Dropbox/PPiSeq_02/Working_data/comp_pvalue_list.Rfile")
+
+#Compare our predictions to GoSlim in DMSO
+x = comp_pvalue_list$DMSO
+y = x[,1:3]
+colnames(y) = c("GO", "PPiSeq Primary", "PPiSeq others")
+y[] = NA
+for(i in rownames(y)){
+  y[i,1] = go[i]
+  if(length(colnames(x)[x[i,] < 0.05] > 0)){
+    y[i,2] = paste(colnames(x)[x[i,] < 0.05], collapse = ", ")
+  }
+}
+
+bait = rownames(x)[1]
+go[bait]
+x[bait,]
 
 
 make.fit.plot1 = function(bait, env){
