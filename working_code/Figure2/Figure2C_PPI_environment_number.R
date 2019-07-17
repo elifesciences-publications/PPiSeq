@@ -103,7 +103,7 @@ par(mar = c(3,4,2,1))
 barCenter = barplot(matrix_PPI_env_rep, horiz=F, beside=F, ylim=c(0,8000), ylab="Number of PPIs",
                     space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6),
                     col= col_chosen, axisnames=F, border=NA)
-legend("topright", legend=c("Reported in BioGRID", "PPV >= 80% in PCA but not in BioGRID", "Previously unreported"), 
+legend("topright", legend=c("BioGRID", "Marginal PCA", "Previously unreported"), 
        fill=col_chosen[c(3,2,1)], bty="n", border=FALSE)
 text(x= barCenter, y = all_PPI_count + 150, labels = ratio_PCA_low_overlapped, 
      cex=0.7, xpd = TRUE, col= col_chosen[2]) 

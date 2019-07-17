@@ -305,9 +305,13 @@ for(i in 3:11){
 }
 environment_matrix_order = environment_matrix[,c(1,5,9,7,6,3,2,4,8)]
 csvWriter_rownames(environment_matrix_order, "Working_data/Positive_PPI_environment/Count_summary_04_each_environment.csv")
+
+environment_matrix_order = csvReader_T("Working_data/Positive_PPI_environment/Count_summary_04_each_environment.csv")
+environment_matrix_order= environment_matrix_order[,-1]
 library(RColorBrewer)
 #col_purple = colorRampPalette(apple_colors[c(5,6,7)])(9)
-col_purple = brewer.pal(9,"Set3")
+#col_purple = brewer.pal(9,"Set3")
+col_purple = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
 pdf("Working_figure/Figure2/Figure2A_Number_PPIs_across_environments_half_new.pdf", height = 5, width = 5)
 par(mar = c(4,4,2,1))
 barCenter = barplot(environment_matrix_order, horiz=F, beside=F,  ylab="Number of PPIs",
@@ -315,8 +319,8 @@ barCenter = barplot(environment_matrix_order, horiz=F, beside=F,  ylab="Number o
                     col= col_purple, axisnames=F, border=NA)
 
 axis(2,at = c(seq(0, 6000, by = 1000)))
-legend(0, 6500, legend=as.character(1:9), title = c("Number of environments in which a PPI is detected"),
-       fill=col_purple,  bty="n", border=FALSE, xpd = TRUE, ncol = 3)
+legend(0, 6500, legend=as.character(rev(1:9)), title = c("Number of environments in which the PPI is detected"),
+       fill=col_purple[rev(1:9)],  bty="n", border=FALSE, xpd = TRUE, ncol = 3)
 
 text(x= barCenter, y = -150, cex =0.8,
      labels = rep(c("SD", "Forskolin", "FK506", "NaCl", "Raffinose", "Hydroxyurea",
