@@ -41,7 +41,7 @@ for(i in 1:9){
         column_chosen = as.numeric(count_summary[,i +2])
         matrix_chosen = data.frame(column_chosen, matrix_constructer)
         sum_row = rowSums(matrix_chosen)
-        environ_1_1 = length(which(sum_row >= 1))
+        environ_1_1 = length(which(sum_row >= 1)))
         environ_1_2 = length(which(sum_row >= 2))
         environ_1_3 = length(which(sum_row >= 3))
         environ_1_4 = length(which(sum_row >= 4))
@@ -484,10 +484,10 @@ for(h in 1:9){
                 
         } 
 }
-matrix_count[1:10,]
-matrix_count[40300:40320,]
-sum(matrix_count[,8] > matrix_count[,7])
-length(unique(matrix_count[,8]))
+matrix_count_9[1:10,]
+matrix_count_1[362870:362880,]
+sum(matrix_count_1[,8] > matrix_count_1[,7])
+length(unique(matrix_count_1[,8])) #9
 # Ninth column
 matrix_count_1[,9] = nrow(count_summary)
 matrix_count_2[,9] = length(which(as.numeric(count_summary[,2]) >= 2))
@@ -509,121 +509,142 @@ colnames(matrix_count_7) = c("One", "Two", "Three", "Four", "Five", "Six", "Seve
 colnames(matrix_count_8) = c("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine")
 colnames(matrix_count_9) = c("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine")
 
-csvWriter(matrix_count_1, "Working_data/Positive_PPI_environment/PPI_number_environment_accumulation_all_order_1.csv")
-csvWriter(matrix_count_2, "Working_data/Positive_PPI_environment/PPI_number_environment_accumulation_all_order_2.csv")
-csvWriter(matrix_count_3, "Working_data/Positive_PPI_environment/PPI_number_environment_accumulation_all_order_3.csv")
-csvWriter(matrix_count_4, "Working_data/Positive_PPI_environment/PPI_number_environment_accumulation_all_order_4.csv")
-csvWriter(matrix_count_5, "Working_data/Positive_PPI_environment/PPI_number_environment_accumulation_all_order_5.csv")
-csvWriter(matrix_count_6, "Working_data/Positive_PPI_environment/PPI_number_environment_accumulation_all_order_6.csv")
-csvWriter(matrix_count_7, "Working_data/Positive_PPI_environment/PPI_number_environment_accumulation_all_order_7.csv")
-csvWriter(matrix_count_8, "Working_data/Positive_PPI_environment/PPI_number_environment_accumulation_all_order_8.csv")
-csvWriter(matrix_count_9, "Working_data/Positive_PPI_environment/PPI_number_environment_accumulation_all_order_9.csv")
+csvWriter(matrix_count_1, "Working_data/Positive_PPI_environment/Accumulated_PPI/PPI_number_environment_accumulation_all_order_1.csv")
+csvWriter(matrix_count_2, "Working_data/Positive_PPI_environment/Accumulated_PPI/PPI_number_environment_accumulation_all_order_2.csv")
+csvWriter(matrix_count_3, "Working_data/Positive_PPI_environment/Accumulated_PPI/PPI_number_environment_accumulation_all_order_3.csv")
+csvWriter(matrix_count_4, "Working_data/Positive_PPI_environment/Accumulated_PPI/PPI_number_environment_accumulation_all_order_4.csv")
+csvWriter(matrix_count_5, "Working_data/Positive_PPI_environment/Accumulated_PPI/PPI_number_environment_accumulation_all_order_5.csv")
+csvWriter(matrix_count_6, "Working_data/Positive_PPI_environment/Accumulated_PPI/PPI_number_environment_accumulation_all_order_6.csv")
+csvWriter(matrix_count_7, "Working_data/Positive_PPI_environment/Accumulated_PPI/PPI_number_environment_accumulation_all_order_7.csv")
+csvWriter(matrix_count_8, "Working_data/Positive_PPI_environment/Accumulated_PPI/PPI_number_environment_accumulation_all_order_8.csv")
+csvWriter(matrix_count_9, "Working_data/Positive_PPI_environment/Accumulated_PPI/PPI_number_environment_accumulation_all_order_9.csv")
+
+##### Make a plot to show these accumulated counts
+setwd("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/Accumulated_PPI/")
+matrix_count_1 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_1.csv")
+matrix_count_2 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_2.csv")
+matrix_count_3 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_3.csv")
+matrix_count_4 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_4.csv")
+matrix_count_5 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_5.csv")
+matrix_count_6 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_6.csv")
+matrix_count_7 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_7.csv")
+matrix_count_8 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_8.csv")
+matrix_count_9 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_9.csv")
+
+col_mean_1 = colMeans(matrix_count_1)
+col_mean_2 = colMeans(matrix_count_2)
+col_mean_3 = colMeans(matrix_count_3)
+col_mean_4 = colMeans(matrix_count_4)
+col_mean_5 = colMeans(matrix_count_5)
+col_mean_6 = colMeans(matrix_count_6)
+col_mean_7 = colMeans(matrix_count_7)
+col_mean_8 = colMeans(matrix_count_8)
+col_mean_9 = colMeans(matrix_count_9)
 
 
-setwd("~/Dropbox/PPiSeq_02/")
-matrix_count = csvReader_T("Working_data/Positive_PPI_environment/PPI_number_environment_accumulation_all_order.csv")
-matrix_count_high = csvReader_T("Working_data/Positive_PPI_environment/PPI_number_environment_accumulation_all_order_larger_two.csv")
-
-matrix_count_vec = as.numeric(as.vector(t(matrix_count)))
-num_env = rep(1:9, nrow(matrix_count))
-
-matrix_count_high_vec = as.numeric(as.vector(t(matrix_count_high[,2:9])))
-num_env_high = rep(2:9, nrow(matrix_count_high))
-# linear regression for all data
-relation = lm(matrix_count_vec ~ num_env)
-linear_count = relation$coefficients[2]* (1:9) + relation$coefficients[1]
-
-"""
-# Bionomial regression
-polynomial_relation = lm(matrix_count_vec ~ poly(num_env, 2, raw=TRUE))
-polynomial_count = polynomial_relation$coefficients[1] + polynomial_relation$coefficients[2] * (1:9) +
-        polynomial_relation$coefficients[3] * ((1:9)^2)
-"""
-# Trinomial regression for high-quality data
-polynomial_relation_3 = lm(matrix_count_high_vec ~ poly(num_env_high, 3, raw=TRUE))
-polynomial_count_3 = polynomial_relation_3$coefficients[1] + polynomial_relation_3$coefficients[2] * (2:9) +
-        polynomial_relation_3$coefficients[3] * ((2:9)^2) +  polynomial_relation_3$coefficients[4] * ((2:9)^3)
-# Mean count
-mean_count = colMeans(matrix_count)
-mean_count_high = colMeans(matrix_count_high)
-
-pdf("Working_figure/Figure2/Figure2B_PPI_number_accumulation_environments_combine.pdf", width= 5, height =5)
+library(scales)
+col_purple = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
+col_chosen = alpha(col_purple[c(1,2,3,5,7)], 0.5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2B_cumulative_PPI_number/Figure2B_PPI_number_accumulation_environments_combine.pdf", width= 5, height =5)
+#pdf("~/Desktop/Figure2B_PPI_number_accumulation_environments_combine.pdf", width =5, height =5)
 par(mar = c(4,4,2,4))
-plot(1:9, as.numeric(matrix_count[1,]), xlim = c(1,9), ylim = c(4000,14000), type = "l",
-     col = rgb(0.5,0.5,0.5,alpha = 0.05),lwd = 0.05,
+plot(1:9, as.numeric(matrix_count_1[1,]), xlim = c(1,9), ylim = c(0,14000), type = "l",
+     col = col_chosen[1],lwd = 0.5,
      xlab = "Number of environments assayed",
      ylab = "Number of PPIs", main = NA, bty = "n")
-axis(2, at= seq(4000, 14000, by = 2000), labels = seq(4000, 14000, by = 2000))
+axis(2, at= seq(0, 14000, by = 2000), labels = seq(0, 14000, by = 2000))
 axis(1, at= 1:9, labels = 1:9)
-for(i in 2:nrow(matrix_count)){
-        lines(1:9, as.numeric(matrix_count[i,]), col = rgb(0.5,0.5,0.5, alpha = 0.05), lwd = 0.05)
+for(i in 2:nrow(matrix_count_1)){
+        lines(1:9, as.numeric(matrix_count_1[i,]), col = col_chosen[1], lwd = 0.5)
 }
+lines(1:9, col_mean_1, col = apple_colors[11], lwd = 2, lty = 2)
 
-par(new = T)
+for(l in 1:nrow(matrix_count_2)){
+        lines(2:9, as.numeric(matrix_count_2[l,2:9]), col = col_chosen[2], lwd = 0.5)
+}
+lines(2:9, col_mean_2[2:9], col = apple_colors[11], lwd = 2, lty = 2)
 
+
+#for(j in 1:nrow(matrix_count_3)){
+        #lines(3:9, as.numeric(matrix_count_3[j,3:9]), col = col_chosen[3], lwd = 0.5)
+#}
+#lines(3:9, col_mean_3[3:9], col = apple_colors[11], lwd = 2, lty = 2)
+
+for(k in 1:nrow(matrix_count_5)){
+        lines(5:9, as.numeric(matrix_count_5[k,5:9]), col = col_chosen[4], lwd = 0.5)
+}
+lines(5:9, col_mean_5[5:9], col = apple_colors[11], lwd = 2, lty = 2)
+
+for(l in 1:nrow(matrix_count_7)){
+        lines(7:9, as.numeric(matrix_count_7[l,7:9]), col = col_chosen[5], lwd = 0.5)
+}
+lines(7:9, col_mean_7[7:9], col = apple_colors[11], lwd = 2, lty = 2)
+
+
+legend(1,14000, c("1","2","5", "7"),lty = c(1,1,1,1), col = col_purple[c(1,2,5,7)], ncol = 2, bty= "n")
+text(4, 14500, "Minimum number of environments\nin which the PPI is observed", xpd = TRUE)
+dev.off()
+
+##### Only plot average line for each group
+col_purple = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
+
+mean_count_all = data.frame(col_mean_1, col_mean_2, col_mean_3, col_mean_4, col_mean_5,
+                            col_mean_6, col_mean_7, col_mean_8, col_mean_9)
+#pdf("Working_figure/Figure2/Figure2B_PPI_number_accumulation_environments_combine.pdf", width= 5, height =5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2B_cumulative_PPI_number/Figure2B_PPI_number_accumulation_environments_combine_average.pdf", width =5, height =5)
 par(mar = c(4,4,2,4))
-plot(2:9, as.numeric(matrix_count_high[1,2:9]), axes =F, xlim = c(1,9), ylim = c(4000, 6000),
-     xlab = NA, ylab = NA, type = "l",
-     col = rgb(0.5,0.5,0.5,alpha = 1),lwd = 0.05)
-axis(4, at= seq(4000, 6000, by = 250), labels = seq(4000, 6000, by = 250), 
-     col = "darkgreen", col.axis = "darkgreen")
-
-mtext(side = 4,  ">= 2 envrionments", line = 2.5, col = "darkgreen")
-for(i in 1:nrow(matrix_count_high)){
-        lines(2:9, as.numeric(matrix_count_high[i,2:9]), col = rgb(0,0.5,0.5, alpha = 0.05), lwd = 0.05)
-}
-
-dev.off()
-
-#### Separate two figures, and make a small one for high-quality data
-pdf("Working_figure/Figure2/Figure2B_PPI_number_accumulation_environments_large_two_small.pdf", width= 3, height =3)
-par(mar = c(2,1,1,4))
-plot(2:9, as.numeric(matrix_count_high[1,2:9]), axes =F, xlim = c(1,9), ylim = c(4000, 6000),
-     xlab = NA, ylab = NA, type = "l",
-     col = rgb(0.5,0.5,0.5,alpha = 0.05),lwd = 0.05)
-axis(4, at= seq(4000, 6000, by = 500), labels = seq(4000, 6000, by = 500), 
-     cex.axis = 0.6, mgp = c(3,0.5,0))
-     #col = "darkgreen", col.axis = "darkgreen")
-axis(1, at= 1:9, labels = 1:9, cex.axis = 0.6, mgp = c(3, 0.5, 0))
-mtext(side = 4,  "Number of PPIs", line = 2, cex = 0.6)
-for(i in 1:nrow(matrix_count_high)){
-        lines(2:9, as.numeric(matrix_count_high[i,2:9]), col = rgb(0.5,0.5,0.5, alpha = 0.05), lwd = 0.05)
-}
-lines(2:9, mean_count_high[2:9], col = apple_colors[7])
-dev.off()
-
-
-
-
-
-pdf("Working_figure/Figure2/Figure2B_PPI_number_accumulation_environments_large_two.pdf", width= 5, height =5)
-par(mar = c(4,4,2,1))
-plot(2:9, as.numeric(matrix_count_high[1,2:9]), xlim = c(1,9), ylim = c(4000,6000), type = "l",
-     col = rgb(0.5,0.5,0.5,alpha = 0.05),lwd = 0.05,
+plot(1:9, col_mean_1, xlim = c(1,9), ylim = c(0,14000), type = "l",
+     col = col_purple[1],lwd = 2,
      xlab = "Number of environments assayed",
      ylab = "Number of PPIs", main = NA, bty = "n")
-axis(2, at= seq(4000, 6000, by = 250), labels = seq(4000, 6000, by = 250))
+axis(2, at= seq(0, 14000, by = 2000), labels = seq(0, 14000, by = 2000))
 axis(1, at= 1:9, labels = 1:9)
-for(i in 2:nrow(matrix_count_high)){
-        lines(2:9, as.numeric(matrix_count_high[i,2:9]), col = rgb(0.5,0.5,0.5, alpha = 0.05), lwd = 0.05)
+for(i in 2:ncol(mean_count_all)){
+        lines(i:9, mean_count_all[,i][i:9], col = col_purple[i], lwd = 2)
 }
-
-lines(2:9, mean_count_high[2:9], col = apple_colors[7])
-#lines(c(1,9), as.numeric(matrix_count[1,c(1, 9)]), col = "orange", lty = 1)
-#lines(1:9, linear_count, col = apple_colors[5])
-#lines(1:9, polynomial_count_3, col = apple_colors[5])
-lines(2:9, polynomial_count_3, col = apple_colors[5])
-#legend("topleft", c("Mean count", "Linear regression", "Bionomial regression", "Trinomial regression", "Straight line"),
-#lty = c(1,1,2,2,1), col = c("red", "green", "cyan", "blue", "orange"), bty= "n")
-legend("topleft", c("Mean count", "Trinomial regression"),lty = c(1,1), col = apple_colors[c(7,5)], bty= "n")
-
+legend(1,14000, as.character(1:9),lty = 1, col = col_purple, ncol = 3, bty= "n")
+text(4, 14500, "Minimum number of environments\nin which the PPI is observed", xpd = TRUE)
 dev.off()
 
-######################################################
-# Remove PPIs that have been detected only in one environment and then make the same figure
-setwd("~/Dropbox/PPiSeq_02/")
-count_summary = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv") # 1233
-count_summary[1,]
-count_summary = count_summary[which(count_summary[,2] != "1"),] # 5392
-# Then run the above code and generate a new matrix
+###### Check each PPI group (One, two, three, four, five, six, seven, eight, nine environment only PPIs)
 
+setwd("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/Accumulated_PPI/exact_number/")
+matrix_count_1 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_1.csv")
+matrix_count_2 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_2.csv")
+matrix_count_3 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_3.csv")
+matrix_count_4 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_4.csv")
+matrix_count_5 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_5.csv")
+matrix_count_6 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_6.csv")
+matrix_count_7 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_7.csv")
+matrix_count_8 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_8.csv")
+matrix_count_9 = dataFrameReader_T("PPI_number_environment_accumulation_all_order_9.csv")
+
+col_mean_1 = colMeans(matrix_count_1)
+col_mean_2 = colMeans(matrix_count_2)
+col_mean_3 = colMeans(matrix_count_3)
+col_mean_4 = colMeans(matrix_count_4)
+col_mean_5 = colMeans(matrix_count_5)
+col_mean_6 = colMeans(matrix_count_6)
+col_mean_7 = colMeans(matrix_count_7)
+col_mean_8 = colMeans(matrix_count_8)
+col_mean_9 = colMeans(matrix_count_9)
+
+mean_count_all = data.frame(col_mean_1, col_mean_2, col_mean_3, col_mean_4, col_mean_5,
+                            col_mean_6, col_mean_7, col_mean_8, col_mean_9)
+#pdf("Working_figure/Figure2/Figure2B_PPI_number_accumulation_environments_combine.pdf", width= 5, height =5)
+pdf("~/Desktop/Figure2B_PPI_number_accumulation_environments_differen_group_average.pdf", width =5, height =5)
+par(mar = c(4,4,2,4))
+plot(1:9, col_mean_1, xlim = c(1,9), ylim = c(0,7000), type = "l",
+     col = col_purple[1],lwd = 2,
+     xlab = "Number of environments assayed",
+     ylab = "Number of PPIs", main = NA, bty = "n")
+axis(2, at= seq(0,7000, by = 1000), labels = seq(0, 7000, by = 1000))
+axis(1, at= 1:9, labels = 1:9)
+for(i in 2:ncol(mean_count_all)){
+        lines(i:9, mean_count_all[,i][i:9], col = col_purple[i], lwd = 2)
+}
+legend(1,7000, as.character(1:9),lty = 1, col = col_purple, ncol = 3, bty= "n")
+text(4, 7300, "Number of environments\nin which the PPI is observed", xpd = TRUE)
+dev.off()
+
+###### Use a new way to check these
