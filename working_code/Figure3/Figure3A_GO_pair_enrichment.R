@@ -136,7 +136,7 @@ for(i in 1:length(network_density_vector)){
 library(ggplot2)
 library(ggdendro)
 rownames(network_density) = colnames(network_density)
-hc = hclust(dist(network_density), method="ward.D")
+hc = hclust(dist(network_density))
 dendr = dendro_data(hc, type= "rectangle")
 clust = cutree(hc, k = 3) 
 clust.df <- data.frame(label=names(clust), cluster=factor(clust))
@@ -264,7 +264,7 @@ for(i in 1:length(network_density_vector)){
 # dendrogram
 library(ggdendro)
 rownames(network_density) = colnames(network_density)
-hc = hclust(dist(network_density), method="ward.D")
+hc = hclust(dist(network_density))
 
 dendr = dendro_data(hc, type= "rectangle")
 clust = cutree(hc, k = 10) 
@@ -412,7 +412,7 @@ for(i in 1:length(network_density_vector)){
 # dendrogram
 library(ggdendro)
 rownames(network_density) = colnames(network_density)
-hc = hclust(dist(network_density), method="ward.D")
+hc = hclust(dist(network_density))
 
 dendr = dendro_data(hc, type= "rectangle")
 clust = cutree(hc, k = 10) 

@@ -543,8 +543,8 @@ col_mean_9 = colMeans(matrix_count_9)
 
 
 library(scales)
-col_purple = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
-col_chosen = alpha(col_purple[c(1,2,3,5,7)], 0.5)
+col_group = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
+col_chosen = alpha(col_group, 0.05)
 pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2B_cumulative_PPI_number/Figure2B_PPI_number_accumulation_environments_combine.pdf", width= 5, height =5)
 #pdf("~/Desktop/Figure2B_PPI_number_accumulation_environments_combine.pdf", width =5, height =5)
 par(mar = c(4,4,2,4))
@@ -565,25 +565,41 @@ for(l in 1:nrow(matrix_count_2)){
 lines(2:9, col_mean_2[2:9], col = apple_colors[11], lwd = 2, lty = 2)
 
 
-#for(j in 1:nrow(matrix_count_3)){
-        #lines(3:9, as.numeric(matrix_count_3[j,3:9]), col = col_chosen[3], lwd = 0.5)
-#}
-#lines(3:9, col_mean_3[3:9], col = apple_colors[11], lwd = 2, lty = 2)
+for(j in 1:nrow(matrix_count_3)){
+        lines(3:9, as.numeric(matrix_count_3[j,3:9]), col = col_chosen[3], lwd = 0.5)
+}
+lines(3:9, col_mean_3[3:9], col = apple_colors[11], lwd = 2, lty = 2)
+
+for(m in 1:nrow(matrix_count_4)){
+        lines(4:9, as.numeric(matrix_count_4[m,4:9]), col = col_chosen[4], lwd = 0.5)
+}
+lines(4:9, col_mean_4[4:9], col = apple_colors[11], lwd = 2, lty = 2)
 
 for(k in 1:nrow(matrix_count_5)){
-        lines(5:9, as.numeric(matrix_count_5[k,5:9]), col = col_chosen[4], lwd = 0.5)
+        lines(5:9, as.numeric(matrix_count_5[k,5:9]), col = col_chosen[5], lwd = 0.5)
 }
 lines(5:9, col_mean_5[5:9], col = apple_colors[11], lwd = 2, lty = 2)
 
+for(n in 1:nrow(matrix_count_6)){
+        lines(6:9, as.numeric(matrix_count_6[n,6:9]), col = col_chosen[6], lwd = 0.5)
+}
+lines(6:9, col_mean_6[6:9], col = apple_colors[11], lwd = 2, lty = 2)
+
 for(l in 1:nrow(matrix_count_7)){
-        lines(7:9, as.numeric(matrix_count_7[l,7:9]), col = col_chosen[5], lwd = 0.5)
+        lines(7:9, as.numeric(matrix_count_7[l,7:9]), col = col_chosen[7], lwd = 0.5)
 }
 lines(7:9, col_mean_7[7:9], col = apple_colors[11], lwd = 2, lty = 2)
 
+for(o in 1:nrow(matrix_count_8)){
+        lines(8:9, as.numeric(matrix_count_8[l,8:9]), col = col_chosen[8], lwd = 0.5)
+}
+lines(8:9, col_mean_8[8:9], col = apple_colors[11], lwd = 2, lty = 2)
 
-legend(1,14000, c("1","2","5", "7"),lty = c(1,1,1,1), col = col_purple[c(1,2,5,7)], ncol = 2, bty= "n")
+legend(1,14000, as.character(1:8),lty = 1, col = col_group[1:8], ncol = 3, bty= "n")
 text(4, 14500, "Minimum number of environments\nin which the PPI is observed", xpd = TRUE)
 dev.off()
+
+
 
 ##### Only plot average line for each group
 col_purple = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
@@ -632,7 +648,7 @@ col_mean_9 = colMeans(matrix_count_9)
 mean_count_all = data.frame(col_mean_1, col_mean_2, col_mean_3, col_mean_4, col_mean_5,
                             col_mean_6, col_mean_7, col_mean_8, col_mean_9)
 #pdf("Working_figure/Figure2/Figure2B_PPI_number_accumulation_environments_combine.pdf", width= 5, height =5)
-pdf("~/Desktop/Figure2B_PPI_number_accumulation_environments_differen_group_average.pdf", width =5, height =5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2B_cumulative_PPI_number/Figure2B_PPI_number_accumulation_environments_differen_group_average.pdf", width =5, height =5)
 par(mar = c(4,4,2,4))
 plot(1:9, col_mean_1, xlim = c(1,9), ylim = c(0,7000), type = "l",
      col = col_purple[1],lwd = 2,

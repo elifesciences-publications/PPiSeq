@@ -85,11 +85,37 @@ PPI_count = dataFrameReader_T("Working_data/Positive_PPI_environment/PPI_environ
 count = PPI_count[match(PPI_carbon_final[,1], PPI_count[,1]),2]
 PPI_carbon_final = data.frame(PPI_carbon_final, count)
 
+# Cluster PPIs with each HXT protein, respectively and then get the order for the final matrix
+PPI_HXT1_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "HXT1"),] # 71
+PPI_HXT3_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "HXT3"),] # 68
+PPI_HXT5_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "HXT5"),] # 43
+PPI_HXT7_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "HXT7"),] # 73
+PPI_others_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "Others"),] # 29
+
+cluster_order = function(PPI_HXT1_matrix){
+        PPI_fitness = PPI_HXT1_matrix[,c(4,8,12,10,9,6,5,7,11)]
+        hc = hclust(dist(PPI_fitness), method = "complete")
+        PPI_HXT1_matrix_order = PPI_HXT1_matrix[hc$order,]
+        return(PPI_HXT1_matrix_order)
+
+}
+PPI_HXT1_matrix_order = cluster_order(PPI_HXT1_matrix)
+PPI_HXT3_matrix_order = cluster_order(PPI_HXT3_matrix)
+PPI_HXT5_matrix_order = cluster_order(PPI_HXT5_matrix)
+PPI_HXT7_matrix_order = cluster_order(PPI_HXT7_matrix)
+PPI_others_matrix_order = cluster_order(PPI_others_matrix)
+
+PPI_carbon_final_order = rbind(PPI_HXT1_matrix_order, PPI_HXT3_matrix_order, 
+                               PPI_HXT5_matrix_order, PPI_HXT7_matrix_order,
+                               PPI_others_matrix_order)
 # Take the order the same with Figure2A
-PPI_carbon_heatmap = PPI_carbon_final[,c(4,8,12,10,9,6,5,7,11)]
+PPI_carbon_heatmap = PPI_carbon_final_order[,c(4,8,12,10,9,6,5,7,11)]
 colnames(PPI_carbon_heatmap) = c("SD", "Forskolin", "FK506", "NaCl", "Raffinose", "Hydroxyurea",  
                                  "H2O2", "Doxorubicin", "16 \u00B0C")
 rownames(PPI_carbon_heatmap) = as.character(PPI_carbon_final[,1])
+csvWriter(PPI_carbon_heatmap, "~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/PPI_pair_GO/environment/carbonhydrate_transport_network/PPI_carbohydrate_transport_heatmap.csv")
+
+'''
 row_ann = data.frame(Protein = as.character(PPI_carbon_final$Group), 
                      Reported = as.character(PPI_carbon_final$Reported),
                      Environment = as.character(PPI_carbon_final$count))
@@ -99,22 +125,31 @@ my_colour = list(
   Environment = c("1" = "#4575b4", "2" = "#74add1", "3" = "#abd9e9", "4" = "#e0f3f8", "5" = "#ffffbf",
                   "6" = "#fee090", "7" = "#fdae61", "8" = "#f46d43", "9" = "#d73027")
 )
+'''
+
+row_ann = data.frame(Protein = as.character(PPI_carbon_final_order$Group))
+my_colour = list(Protein = c("HXT1" = "#7b3294", "HXT3" = "#c2a5cf", "HXT5" = "#d01c8b", 
+                             "HXT7" = "#a6dba0", "Others" ="#008837"))
+
 row.names(row_ann) = row.names(PPI_carbon_heatmap)
 col_chosen = c(apple_colors[5], "#e7d4e8",apple_colors[7])
 color_scale = colorRampPalette(col_chosen)(n=100)
+
 library(pheatmap)
-fit_heatmap = pheatmap(PPI_carbon_heatmap, cluster_rows = FALSE, cluster_cols = FALSE, show_rownames=FALSE,
+fit_heatmap = pheatmap(PPI_carbon_heatmap, cluster_rows = FALSE, cluster_cols = TRUE, show_rownames=FALSE,
                        annotation_colors = my_colour,
                        annotation_row = row_ann, show_colnames=T, col = color_scale)
 
-save_pheatmap_pdf <- function(x, filename, width=6, height=5) {
+save_pheatmap_pdf <- function(x, filename, width=5, height=5) {
   pdf(filename, width = width, height = height)
   grid::grid.newpage()
   grid::grid.draw(x$gtable)
   dev.off()
 }
-save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure3/Figure3B_carbonhydrate_transport_fitness_environment_primary_col_cluster.pdf")
+save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure3/Figure3B_carbonhydrate_transport_fitness_environment_primary_cluster.pdf")
 
+
+#################################################################################
 ##### Transcription correlated PPIs
 PPI_fit = dataFrameReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_primary.csv")
 PPI_transcription_fit = PPI_fit[which(as.character(PPI_fit[,1]) %in% PPI_transcription),] #731
