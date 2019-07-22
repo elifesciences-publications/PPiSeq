@@ -95,8 +95,10 @@ ratio_PCA_low = matrix_PPI_env_rep[2,]/all_PPI_count
 ratio_PCA_low # 0.03428901 0.12230769 0.19218750 0.25842697 0.28519856 0.33232628 0.33333333 0.33925687 0.46978558
 ratio_PCA_low_overlapped = c("3.4%", "12.2%", "19.2%", "25.8%", "28.5%", "33.2%", "33.3%", "33.9%", "47.0%")
 
+#col_purple = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
 library(RColorBrewer)
-col_chosen = brewer.pal(4, "Set1")[2:4]
+#col_chosen = brewer.pal(4, "Set1")[2:4]
+col_chosen = c("#4575b4","#fdae61","#d73027")
 pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2C_Number_environments_PPI_reproted.pdf", height = 5, width = 5)
 #pdf("~/Desktop/Figure2B_Number_environments_PPI_reproted.pdf", height = 5, width = 5)
 par(mar = c(3,4,2,1))

@@ -109,7 +109,8 @@ counts_label = c("2/7", "48/110", "5/10", "43/88", "19/21", "43/57",
                  "17/20", "37/41", "10/10", "37/41", "14/21", "33/38",
                  "33/38", "27/34", "34/36", "42/42", "22/22", "35/36")
 library(RColorBrewer)
-col_chosen = brewer.pal(3,"Dark2")[1:2]
+#col_chosen = brewer.pal(3,"Dark2")[1:2]
+col_chosen = c("#d73027","#4575b4")
 pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2D_Validation_bar_plot.pdf", width= 6, height=5)
 barCenter = barplot(ratio_all*100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
                     space= c(0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08, 0.4, 0.08,
