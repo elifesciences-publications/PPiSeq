@@ -37,20 +37,21 @@ check_specific_protein = function(PPI, Gene_Carbon){
 }
 PPI_carbon = check_specific_protein(PPI, Gene_Carbon)
 PPI_carbon_fitness = PPI[which(PPI[,1] %in% PPI_carbon),]
-
 name_exchange = csvReader_T("Working_data/Systematic_standard_protein.csv")
 PPI_split = split_string_vector(PPI_carbon_fitness[,1])
 protein_1 = name_exchange[match(PPI_split[,1], name_exchange[,1]),2]
 protein_2 = name_exchange[match(PPI_split[,2], name_exchange[,1]),2]
-weight = as.numeric(PPI_carbon_fitness[,10])
+weight = as.numeric(PPI_carbon_fitness[,12])
 # DMSO:4, H2O2:5, HU:6, Dox:7, Forskolin:8, Raffinose:9, NaCl:10, 16C:11, FK506:12
 #PPI_net = data.frame(protein_1, protein_2, weight, label)
 #PPI_net = PPI_net[which(PPI_net$weight!= 0),]
 PPI_net = data.frame(protein_1, protein_2, weight)
 group = rep(5, nrow(PPI_net))
-col_nodes = c("#7b3294", "#c2a5cf", "#d01c8b", "#a6dba0", "#008837")
+#col_nodes = c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#CECED2")
+
+col_nodes = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#CECED2")
 library(scales)
-col_nodes_transparent = alpha(col_nodes, 0.5)
+col_nodes_transparent = alpha(col_nodes, 0.4)
 for(i in 1:nrow(PPI_net)){
         if(PPI_net[i,1] == "HXT1" | PPI_net[i,2] == "HXT1"){
                 group[i] = 1
@@ -86,7 +87,7 @@ E(net)$width <- 2^E(net)$weight
 #l = layout_on_sphere(net)
 net_clean <- delete.edges(net, which(E(net)$weight == 0))
 
-pdf("Working_figure/Figure3/Figure3C_dynamic_PPI_network/carbohydrate_transport/PPI_carbonhydrate_transport_NaCl.pdf", height =5, width = 5)
+pdf("Working_figure/Figure3/Figure3C_dynamic_PPI_network/carbohydrate_transport/PPI_carbonhydrate_transport_FK506.pdf", height =5, width = 5)
 plot(net_clean, layout = l,  vertex.frame.color=NA, vertex.label.color = apple_colors[11],
      vertex.label.cex = 0.35, margin = c(0,0,0,0))
 dev.off()

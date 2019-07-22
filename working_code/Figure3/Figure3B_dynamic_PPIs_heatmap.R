@@ -113,7 +113,7 @@ PPI_carbon_heatmap = PPI_carbon_final_order[,c(4,8,12,10,9,6,5,7,11)]
 colnames(PPI_carbon_heatmap) = c("SD", "Forskolin", "FK506", "NaCl", "Raffinose", "Hydroxyurea",  
                                  "H2O2", "Doxorubicin", "16 \u00B0C")
 rownames(PPI_carbon_heatmap) = as.character(PPI_carbon_final[,1])
-csvWriter(PPI_carbon_heatmap, "~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/PPI_pair_GO/environment/carbonhydrate_transport_network/PPI_carbohydrate_transport_heatmap.csv")
+#csvWriter(PPI_carbon_heatmap, "~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/PPI_pair_GO/environment/carbonhydrate_transport_network/PPI_carbohydrate_transport_heatmap.csv")
 
 '''
 row_ann = data.frame(Protein = as.character(PPI_carbon_final$Group), 
@@ -127,10 +127,13 @@ my_colour = list(
 )
 '''
 
-row_ann = data.frame(Protein = as.character(PPI_carbon_final_order$Group))
-my_colour = list(Protein = c("HXT1" = "#7b3294", "HXT3" = "#c2a5cf", "HXT5" = "#d01c8b", 
-                             "HXT7" = "#a6dba0", "Others" ="#008837"))
 
+row_ann = data.frame(Protein = as.character(PPI_carbon_final_order$Group))
+#my_colour = list(Protein = c("HXT1" = "#66c2a5", "HXT3" = "#fc8d62", "HXT5" = "#8da0cb", 
+                             #"HXT7" = "#e78ac3", "Others" ="#CECED2"))
+
+my_colour = list(Protein = c("HXT1" = "#1b9e77", "HXT3" = "#d95f02", "HXT5" = "#7570b3", 
+                             "HXT7" = "#e7298a", "Others" ="#CECED2"))
 row.names(row_ann) = row.names(PPI_carbon_heatmap)
 col_chosen = c(apple_colors[5], "#e7d4e8",apple_colors[7])
 color_scale = colorRampPalette(col_chosen)(n=100)
