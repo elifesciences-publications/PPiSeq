@@ -143,6 +143,7 @@ l = m-sd
 
 pdf(file = "~/Dropbox/PPiSeq_02/Working_figure/Figure3/Figure3B_colocalization_rate.pdf", height = 6, width = 4)
 plot(1:9, m, xlab = "Environments in which a PPI is observed", 
-        ylab = "Percent colocalized in synthethic media", type = 'b', ylim = c(30,90), pch = 16)
+     ylab = "Percent colocalized in synthethic media", type = 'b', ylim = c(30,90), pch = 16, cex = 1.7,
+     col = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027"))
 arrows( 1:9, u, 1:9,l,  lwd = 1.5, code = 3, length = 0.05, angle = 90)
 dev.off()

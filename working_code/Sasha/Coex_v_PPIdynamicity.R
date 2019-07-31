@@ -45,18 +45,6 @@ coex = m
 save(coex, file = "~/Dropbox/PPiSeq_02/Working_data/Coexpression/CoExpressDB.Rfile")
 
 
-#YeastNet co-expression
-# x = read.csv("Working_data/Coexpression/YeastNet_Coexpression.txt", sep = "\t", header = F)
-# coex = 1:length(dynamicity)
-# coex[] = NA #need to fix this with the full data set
-# for(i in 1:length(dynamicity)){
-#   a = intersect(which(x[,1] == pairs[i,1]), which(x[,2] == pairs[i,2]))
-#   b = intersect(which(x[,1] == pairs[i,2]), which(x[,2] == pairs[i,1]))
-#   if(length(c(a,b))>0){
-#     coex[i] = x[c(a,b)[1], 3]
-#   }
-# }
-
 #Get CoExpression for all PPIs
 x = 1:length(dynamicity)
 x[] = NA
