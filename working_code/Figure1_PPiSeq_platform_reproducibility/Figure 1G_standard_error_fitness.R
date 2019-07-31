@@ -19,10 +19,11 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 ### Estimate the standard error of the fitness for the same protein protein pair
 setwd("~/Dropbox/PPiSeq_02/")
 DMSO_fit = dataFrameReader_T("Paper_data/DMSO_mean_fitness_positive.csv")
-mean_sd = mean(DMSO_fit$SD) # 0.06912734
-sd_sd = sd(DMSO_fit$SD) # 0.05069146
+DMSO_fit$SD[which(DMSO_fit$SD == 0)]= 1e-8
+#mean_sd = mean(DMSO_fit$SD) # 0.06912734
+#sd_sd = sd(DMSO_fit$SD) # 0.05069146
 #error_sd = qnorm(0.975)*sd_sd/sqrt(nrow(DMSO_fit)) # 8.224907e-05
-error_sd = qnorm(0.975)*sd_sd/sqrt(4) # 0.04967672
+#error_sd = qnorm(0.975)*sd_sd/sqrt(4) # 0.04967672
 pdf("Working_figure/Figure1/Figure1G_standard_error_estimation/QQ_plot_sd_DMSO.pdf")
 qqnorm(DMSO_fit$SD, frame = FALSE, pch = 1)
 qqline(DMSO_fit$SD, col = apple_colors[5], lwd = 2)
@@ -35,29 +36,59 @@ dev.off()
 CI_sd_lower = mean_sd - error_sd # 0.01945062
 CI_sd_upper = mean_sd + error_sd # 0.11880419
 
-#col_values = c("2" = "#fc8d62", "3" = "#8da0cb", "4" = "#e78ac3", 
-               #"10" = apple_colors[7], "100" = apple_colors[4])
+col_values = c("2" = "#fc8d62", "3" = "#8da0cb", "4" = "#e78ac3", 
+               "10" = apple_colors[7], "100" = apple_colors[4])
 
 DMSO_fit$Positive[which(DMSO_fit$Positive == 0)] = "Negative"
 DMSO_fit$Positive[which(DMSO_fit$Positive == 1)] = "Positive"
-col_values = c("Positive" = apple_colors[7], "Negative" = apple_colors[5])
+library(scales)
+col_neg = alpha(apple_colors[5], 0.1) 
+col_pos = alpha(apple_colors[7], 0.5)
+col_values = c("Positive" = col_pos, "Negative" = col_neg)
 
-matrix_CI = data.frame(seq(-0.8, 1.2, by = 0.2),rep(CI_sd_lower,11), rep(CI_sd_upper, 11))
-colnames(matrix_CI) = c("Fitness", "Lower", "Upper")
+bin_fit = seq(-0.5, 1.0, by = 0.05)
+matrix_mean_CI = data.frame(bin_fit, rep(0,length(bin_fit)),rep(0,length(bin_fit)), rep(0, length(bin_fit)))
+sd = DMSO_fit$SD[which(DMSO_fit$Mean_fitness <= -0.5 & DMSO_fit$Mean_fitness > -0.55)]
+matrix_mean_CI[1,2] = mean(sd)
+sem_sd= sd(sd)/(length(sd)^0.5)
+matrix_mean_CI[1,3] = mean(sd) - qnorm(0.975)*sem_sd
+matrix_mean_CI[1,4] = mean(sd) + qnorm(0.975)*sem_sd
+for(i in 2:length(bin_fit)){
+  sd = DMSO_fit$SD[which(DMSO_fit$Mean_fitness <= bin_fit[i] & DMSO_fit$Mean_fitness > bin_fit[i-1])]
+  matrix_mean_CI[i,2] = mean(sd)
+  sem_sd= (sd(sd)/(length(sd))^0.5)
+  matrix_mean_CI[i,3] = mean(sd) - qnorm(0.975)*sem_sd
+  matrix_mean_CI[i,4] = mean(sd) + qnorm(0.975)*sem_sd
+}
+colnames(matrix_mean_CI) = c("Fitness", "Mean", "Lower", "Upper")
+#colnames(matrix_CI) = c("Fitness", "Lower", "Upper")
+#scale_y_continuous(name = "Standard deviation of fitness",
+                   #limits=c(1e-8, 1),
+                   #trans = log10_trans(),
+                   #breaks= trans_breaks("log10", function(x) 10^x),
+                   #labels = trans_format("log10", math_format(10^.x)))+
+
 library(ggplot2)
 ggplot() +
-        geom_point(aes(x = Mean_fitness, y = SD, col = as.character(Positive)), DMSO_fit, alpha = 0.1) +
-        geom_line(aes(x = Fitness, y = Lower), matrix_CI, linetype = "dashed", col = apple_colors[11])+
-        geom_line(aes(x = Fitness, y = Upper), matrix_CI, linetype = "dashed", col = apple_colors[11])+
+        geom_hex(aes(x = Mean_fitness, y = SD, fill = log10(..count..),col = as.character(Positive)), DMSO_fit,
+                 bins = 80, size = 0.05) +
+        scale_fill_gradientn(colours = c("white", apple_colors[10], apple_colors[3]))+
+        #geom_smooth(aes(x = Mean_fitness, y = SD), DMSO_fit, method= 'lm',  
+                    #size = 1, se =FALSE, col= apple_colors[6])+
+        geom_line(aes(x = Fitness, y = Mean), matrix_mean_CI, size = 0.2,col = apple_colors[11])+
+        geom_ribbon(aes(x = Fitness, ymin= Lower, ymax = Upper), matrix_mean_CI, alpha = 0.2) +
+    
+        #geom_line(aes(x = Fitness, y = Upper), matrix_CI, linetype = "dashed", col = apple_colors[11])+
         scale_color_manual(name = "",values = col_values) +
         scale_y_continuous(name = "Standard deviation of fitness",
-                           limits=c(0, 1),
-                           breaks=seq(0,1, by =0.1),
-                           labels = seq(0,1, by= 0.1)) +
+                     limits=c(0, 0.8),
+                     breaks= seq(0,1, by = 0.1),
+                     labels =seq(0,1, by = 0.1)) +
+  
         scale_x_continuous(name = "Mean fitness of each protein pair", 
-                           limits=c(-0.8, 1.2),
-                           breaks=seq(-0.8, 1.2, by =0.2),
-                           labels = seq(-0.8, 1.2, by= 0.2)) +
+                           limits=c(-0.6, 1.2),
+                           breaks=seq(-0.6, 1.2, by =0.3),
+                           labels = seq(-0.6, 1.2, by= 0.3)) +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black"),
               legend.key=element_blank()) +
