@@ -20,6 +20,11 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 setwd("~/Dropbox/PPiSeq_02/")
 PPI_fit_csv = dataFrameReader_T("Working_data/Positive_PPI_environment/All_PPI_environments_normalized_fit.csv")
 PPI_pos = dataFrameReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
+# remove the potential promiscuous proteins
+promiscuous_protein = dataFrameReader_T("Working_data/Promiscuous_PPIs/Promiscuous_protein_summary.csv")
+promiscuous_protein = promiscuous_protein[which(promiscuous_protein[,2] >= 2), 1]
+promiscuous_homo_dimer = paste(promiscuous_protein, promiscuous_protein, sep = "_")
+
 PPI_pos = PPI_pos[which(PPI_pos$DMSO == 1),] # 4645
 # A function to extract self-interacting PPIs
 extract_self_PPI = function(DMSO_PPI){
@@ -28,10 +33,11 @@ extract_self_PPI = function(DMSO_PPI){
   return(DMSO_self_PPI)
 }
 homo_dimer_all = extract_self_PPI(PPI_fit_csv) # 484
+homo_dimer_all = homo_dimer_all[which(!homo_dimer_all[,1] %in% promiscuous_homo_dimer),] # 482
 homo_dimer_pos_index = extract_self_PPI(PPI_pos) # 213; 159 for DMSO
 
 homo_dimer_pos = homo_dimer_all[which(homo_dimer_all[,1] %in% homo_dimer_pos_index[,1]),] # 213; 159 for DMSO
-homo_dimer_non = homo_dimer_all[which(!homo_dimer_all[,1] %in% homo_dimer_pos_index[,1]),] # 271; 325 for DMSO
+homo_dimer_non = homo_dimer_all[which(!homo_dimer_all[,1] %in% homo_dimer_pos_index[,1]),] # 269; 323 for DMSO
 Pos = rep("1", nrow(homo_dimer_pos))
 homo_dimer_pos = cbind(homo_dimer_pos, Pos)
 Pos = rep("0", nrow(homo_dimer_non))
@@ -50,16 +56,16 @@ homo_dimer_abundance = log2(as.numeric(protein_abundance[match(homo_dimer_final[
 
 homo_dimer_abundance_comp = cbind(homo_dimer_final[,1], homo_dimer_final_median, homo_dimer_abundance, 
                                   as.character(homo_dimer_final$Pos)) # 484
-homo_dimer_abundance_comp = na.omit(homo_dimer_abundance_comp) # 480; 444 for DMSO
-cor(as.numeric(homo_dimer_abundance_comp[,2]), as.numeric(homo_dimer_abundance_comp[,3])) # 0.3588766; 0.391472 for DMSO
+homo_dimer_abundance_comp = na.omit(homo_dimer_abundance_comp) # 478; 444 for DMSO
+cor(as.numeric(homo_dimer_abundance_comp[,2]), as.numeric(homo_dimer_abundance_comp[,3]), method = "spearman") # 0.3330563; 0.3562464 for DMSO
 
 homo_dimer_abundance_comp_pos = homo_dimer_abundance_comp[which(homo_dimer_abundance_comp[,4] == "1"),] # 213; 159 for DMSO
-cor(as.numeric(homo_dimer_abundance_comp_pos[,2]), as.numeric(homo_dimer_abundance_comp_pos[,3])) # 0.3579897 ; 0.4448132 for DMSO pos
+cor(as.numeric(homo_dimer_abundance_comp_pos[,2]), as.numeric(homo_dimer_abundance_comp_pos[,3]), method = "spearman") # 0.3389362 ; 0.456619 for DMSO pos
 
-homo_dimer_abundance_comp_neg = homo_dimer_abundance_comp[which(homo_dimer_abundance_comp[,4] == "0"),] # 267; 285 for DMSO
-cor(as.numeric(homo_dimer_abundance_comp_neg[,2]), as.numeric(homo_dimer_abundance_comp_neg[,3])) # 0.1634155; 0.2250353 for DMSO
+homo_dimer_abundance_comp_neg = homo_dimer_abundance_comp[which(homo_dimer_abundance_comp[,4] == "0"),] # 265; 283 for DMSO
+cor(as.numeric(homo_dimer_abundance_comp_neg[,2]), as.numeric(homo_dimer_abundance_comp_neg[,3]), method = "spearman") # 0.1124867; 0.1704747 for DMSO
 colnames(homo_dimer_abundance_comp) = c("Protein", "Fitness", "Number","Positive" )
-csvWriter(homo_dimer_abundance_comp, "Working_data/homo_dimer/Homo_dimer_fitness_versus_protein_abundance_DMSO.csv")
+csvWriter(homo_dimer_abundance_comp, "Working_data/homo_dimer/Homo_dimer_fitness_versus_protein_abundance.csv")
 
 library(scales)
 col_chosen = alpha(apple_colors[c(5,7)], 0.3)
@@ -75,7 +81,7 @@ for(i in 2: nrow(homo_dimer_abundance_comp_pos)){
 for(j in 1: nrow(homo_dimer_abundance_comp_neg)){
   points(as.numeric(homo_dimer_abundance_comp_neg[j,2]), homo_dimer_abundance_comp_neg[j,3], col = col_chosen[1], pch = 16)
 }
-legend("bottomright", c("Negative:285 (r= 0.23)", "Positive:159 (r= 0.45)"), pch = c(16, 16), col = alpha(apple_colors[c(5,7)], alpha = 0.8),
+legend("bottomright", c("Negative: 283 (r= 0.17)", "Positive: 159 (r= 0.46)"), pch = c(16, 16), col = alpha(apple_colors[c(5,7)], alpha = 0.8),
        bty = "n")
 dev.off()
 

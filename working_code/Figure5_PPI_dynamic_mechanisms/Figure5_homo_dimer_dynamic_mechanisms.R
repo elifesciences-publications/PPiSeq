@@ -287,6 +287,10 @@ save_pheatmap_pdf(fit_heatmap, "Working_data/homo_dimer/homo-dimer_>=20_localiza
 setwd("~/Dropbox/PPiSeq_02/")
 PPI_fit_csv = csvReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_primary.csv")
 GO_slim = as.matrix(read.table("Working_data/GO_term_files/go_slim_mapping_tab_20190405.txt", header = F, sep = "\t"))
+GO_slim = as.matrix(read.table("Working_data/GO_term_files/go_slim_mapping_tab_20190405.txt", header = F, sep = "\t"))
+GO_slim_homo = GO_slim[which(GO_slim[,1] %in% self_protein_matrix[,1]),]
+GO_slim_homo_CC = GO_slim_homo[which(GO_slim_homo[,4] == "C"),] # 726
+cc_unique = unique(GO_slim_homo_CC[,5]) # 23
 Check_CC_homodimer= function(protein_chosen, csv_name, pdf_name){
   PPI = check_specific_protein(PPI_fit_csv, protein_chosen)
   PPI_fit = PPI_fit_csv[which(PPI_fit_csv[,1] %in% PPI),]
@@ -331,9 +335,9 @@ Check_CC_homodimer= function(protein_chosen, csv_name, pdf_name){
   
   library(pheatmap)
   fit_heatmap = pheatmap(homo_CC_heatmap, cluster_rows = FALSE, cluster_cols = TRUE, show_rownames=TRUE,
-                         show_colnames=T, fontsize_row = 5,col = color_scale, border_color = apple_colors[9])
+                         show_colnames=T, fontsize_row = 3,col = color_scale, border_color = apple_colors[9])
   
-  save_pheatmap_pdf <- function(x, filename, width=6, height=6) {
+  save_pheatmap_pdf <- function(x, filename, width=6, height=7) {
     pdf(filename, width = width, height = height)
     grid::grid.newpage()
     grid::grid.draw(x$gtable)
@@ -343,9 +347,9 @@ Check_CC_homodimer= function(protein_chosen, csv_name, pdf_name){
   #save_pheatmap_pdf(fit_heatmap, "~/Desktop/homo-dimer_>=20_localization.pdf")
   
 }
-csv_name = "Working_data/homo_dimer/localization/PPI_YDL222C_localization.csv"
-heatmap_name = "Working_data/homo_dimer/localization/PPI_YDL222C_correlation_localization.pdf"
-Check_CC_homodimer("YDL222C", csv_name, heatmap_name)
+csv_name = "Working_data/homo_dimer/localization/PPI_YML067C-A_localization.csv"
+heatmap_name = "Working_data/homo_dimer/localization/YML067C-A_correlation_localization.pdf"
+Check_CC_homodimer("YML067C", csv_name, heatmap_name)
 
 ### check the abundance level in these proteins
 setwd("~/Dropbox/PPiseq_02/")
