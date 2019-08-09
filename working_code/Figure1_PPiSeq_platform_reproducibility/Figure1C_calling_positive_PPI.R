@@ -22,7 +22,7 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 ### PPIs that contain fragments, several positive PPIs with different fitness values or Q-values,
 ### and negative PPIs with low fitness or large Q-values
 setwd("~/Dropbox/PPiSeq_02/")
-PPI_lineages = dataFrameReader_T("Paper_data/DMSO_PPI_barcodes_fitness_counts.csv")
+PPI_lineages = dataFrameReader_T("Paper_data/SD_PPI_barcodes_fitness_counts.csv")
 PPI_lineages_select = PPI_lineages[, c(1, 3, 4, 6:10)] 
 for (i in 4:8){
   PPI_lineages_select[,i] = frequency(as.numeric(PPI_lineages_select[,i]))
@@ -59,8 +59,8 @@ PPI_DHFR3[,1] = "DHFR[3] X ORF"
 #Input data of positive PPIs in DMSO
 ORF_fragments = rbind(PPI_DHFR12, PPI_DHFR3) # 17558
 ORF_fragments[,1] = "ORF X DHFR fragment"
-DMSO_mean = csvReader_T("Paper_data/DMSO_mean_fitness_positive.csv") # 1459163
-DMSO_pos = DMSO_mean[which(DMSO_mean[,7] == 1),] # 5211
+DMSO_mean = csvReader_T("Paper_data/SD_mean_fitness_positive.csv") # 1445535
+DMSO_pos = DMSO_mean[which(DMSO_mean[,7] == 1),] # 5178
 #Here I only choose these reported PPIs in this figure
 PPI_reported = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/multiple_validated_PPI.csv") # summary of BIOGRID data
 DMSO_pos = DMSO_pos[which(DMSO_pos[,1] %in% PPI_reported[,1]),] # 862
@@ -92,9 +92,11 @@ pos_PPI_medium_low[,1] = "HNM1 x KEX1"
 #pos_PPI_low = PPI_lineages_select[which(PPI_lineages_select[,1] == random_sample_one(DMSO_pos_low)),] # YIL035C_YGL019W
 pos_PPI_low = PPI_lineages_select[which(PPI_lineages_select[,1] == "YIL035C_YGL019W"),] # YIL038C_YNL091W
 pos_PPI_low[,1] = "CKA1 x CKB1"
+
 #neg_PPI_medium_low = PPI_lineages_select[which(PPI_lineages_select[,1] == random_sample_one(DMSO_neg_medium_low)),] # YDR086C_YPR028W
-neg_PPI_medium_low = PPI_lineages_select[which(PPI_lineages_select[,1] == "YDR086C_YPR028W"),]
-neg_PPI_medium_low[,1] = "SSS1 x YOP1" # not reported in all other environments 
+neg_PPI_medium_low = PPI_lineages_select[which(PPI_lineages_select[,1] == "YCR005C_YMR120C"),]
+neg_PPI_medium_low[,1] = "CIT2 x ADE17" # not reported in all other environments 
+
 #neg_PPI_low = PPI_lineages_select[which(PPI_lineages_select[,1] == random_sample_one(DMSO_neg_low)),] # YGL085W_YIL030C
 neg_PPI_low = PPI_lineages_select[which(PPI_lineages_select[,1] == "YGL085W_YIL030C"),]
 neg_PPI_low[,1] = "LCL3 x SSM4" # not reported in all other environments
@@ -115,7 +117,7 @@ fitness = all_data[,3]
 color = color_label
 bar_plot_data = data.frame(PPI, fitness, color)
 bar_plot_data$PPI = factor(bar_plot_data$PPI, 
-                           levels = c("ORF x Null","DHFR(-)", "LCL3 x SSM4","SSS1 x YOP1", 
+                           levels = c("ORF x Null","DHFR(-)", "LCL3 x SSM4","CIT2 x ADE17", 
                                       "CKA1 x CKB1", "HNM1 x KEX1", "GNP1 x SND3", "VOA1 x VPH1", 
                                       "DHFR(+)"))
 bar_plot_data_control = bar_plot_data[which(bar_plot_data[,1] == "ORF x Null"),]
@@ -123,7 +125,7 @@ bar_plot_data_neg = bar_plot_data[which(bar_plot_data[,1] %in% c("DHFR(-)", "DHF
 bar_plot_data_real = bar_plot_data[which(!bar_plot_data[,1] %in% unique(c(as.character(bar_plot_data_control[,1]),
                                                                           as.character(bar_plot_data_neg[,1])))),]
 bar_plot_data_real$PPI = factor(bar_plot_data_real$PPI, 
-                                levels = c("LCL3 x SSM4","SSS1 x YOP1", 
+                                levels = c("LCL3 x SSM4","CIT2 x ADE17", 
                                            "CKA1 x CKB1", "HNM1 x KEX1", "GNP1 x SND3", "VOA1 x VPH1"))
 
 library(ggplot2)
@@ -137,7 +139,7 @@ ggplot()+
   #geom_boxplot(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_control, 
   #show.legend = FALSE)+
   
-  scale_x_discrete(limits = c("ORF x Null","DHFR(-)", "LCL3 x SSM4","SSS1 x YOP1", 
+  scale_x_discrete(limits = c("ORF x Null","DHFR(-)", "LCL3 x SSM4","CIT2 x ADE17", 
                               "CKA1 x CKB1", "HNM1 x KEX1", "GNP1 x SND3", "VOA1 x VPH1", 
                               "DHFR(+)")) +
   
@@ -157,6 +159,6 @@ ggplot()+
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   theme(axis.text.x = element_text(size = 10, color = "black", angle = 60, hjust =1),
         axis.title.x = element_blank(),axis.text.y.left = element_text(size = 10, color = "black")) + 
-  theme(text = element_text(size=12))+ theme(plot.margin = unit(c(0.2,0.1,0.4,0.5), "cm"))
+  theme(text = element_text(size=10))
 ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure1/Figure1C_Calling_PPIs_violin_jitter_dot.pdf", width= 5, height = 5)
 

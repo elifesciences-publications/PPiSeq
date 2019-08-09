@@ -16,10 +16,57 @@ source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 
-setwd("/Volumes/zmliu_02/PPiseq/DMSO_2/counts/")
-DMSO_2 = csvReader_T("Pos_PPI_real.csv")
-DMSO = csvReader_T("/Volumes/zmliu_02/PPiseq/Combine_environments/PPI_each_environment/DMSO_Pos_PPI_real.csv")
-Forskolin = csvReader_T("/Volumes/zmliu_02/PPiseq/Combine_environments/PPI_each_environment/Forskolin_Pos_PPI_real.csv")
+setwd("~/Dropbox/PPiSeq_02/")
+SD = csvReader_T("Paper_data/SD2_PPI_barcodes_fitness_counts.csv") # 5331589
+SD2 = csvReader_T("Paper_data/SD_PPI_barcodes_fitness_counts.csv") # 5013513
+fit_SD = as.numeric(SD[,4])
+fit_SD2 = as.numeric(SD2[,4])
+fit_SD_correct = (fit_SD - min(fit_SD))/(max(fit_SD) - min(fit_SD))
+fit_SD2_correct = (fit_SD2 - min(fit_SD2))/(max(fit_SD2) - min(fit_SD2))
+SD[,4] = fit_SD_correct
+SD2[,4] = fit_SD2_correct
+
+BC_overlap = intersect(SD[,3], SD2[,3]) # 4896623
+SD_overlap = as.numeric(SD[match(BC_overlap, SD[,3]),4])
+SD2_overlap = as.numeric(SD2[match(BC_overlap, SD2[,3]),4])
+
+cor(SD_overlap, SD2_overlap)# 0.2715489
+
+PPI_SD = csvReader_T("Paper_data/SD_mean_fitness_positive.csv") # 1445535
+PPI_SD2 = csvReader_T("Paper_data/SD2_mean_fitness_positive.csv") # 1520112
+PPI_overlap = intersect(PPI_SD[,1], PPI_SD2[,1]) # 1427398
+
+PPI_SD_overlap = as.numeric(PPI_SD[match(PPI_overlap, PPI_SD[,1]),3])
+PPI_SD2_overlap = as.numeric(PPI_SD2[match(PPI_overlap, PPI_SD[,1]),3])
+
+cor(PPI_SD_overlap, PPI_SD2_overlap) # 0.0001269587
+
+PPI_SD_pos = PPI_SD[which(PPI_SD[,7] == "1"),] # 5178
+PPI_SD2_pos = PPI_SD2[which(PPI_SD2[,7] == "1"),] # 5348
+
+PPI_pos_overlap = intersect(PPI_SD_pos[,1], PPI_SD2_pos[,1]) # 3745
+
+PPI_SD_pos_overlap = as.numeric(PPI_SD_pos[match(PPI_pos_overlap, PPI_SD_pos[,1]),3])
+PPI_SD2_pos_overlap = as.numeric(PPI_SD2_pos[match(PPI_pos_overlap, PPI_SD2_pos[,1]),3])
+
+cor(PPI_SD_pos_overlap, PPI_SD2_pos_overlap) # 0.9393566
+
+PPI_SD_pos_non_overlap = as.numeric(PPI_SD_pos[which(!PPI_SD_pos[,1] %in% PPI_pos_overlap),3]) # 1433
+min(PPI_SD_pos_non_overlap) # 0.25
+max(PPI_SD_pos_non_overlap) # 1.05418
+median(PPI_SD_pos_non_overlap) # 0.34
+
+PPI_SD_pos[which(as.numeric(PPI_SD_pos[,3]) == max(PPI_SD_pos_non_overlap)),]
+
+PPI_SD2_pos_non_overlap = as.numeric(PPI_SD2_pos[which(!PPI_SD2_pos[,1] %in% PPI_pos_overlap),3]) # 1603
+min(PPI_SD2_pos_non_overlap) # 0.1028208
+max(PPI_SD2_pos_non_overlap) # 0.92554
+median(PPI_SD2_pos_non_overlap) # 0.34
+
+PPI_SD2_pos[which(as.numeric(PPI_SD2_pos[,3]) == max(PPI_SD2_pos_non_overlap)),]
+
+hist(PPI_SD_pos_non_overlap, breaks =seq(0.2, 1.1, by= 0.05) )
+
 
 nrow(na.omit(DMSO_2))
 nrow(na.omit(DMSO))

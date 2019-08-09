@@ -18,29 +18,34 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 
 ### Estimate the standard error of the fitness for the same protein protein pair
 setwd("~/Dropbox/PPiSeq_02/")
-DMSO_fit = dataFrameReader_T("Paper_data/DMSO_mean_fitness_positive.csv")
+DMSO_fit = dataFrameReader_T("Paper_data/SD_mean_fitness_positive.csv")
+
+#DMSO_fit_2 = dataFrameReader_T("Paper_data/SD_mean_fitness_positive.csv")
+
 DMSO_fit$SD[which(DMSO_fit$SD == 0)]= 1e-8
 #mean_sd = mean(DMSO_fit$SD) # 0.06912734
 #sd_sd = sd(DMSO_fit$SD) # 0.05069146
 #error_sd = qnorm(0.975)*sd_sd/sqrt(nrow(DMSO_fit)) # 8.224907e-05
 #error_sd = qnorm(0.975)*sd_sd/sqrt(4) # 0.04967672
-pdf("Working_figure/Figure1/Figure1G_standard_error_estimation/QQ_plot_sd_DMSO.pdf")
+pdf("Working_figure/SFigures/Figure1_related/FigureSX_SD_standard_error_estimation_related_Figure1C/QQ_plot_sd_SD2.pdf")
 qqnorm(DMSO_fit$SD, frame = FALSE, pch = 1)
 qqline(DMSO_fit$SD, col = apple_colors[5], lwd = 2)
 dev.off()
-pdf("Working_figure/Figure1/Figure1G_standard_error_estimation/Histogram_sd_DMSO.pdf")
+pdf("Working_figure/SFigures/Figure1_related/FigureSX_SD_standard_error_estimation_related_Figure1C/Histogram_sd_SD2.pdf")
 hist(DMSO_fit$SD, breaks = seq(0, 0.95, by = 0.01), xlab = "Standard error of fitness",
      ylab = "Frequency", xlim = c(0, 0.4), main = "SD")
 dev.off()
 
-CI_sd_lower = mean_sd - error_sd # 0.01945062
-CI_sd_upper = mean_sd + error_sd # 0.11880419
 
 col_values = c("2" = "#fc8d62", "3" = "#8da0cb", "4" = "#e78ac3", 
                "10" = apple_colors[7], "100" = apple_colors[4])
 
+length(which(DMSO_fit$Positive == 0)) # 1514764
+length(which(DMSO_fit$Positive != 0)) # 5348
+
 DMSO_fit$Positive[which(DMSO_fit$Positive == 0)] = "Negative"
 DMSO_fit$Positive[which(DMSO_fit$Positive == 1)] = "Positive"
+
 library(scales)
 col_neg = alpha(apple_colors[5], 0.1) 
 col_pos = alpha(apple_colors[7], 0.5)
@@ -95,4 +100,4 @@ ggplot() +
         theme(axis.text.x = element_text(size = 10, color = "black"),
               axis.text.y.left = element_text(size = 10, color = "black"))
 #ggsave("~/Desktop/Figure1F_standard_error_fitness_estimation_Reported_wide.pdf", width = 7, height = 5)
-ggsave("Working_figure/Figure1/Figure1G_standard_error_estimation/Figure1G_standard_deviation_SD.pdf", width = 7, height = 5)
+ggsave("Working_figure/SFigures/Figure1_related/FigureSX_SD_standard_error_estimation_related_Figure1C/Hexagon_plot_standard_deviation_SD_mean.pdf", width = 7, height = 5)

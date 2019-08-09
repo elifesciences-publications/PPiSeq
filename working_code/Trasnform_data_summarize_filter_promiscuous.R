@@ -173,7 +173,7 @@ output = "SD_mean_fitness_positive.csv"
 Combine_matrix(DMSO, DMSO_pos_control, DMSO_pos_real, output)
 
 #### SD_2
-DMSO_2 = dataFrameReader_T("SD2_PPI_multiple_p.values.csv")
+DMSO = dataFrameReader_T("SD2_PPI_multiple_p.values.csv")
 DMSO_pos_control = csvReader_T("/Volumes/zmliu_02/PPiseq/Combine_environments/PPI_each_environment/SD2_Pos_PPI_control.csv")
 DMSO_pos_real = csvReader_T("/Volumes/zmliu_02/PPiseq/Combine_environments/Positive_PPI_remove_promiscuous/SD2_Pos_PPI_real.csv")
 output = "SD2_mean_fitness_positive.csv"
