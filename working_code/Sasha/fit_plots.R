@@ -106,9 +106,25 @@ for(k in 1:length(env_names)){
 }
 names(comp_pvalue_list) = env_names
 save(comp_pvalue_list, file = "~/Dropbox/PPiSeq_02/Working_data/comp_pvalue_list.Rfile")
+load("~/Dropbox/PPiSeq_02/Working_data/comp_pvalue_list.Rfile")
 
 #Compare our predictions to GoSlim in DMSO
-x = comp_pvalue_list$DMSO
+x = comp_pvalue_list$DMSO #Our predictions
+x = x[,c(1:3, 5:9, 11, 12)] #remove general terms "cellular_component", "membrane" and "other"
+load("~/Dropbox/PPiSeq_02/Working_data/Yolanda_localization/GO_loc_matrix.Rfile")
+g = GO_loc_matrix
+g = g[rownames(x), colnames(x)] #GO predictions
+y = log(x, base = 10)
+p = y[which(g == 1)]
+ne = y[which(g == 0)]
+pos = density(p)
+neg = density(ne)
+plot(neg, main = comp, xlab = "log(P-value)")
+polygon(neg, col = rgb(1,0,0,0.2))
+points(pos, type = 'l')
+polygon(pos, col = rgb(0,0,1,0.2))
+
+
 y = x[,1:3]
 colnames(y) = c("GO", "PPiSeq Primary", "PPiSeq others")
 y[] = NA
@@ -123,7 +139,7 @@ bait = rownames(x)[1]
 go[bait]
 x[bait,]
 
-
+###########################################
 make.fit.plot1 = function(bait, env){
   m = fitness_by_env_list[[which(names(fitness_by_env_list) == env)]]
   n = ppi_by_env_list[[which(names(ppi_by_env_list) == env)]]
