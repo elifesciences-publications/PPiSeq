@@ -1,6 +1,9 @@
+### This script contains several steps of analysis
+
 source("/Volumes/zmliu_02/PPiseq/HU/R_code/function.R")
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
+
 setwd("/Volumes/zmliu_02/PPiseq/Combine_environments/lineage_fitness_files/")
 DMSO = dataFrameReader_F("SD_known_PPI_fitness_barcodes_sorted.csv")
 colnames(DMSO) = c("PPI", "Number_of_Barcodes", "Barcode_sequences", "Fitness", "Fitness_estimaion_error", 
@@ -8,7 +11,7 @@ colnames(DMSO) = c("PPI", "Number_of_Barcodes", "Barcode_sequences", "Fitness", 
 csvWriter(DMSO, "SD_PPI_barcodes_fitness_counts.csv")
 
 DMSO_2 = dataFrameReader_F("SD2_known_PPI_fitness_barcodes_sorted.csv")
-colnames(DMSO) = c("PPI", "Number_of_Barcodes", "Barcode_sequences", "Fitness", "Fitness_estimaion_error(d)", 
+colnames(DMSO_2) = c("PPI", "Number_of_Barcodes", "Barcode_sequences", "Fitness", "Fitness_estimaion_error(d)", 
                    "Counts_G0", "Counts_G3", "Counts_G6", "Counts_G9", "Counts_G12")
 csvWriter(DMSO_2, "SD2_PPI_barcodes_fitness_counts.csv")
 

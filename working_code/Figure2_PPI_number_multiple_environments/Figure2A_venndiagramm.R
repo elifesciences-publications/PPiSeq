@@ -1,23 +1,4 @@
-###########################
-# Source some basic functions froma function.R in Github repository
-source_https <- function(u, unlink.tmp.certs = FALSE) {
-  # load package
-  require(RCurl)
-  # read script lines from website using a security certificate
-  if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
-  script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
-  if(unlink.tmp.certs) unlink("cacert.pem")
-  
-  # parase lines and evealuate in the global environement
-  eval(parse(text = script), envir= .GlobalEnv)
-}
-source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working_code/function.R", unlink.tmp.certs = TRUE)
 
-#Commonly used colors
-apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
-                 "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
-
-################# Figure 2D Comparison among PPiSeq, DHFR_PCA, and BioGRID. 
 ### Make a venn diagram to show the overlap the current data with PCA and BIOGRID and fitness distributions for different parts
 # Generate BIOGRID databse that not contain PCA PPIs
 setwd("~/Dropbox/PPiSeq_02/")
