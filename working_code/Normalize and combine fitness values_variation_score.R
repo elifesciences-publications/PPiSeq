@@ -217,23 +217,26 @@ PPI_fit_norm = csvReader_T("Pos_PPI_normalized_fit_primary.csv") # 16431
 ## Make the PPI name for the count and normalized fitness consistent
 PPI_count = csvReader_T("PPI_environment_count_summary.csv") 
 PPI_dup = mark_duplicates_fast(PPI_fit_norm[,1]) # 15656
+PPI_dup_01 = c("0", "0")
+for(i in 1:nrow(PPI_count)){
+        if(PPI_count[i,1] %in% PPI_dup[,1]){
+                index = which(PPI_dup[,1] == PPI_count[i,1])
+                PPI_dup_01 = rbind(PPI_dup_01, PPI_dup[index,])
+        }else if (PPI_count[i,1] %in% PPI_dup[,2]){
+                index = which(PPI_dup[,2] == PPI_count[i,1])
+                PPI_dup_01 = rbind(PPI_dup_01, PPI_dup[index, c(2,1)])
+        }
+}
+
+PPI_dup = PPI_dup_01[2:nrow(PPI_dup_01),]
 matrix = matrix(NA, nrow(PPI_dup), 2* ncol(PPI_fit_norm))
 for(i in 1:nrow(PPI_dup)){
-        if (PPI_dup[i,1] %in% PPI_count[,1]){
-                if (PPI_dup[i,2] != "0"){
-                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                        matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-                }else{
-                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                }   
-        }else if ((!PPI_dup[i,1] %in% PPI_count[,1]) & PPI_dup[i,2] %in% PPI_count[,1]){
-                if (PPI_dup[i,2] != "0"){
-                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-                        matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                }else{
-                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-                }   
-        }
+        if (PPI_dup[i,2] != "0"){
+                matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+                matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
+        }else{
+                matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+        }   
         
 }
 colnames(matrix) = c("PPI", "SD", "SD2", "H2O2", "HU", "Dox", "Forskolin", "Raffinose", 
@@ -251,23 +254,26 @@ csvWriter(matrix_final, "Normalized_fitness_PPI_all_primary.csv")
 PPI_fit_norm = csvReader_T("Pos_PPI_normalized_fit.csv") # 16431
 PPI_count = csvReader_T("PPI_environment_count_summary.csv") 
 PPI_dup = mark_duplicates_fast(PPI_fit_norm[,1]) # 15656
+PPI_dup_01 = c("0", "0")
+for(i in 1:nrow(PPI_count)){
+        if(PPI_count[i,1] %in% PPI_dup[,1]){
+                index = which(PPI_dup[,1] == PPI_count[i,1])
+                PPI_dup_01 = rbind(PPI_dup_01, PPI_dup[index,])
+        }else if (PPI_count[i,1] %in% PPI_dup[,2]){
+                index = which(PPI_dup[,2] == PPI_count[i,1])
+                PPI_dup_01 = rbind(PPI_dup_01, PPI_dup[index, c(2,1)])
+        }
+}
+
+PPI_dup = PPI_dup_01[2:nrow(PPI_dup_01),]
 matrix = matrix(NA, nrow(PPI_dup), 2* ncol(PPI_fit_norm))
 for(i in 1:nrow(PPI_dup)){
-        if (PPI_dup[i,1] %in% PPI_count[,1]){
-                if (PPI_dup[i,2] != "0"){
-                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                        matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-                }else{
-                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                }   
-        }else if ((!PPI_dup[i,1] %in% PPI_count[,1]) & PPI_dup[i,2] %in% PPI_count[,1]){
-                if (PPI_dup[i,2] != "0"){
-                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-                        matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                }else{
-                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-                }   
-        }
+        if (PPI_dup[i,2] != "0"){
+                matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+                matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
+        }else{
+                matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+        }   
         
 }
 colnames(matrix) = c("PPI", "SD", "SD2", "H2O2", "HU", "Dox", "Forskolin", "Raffinose", 
@@ -292,23 +298,26 @@ for (i in 1:nrow(PPI_fit_norm)){
 }
 PPI_count = csvReader_T("PPI_environment_count_summary.csv") 
 PPI_dup = mark_duplicates_fast(PPI_fit_norm[,1]) # 15656
+PPI_dup_01 = c("0", "0")
+for(i in 1:nrow(PPI_count)){
+        if(PPI_count[i,1] %in% PPI_dup[,1]){
+                index = which(PPI_dup[,1] == PPI_count[i,1])
+                PPI_dup_01 = rbind(PPI_dup_01, PPI_dup[index,])
+        }else if (PPI_count[i,1] %in% PPI_dup[,2]){
+                index = which(PPI_dup[,2] == PPI_count[i,1])
+                PPI_dup_01 = rbind(PPI_dup_01, PPI_dup[index, c(2,1)])
+        }
+}
+
+PPI_dup = PPI_dup_01[2:nrow(PPI_dup_01),]
 matrix = matrix(NA, nrow(PPI_dup), 2* ncol(PPI_fit_norm))
 for(i in 1:nrow(PPI_dup)){
-        if (PPI_dup[i,1] %in% PPI_count[,1]){
-                if (PPI_dup[i,2] != "0"){
-                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                        matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-                }else{
-                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                }   
-        }else if ((!PPI_dup[i,1] %in% PPI_count[,1]) & PPI_dup[i,2] %in% PPI_count[,1]){
-                if (PPI_dup[i,2] != "0"){
-                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-                        matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                }else{
-                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-                }   
-        }
+        if (PPI_dup[i,2] != "0"){
+                matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+                matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
+        }else{
+                matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+        }   
         
 }
 colnames(matrix) = c("PPI", "SD", "SD2", "H2O2", "HU", "Dox", "Forskolin", "Raffinose", 
