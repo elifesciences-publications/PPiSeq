@@ -147,6 +147,28 @@ Dox_norm = csvReader_T("Doxorubicin_normalized_multiple.csv")
 cold_norm = csvReader_T("Cold_16C_normalized_multiple.csv")
 HU_norm = csvReader_T("Hydroxyurea_normalized_multiple.csv")
 
+#### Combine all the PPIs that has been barcoded twice in one of environments
+all = unique(c(DMSO_norm[,1], DMSO2_norm[,1], Forskolin_norm[,1], FK506_norm[,1], Raffinose_norm[,1], 
+                   NaCl_norm[,1], H2O2_norm[,1], Dox_norm[,1], cold_norm[,1], HU_norm[,1])) #16431
+
+matrix_all = matrix(0, length(all), 11)
+matrix_all[,1] = all
+matrix_all[,2] = as.numeric(DMSO_norm[match(all, DMSO_norm[,1]),3])
+matrix_all[,3] = as.numeric(DMSO2_norm[match(all, DMSO2_norm[,1]),3])
+matrix_all[,4] = as.numeric(H2O2_norm[match(all, H2O2_norm[,1]),3])
+matrix_all[,5] = as.numeric(HU_norm[match(all, HU_norm[,1]),3])
+matrix_all[,6] = as.numeric(Dox_norm[match(all, Dox_norm[,1]),3])
+matrix_all[,7] = as.numeric(Forskolin_norm[match(all, Forskolin_norm[,1]),3])
+matrix_all[,8] = as.numeric(Raffinose_norm[match(all, Raffinose_norm[,1]),3])
+matrix_all[,9] = as.numeric(NaCl_norm[match(all, NaCl_norm[,1]),3])
+matrix_all[,10] = as.numeric(cold_norm[match(all, cold_norm[,1]),3])
+matrix_all[,11] = as.numeric(FK506_norm[match(all, FK506_norm[,1]),3])
+
+colnames(matrix_all) = c("PPI", "SD", "SD2","H2O2", "HU", "Dox", "Forskolin", 
+                         "Raffinose", "NaCl", "16C", "FK506")
+csvWriter(matrix_all, "All_PPI_environments_normalized_fit.csv")
+
+######## Only consider positive PPIs in one of environments
 DMSO_real = csvReader_T("/Volumes/zmliu_02/PPiseq/Combine_environments/Positive_PPI_remove_promiscuous/SD_Pos_PPI_real.csv")
 DMSO2_real = csvReader_T("/Volumes/zmliu_02/PPiseq/Combine_environments/Positive_PPI_remove_promiscuous/SD2_Pos_PPI_real.csv")
 Forskolin_real = csvReader_T("/Volumes/zmliu_02/PPiseq/Combine_environments/Positive_PPI_remove_promiscuous/Forskolin_Pos_PPI_real.csv")

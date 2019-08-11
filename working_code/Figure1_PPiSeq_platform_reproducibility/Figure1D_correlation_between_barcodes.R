@@ -106,7 +106,7 @@ ggplot() +
   #guides(fill=guide_legend(title="Log10(Count)")) + 
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black", hjust =1),
+  theme(axis.text.x = element_text(size = 10, color = "black"),
         axis.text.y.left = element_text(size = 10, color = "black"))
 
 ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1/Figure1D_correlation_two_replicates_hexagonlot_SD.pdf", height =5, width =5)
