@@ -24,23 +24,24 @@ library(pheatmap)
 library(RColorBrewer)
 PPI_heatmap$Environment_number = PPI_count[match(as.character(PPI_heatmap$PPI), as.character(PPI_count[,1])),2]
 PPI_heatmap_order = PPI_heatmap[order(PPI_heatmap$Environment_number, decreasing=F),]
-heatmap_matrix = PPI_heatmap_order[,4:12]
-colnames(heatmap_matrix) = c("SD", "H2O2", "Hydroxyurea", "Doxorubicin",
+heatmap_matrix = PPI_heatmap_order[,4:13]
+colnames(heatmap_matrix) = c("SD","SD replicate", "H2O2", "Hydroxyurea", "Doxorubicin",
                                 "Forskolin", "Raffinose", "NaCl", "16 \u00B0C", "FK506")
 
-row_ann = data.frame(Environment = as.character(PPI_heatmap_order$Environment_number))
-row.names(row_ann) = rownames(PPI_heatmap_order)
+#row_ann = data.frame(Environment = as.character(PPI_heatmap_order$Environment_number))
+#row.names(row_ann) = rownames(PPI_heatmap_order)
 #pdf("~/Desktop/PPI_fitness_across_environment.pdf", height = 5, width =5)
 #color_scale=c("#FFFFFF",colorRampPalette((RColorBrewer::brewer.pal(n=7,name="YlGnBu")))(99))
-color_scale = c("white", colorRampPalette(brewer.pal(9,"YlGnBu"))(n=99))
+col_chosen = c(apple_colors[5], "#e7d4e8",apple_colors[7])
+color_scale = colorRampPalette(col_chosen)(n=100)
 fit_heatmap = pheatmap(heatmap_matrix, cluster_rows = TRUE, cluster_cols = TRUE, show_rownames=FALSE,
-         annotation_row = row_ann, show_colnames=T, col = color_scale)
+          show_colnames=T, col = color_scale, treeheight_row = 0)
 
-save_pheatmap_pdf <- function(x, filename, width=6, height=5) {
+save_pheatmap_pdf <- function(x, filename, width=5, height=5) {
         pdf(filename, width = width, height = height)
         grid::grid.newpage()
         grid::grid.draw(x$gtable)
         dev.off()
 }
 
-save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure6/Figure6B_fitness_environment_primary.pdf")
+save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure2/Figure2D_fitness_environment_primary.pdf")
