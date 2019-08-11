@@ -66,32 +66,3 @@ all_PPI_matrix_final = cbind(all_PPI_matrix[,1], environment_number, all_PPI_mat
 csvWriter(all_PPI_matrix_final, "Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
 
 
-
-
-
-
-
-
-##### Put normalized fitnesses of the same PPI in different environments on the same row
-setwd("~/Dropbox/PPiSeq_02/")
-PPI_fit_norm = csvReader_T("Working_data/Positive_PPI_environment/Pos_PPI_normalized_fit.csv") # 14164
-PPI_dup = mark_duplicates_fast(PPI_fit_norm[,1]) #13430
-matrix = matrix(NA, nrow(PPI_dup), 2* ncol(PPI_fit_norm))
-for(i in 1:nrow(PPI_dup)){
-        if (PPI_dup[i,2] != "0"){
-                matrix[i,1:10] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                matrix[i,11:20] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-        }else{
-                matrix[i,1:10] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-        }
-}
-colnames(matrix) = c("PPI", "DMSO", "H2O2", "HU", "Dox", "Forskolin", "Raffinose", 
-                     "NaCl", "16C", "FK506", "PPI_opposite", "DMSO", "H2O2", "HU",
-                     "Dox", "Forskolin", "Raffinose", "NaCl", "16C", "FK506")
-mean_fitness = rep(0, nrow(matrix))
-for(i in 1:length(mean_fitness)){
-        mean_fitness[i] = mean(na.omit(as.numeric(matrix[i, c(2:10, 12:20)])))
-}
-
-matrix_final = cbind(matrix[,1], mean_fitness, matrix[,2:ncol(matrix)])
-csvWriter(matrix_final, "Working_data/Positive_PPI_environment/Normalzied_fitness_PPI_all.csv")

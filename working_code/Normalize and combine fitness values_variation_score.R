@@ -213,17 +213,28 @@ csvWriter(matrix_pos, "Pos_PPI_normalized_fit_primary.csv")
 ### (4) Put the fitness of PPI of two orientations across different environments onto the same row
 
 setwd("/Volumes/zmliu_02/PPiseq/Combine_environments/Normalized_multiple_files/")
-
 PPI_fit_norm = csvReader_T("Pos_PPI_normalized_fit_primary.csv") # 16431
+## Make the PPI name for the count and normalized fitness consistent
+PPI_count = csvReader_T("PPI_environment_count_summary.csv") 
 PPI_dup = mark_duplicates_fast(PPI_fit_norm[,1]) # 15656
 matrix = matrix(NA, nrow(PPI_dup), 2* ncol(PPI_fit_norm))
 for(i in 1:nrow(PPI_dup)){
-        if (PPI_dup[i,2] != "0"){
-                matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-        }else{
-                matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+        if (PPI_dup[i,1] %in% PPI_count[,1]){
+                if (PPI_dup[i,2] != "0"){
+                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+                        matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
+                }else{
+                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+                }   
+        }else if ((!PPI_dup[i,1] %in% PPI_count[,1]) & PPI_dup[i,2] %in% PPI_count[,1]){
+                if (PPI_dup[i,2] != "0"){
+                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
+                        matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+                }else{
+                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
+                }   
         }
+        
 }
 colnames(matrix) = c("PPI", "SD", "SD2", "H2O2", "HU", "Dox", "Forskolin", "Raffinose", 
                      "NaCl", "16C", "FK506", "PPI_opposite", "SD", "SD2" ,"H2O2", "HU",
@@ -238,15 +249,26 @@ csvWriter(matrix_final, "Normalized_fitness_PPI_all_primary.csv")
 
 ## only consider positive PPIs, all negative PPIs have fitness of 0
 PPI_fit_norm = csvReader_T("Pos_PPI_normalized_fit.csv") # 16431
+PPI_count = csvReader_T("PPI_environment_count_summary.csv") 
 PPI_dup = mark_duplicates_fast(PPI_fit_norm[,1]) # 15656
 matrix = matrix(NA, nrow(PPI_dup), 2* ncol(PPI_fit_norm))
 for(i in 1:nrow(PPI_dup)){
-        if (PPI_dup[i,2] != "0"){
-                matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-        }else{
-                matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+        if (PPI_dup[i,1] %in% PPI_count[,1]){
+                if (PPI_dup[i,2] != "0"){
+                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+                        matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
+                }else{
+                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+                }   
+        }else if ((!PPI_dup[i,1] %in% PPI_count[,1]) & PPI_dup[i,2] %in% PPI_count[,1]){
+                if (PPI_dup[i,2] != "0"){
+                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
+                        matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+                }else{
+                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
+                }   
         }
+        
 }
 colnames(matrix) = c("PPI", "SD", "SD2", "H2O2", "HU", "Dox", "Forskolin", "Raffinose", 
                      "NaCl", "16C", "FK506", "PPI_opposite", "SD", "SD2" ,"H2O2", "HU",
@@ -268,15 +290,26 @@ for (i in 1:nrow(PPI_fit_norm)){
                 }
         }
 }
+PPI_count = csvReader_T("PPI_environment_count_summary.csv") 
 PPI_dup = mark_duplicates_fast(PPI_fit_norm[,1]) # 15656
 matrix = matrix(NA, nrow(PPI_dup), 2* ncol(PPI_fit_norm))
 for(i in 1:nrow(PPI_dup)){
-        if (PPI_dup[i,2] != "0"){
-                matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
-                matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
-        }else{
-                matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+        if (PPI_dup[i,1] %in% PPI_count[,1]){
+                if (PPI_dup[i,2] != "0"){
+                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+                        matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
+                }else{
+                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+                }   
+        }else if ((!PPI_dup[i,1] %in% PPI_count[,1]) & PPI_dup[i,2] %in% PPI_count[,1]){
+                if (PPI_dup[i,2] != "0"){
+                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
+                        matrix[i,12:22] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,1]),]
+                }else{
+                        matrix[i,1:11] = PPI_fit_norm[which(PPI_fit_norm[,1] == PPI_dup[i,2]),]
+                }   
         }
+        
 }
 colnames(matrix) = c("PPI", "SD", "SD2", "H2O2", "HU", "Dox", "Forskolin", "Raffinose", 
                      "NaCl", "16C", "FK506", "PPI_opposite", "SD", "SD2" ,"H2O2", "HU",
@@ -290,41 +323,7 @@ matrix_final = cbind(matrix[,1], mean_fitness, matrix[,2:ncol(matrix)])
 csvWriter(matrix_final, "Normalized_fitness_PPI_all_neg_zero.csv")
 
 
-########### (5)Caculate an variation score for each PPI based on their fitness values across
-#### different environments. Use the normalized value and Keep the primary normalized fitess even a PPI is called negative
-PPI_norm = csvReader_T("Normalized_fitness_PPI_all_primary.csv")
-PPI_norm_matrix = matrix(0, nrow(PPI_norm), 11)
-PPI_norm_matrix[,1] = PPI_norm[,1]
-for(i in 1:nrow(PPI_norm)){
-        for(j in 3:12){
-                mean_fit = mean(as.numeric(na.omit(PPI_norm[i,c(j, j + 11)])))
-                if(is.na(mean_fit)){
-                        PPI_norm_matrix[i, j-1] = 0
-                }
-                else{
-                        PPI_norm_matrix[i,j-1] = mean_fit
-                }
-                
-        }  
-}
-variation_score = rep(0, nrow(PPI_norm_matrix))
-environment_number = rep(0, nrow(PPI_norm_matrix))
-for(i in 1:length(variation_score)){
-        fitness = as.numeric(PPI_norm_matrix[i,2:11])
-        variation_score[i] = sd(fitness)/mean(fitness)
-        environment_number[i] = length(which(fitness != 0))
-}
-
-# Include the variation score into the matrix, and output the matrix
-PPI_norm_matrix_final = cbind(PPI_norm_matrix[,1],environment_number, variation_score,
-                              PPI_norm_matrix[,2:11])
-colnames(PPI_norm_matrix_final) = c("PPI", "Environment_number", "Variation_score",
-                                    "SD","SD2", "H2O2", "HU", "Dox", "Forskolin", "Raffinose",
-                                    "NaCl", "16C", "FK506")
-csvWriter(PPI_norm_matrix_final, "Variation_score_PPI_environment_primary.csv")
-cor(environment_number, variation_score, method="spearman") # -0.7997058
-
-
+########### (5)Caculate an variation score for each PPI based on their fitness values across different environments
 #### Only consider positive PPIs all negative PPIs have fitness of 0
 PPI_norm = csvReader_T("Normalized_fitness_PPI_all_pos.csv")
 PPI_norm_matrix = matrix(0, nrow(PPI_norm), 11)
@@ -359,8 +358,9 @@ csvWriter(PPI_norm_matrix_final, "Variation_score_PPI_environment_pos.csv")
 cor(environment_number, variation_score, method="spearman") # -0.9057337
 
 
-########### Consider negative fitness values to be zero
-PPI_norm = csvReader_T("Normalized_fitness_PPI_all_neg_zero.csv")
+###Use the normalized value and Keep the primary normalized fitess even a PPI is called negative
+PPI_norm = csvReader_T("Normalized_fitness_PPI_all_primary.csv")
+PPI_count = csvReader_T("PPI_environment_count_summary.csv")
 PPI_norm_matrix = matrix(0, nrow(PPI_norm), 11)
 PPI_norm_matrix[,1] = PPI_norm[,1]
 for(i in 1:nrow(PPI_norm)){
@@ -376,13 +376,44 @@ for(i in 1:nrow(PPI_norm)){
         }  
 }
 variation_score = rep(0, nrow(PPI_norm_matrix))
-environment_number = rep(0, nrow(PPI_norm_matrix))
 for(i in 1:length(variation_score)){
         fitness = as.numeric(PPI_norm_matrix[i,2:11])
         variation_score[i] = sd(fitness)/mean(fitness)
-        environment_number[i] = length(which(fitness != 0))
 }
+environment_number = as.numeric(PPI_count[match(PPI_norm_matrix[,1], PPI_count[,1]),2])
+# Include the variation score into the matrix, and output the matrix
+PPI_norm_matrix_final = cbind(PPI_norm_matrix[,1],environment_number, variation_score,
+                              PPI_norm_matrix[,2:11])
+colnames(PPI_norm_matrix_final) = c("PPI", "Environment_number", "Variation_score",
+                                    "SD","SD2", "H2O2", "HU", "Dox", "Forskolin", "Raffinose",
+                                    "NaCl", "16C", "FK506")
+csvWriter(PPI_norm_matrix_final, "Variation_score_PPI_environment_primary.csv")
+cor(environment_number, variation_score, method="spearman") # -0.6790267
 
+
+########### Consider negative fitness values to be zero
+PPI_norm = csvReader_T("Normalized_fitness_PPI_all_neg_zero.csv")
+PPI_count = csvReader_T("PPI_environment_count_summary.csv")
+PPI_norm_matrix = matrix(0, nrow(PPI_norm), 11)
+PPI_norm_matrix[,1] = PPI_norm[,1]
+for(i in 1:nrow(PPI_norm)){
+        for(j in 3:12){
+                mean_fit = mean(as.numeric(na.omit(PPI_norm[i,c(j, j + 11)])))
+                if(is.na(mean_fit)){
+                        PPI_norm_matrix[i, j-1] = 0
+                }
+                else{
+                        PPI_norm_matrix[i,j-1] = mean_fit
+                }
+                
+        }  
+}
+variation_score = rep(0, nrow(PPI_norm_matrix))
+for(i in 1:length(variation_score)){
+        fitness = as.numeric(PPI_norm_matrix[i,2:11])
+        variation_score[i] = sd(fitness)/mean(fitness)
+}
+environment_number = as.numeric(PPI_count[match(PPI_norm_matrix[,1], PPI_count[,1]),2])
 # Include the variation score into the matrix, and output the matrix
 PPI_norm_matrix_final = cbind(PPI_norm_matrix[,1],environment_number, variation_score,
                               PPI_norm_matrix[,2:11])
@@ -390,4 +421,5 @@ colnames(PPI_norm_matrix_final) = c("PPI", "Environment_number", "Variation_scor
                                     "SD","SD2", "H2O2", "HU", "Dox", "Forskolin", "Raffinose",
                                     "NaCl", "16C", "FK506")
 csvWriter(PPI_norm_matrix_final, "Variation_score_PPI_environment_neg_zero.csv")
-cor(environment_number, variation_score, method="spearman") # -0.9454637
+cor(environment_number, variation_score, method="spearman") # -0.7038279
+
