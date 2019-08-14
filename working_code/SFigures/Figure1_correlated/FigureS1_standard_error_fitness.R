@@ -40,8 +40,8 @@ dev.off()
 col_values = c("2" = "#fc8d62", "3" = "#8da0cb", "4" = "#e78ac3", 
                "10" = apple_colors[7], "100" = apple_colors[4])
 
-length(which(DMSO_fit$Positive == 0)) # 1514764
-length(which(DMSO_fit$Positive != 0)) # 5348
+length(which(DMSO_fit$Positive == 0)) # 1440357
+length(which(DMSO_fit$Positive != 0)) # 5178
 
 DMSO_fit$Positive[which(DMSO_fit$Positive == 0)] = "Negative"
 DMSO_fit$Positive[which(DMSO_fit$Positive == 1)] = "Positive"
@@ -51,21 +51,23 @@ col_neg = alpha(apple_colors[5], 0.1)
 col_pos = alpha(apple_colors[7], 0.5)
 col_values = c("Positive" = col_pos, "Negative" = col_neg)
 
-bin_fit = seq(-0.5, 1.0, by = 0.05)
-matrix_mean_CI = data.frame(bin_fit, rep(0,length(bin_fit)),rep(0,length(bin_fit)), rep(0, length(bin_fit)))
-sd = DMSO_fit$SD[which(DMSO_fit$Mean_fitness <= -0.5 & DMSO_fit$Mean_fitness > -0.55)]
+bin_fit = seq(-0.2, 0.9, by = 0.05)
+matrix_mean_CI = data.frame(bin_fit, rep(0,length(bin_fit)), rep(0,length(bin_fit)),rep(0,length(bin_fit)), rep(0, length(bin_fit)))
+sd = DMSO_fit$SD[which(DMSO_fit$Mean_fitness <= -0.2 & DMSO_fit$Mean_fitness > -0.25)]
 matrix_mean_CI[1,2] = mean(sd)
+matrix_mean_CI[1,3] = median(sd)
 sem_sd= sd(sd)/(length(sd)^0.5)
-matrix_mean_CI[1,3] = mean(sd) - qnorm(0.975)*sem_sd
-matrix_mean_CI[1,4] = mean(sd) + qnorm(0.975)*sem_sd
+matrix_mean_CI[1,4] = mean(sd) - qnorm(0.975)*sem_sd
+matrix_mean_CI[1,5] = mean(sd) + qnorm(0.975)*sem_sd
 for(i in 2:length(bin_fit)){
   sd = DMSO_fit$SD[which(DMSO_fit$Mean_fitness <= bin_fit[i] & DMSO_fit$Mean_fitness > bin_fit[i-1])]
   matrix_mean_CI[i,2] = mean(sd)
+  matrix_mean_CI[i,3] = median(sd)
   sem_sd= (sd(sd)/(length(sd))^0.5)
-  matrix_mean_CI[i,3] = mean(sd) - qnorm(0.975)*sem_sd
-  matrix_mean_CI[i,4] = mean(sd) + qnorm(0.975)*sem_sd
+  matrix_mean_CI[i,4] = mean(sd) - qnorm(0.975)*sem_sd
+  matrix_mean_CI[i,5] = mean(sd) + qnorm(0.975)*sem_sd
 }
-colnames(matrix_mean_CI) = c("Fitness", "Mean", "Lower", "Upper")
+colnames(matrix_mean_CI) = c("Fitness", "Mean", "Median", "Lower", "Upper")
 #colnames(matrix_CI) = c("Fitness", "Lower", "Upper")
 #scale_y_continuous(name = "Standard deviation of fitness",
                    #limits=c(1e-8, 1),
@@ -81,6 +83,8 @@ ggplot() +
         #geom_smooth(aes(x = Mean_fitness, y = SD), DMSO_fit, method= 'lm',  
                     #size = 1, se =FALSE, col= apple_colors[6])+
         geom_line(aes(x = Fitness, y = Mean), matrix_mean_CI, size = 0.2,col = apple_colors[11])+
+        geom_line(aes(x = Fitness, y = Median), matrix_mean_CI, size = 0.2,col = apple_colors[11],
+                  linetype = "dashed")+
         geom_ribbon(aes(x = Fitness, ymin= Lower, ymax = Upper), matrix_mean_CI, alpha = 0.2) +
     
         #geom_line(aes(x = Fitness, y = Upper), matrix_CI, linetype = "dashed", col = apple_colors[11])+

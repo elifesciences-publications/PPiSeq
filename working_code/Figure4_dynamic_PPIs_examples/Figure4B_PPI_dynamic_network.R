@@ -22,7 +22,7 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 setwd("~/Dropbox/PPiSeq_02/") # GO:0008643 carbonhydrate transport
 GO_slim = as.matrix(read.table("Working_data/GO_term_files/go_slim_mapping_tab_20190405.txt", header = F, sep = "\t"))
 Gene_Carbon = unique(GO_slim[which(GO_slim[,6] == "GO:0008643"), 1])
-PPI = csvReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment.csv")
+PPI = csvReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_pos.csv")
 
 check_specific_protein = function(PPI, Gene_Carbon){
         PPI_chosen = "0"
@@ -41,7 +41,7 @@ name_exchange = csvReader_T("Working_data/Systematic_standard_protein.csv")
 PPI_split = split_string_vector(PPI_carbon_fitness[,1])
 protein_1 = name_exchange[match(PPI_split[,1], name_exchange[,1]),2]
 protein_2 = name_exchange[match(PPI_split[,2], name_exchange[,1]),2]
-weight = as.numeric(PPI_carbon_fitness[,12])
+weight = as.numeric(PPI_carbon_fitness[,10])
 # DMSO:4, H2O2:5, HU:6, Dox:7, Forskolin:8, Raffinose:9, NaCl:10, 16C:11, FK506:12
 #PPI_net = data.frame(protein_1, protein_2, weight, label)
 #PPI_net = PPI_net[which(PPI_net$weight!= 0),]
@@ -81,13 +81,13 @@ V(net)["HXT3"]$color = col_nodes[2]
 V(net)["HXT5"]$color = col_nodes[3]
 V(net)["HXT7"]$color = col_nodes[4]
 V(net)$label = NA
-E(net)$width <- 2^E(net)$weight
+E(net)$width <- 2*exp(E(net)$weight)
 #E(net)$color[E(net)$reported == 1 ] = apple_colors[1]
 #E(net)$color[E(net)$reported == 2 ] = apple_colors[4]
 #l = layout_on_sphere(net)
 net_clean <- delete.edges(net, which(E(net)$weight == 0))
 
-pdf("Working_figure/Figure3/Figure3C_dynamic_PPI_network/carbohydrate_transport/PPI_carbonhydrate_transport_FK506.pdf", height =5, width = 5)
+pdf("Working_figure/Figure4/Figure4B_dynamic_PPI_network/carbohydrate_transport/PPI_carbonhydrate_transport_Raffinose.pdf", height =5, width = 5)
 plot(net_clean, layout = l,  vertex.frame.color=NA, vertex.label.color = apple_colors[11],
      vertex.label.cex = 0.35, margin = c(0,0,0,0))
 dev.off()

@@ -454,3 +454,50 @@ colnames(PPI_norm_matrix_final) = c("PPI", "Environment_number", "Variation_scor
 csvWriter(PPI_norm_matrix_final, "Variation_score_PPI_environment_neg_zero.csv")
 cor(environment_number, variation_score, method="spearman") # -0.7038279
 
+###########################################################################################
+##### Combine two SD environment and then calculate the variation score
+#### Only consider positive PPIs all negative PPIs have fitness of 0
+
+########### Consider negative fitness values to be zero
+setwd("/Volumes/zmliu_02/PPiseq/Combine_environments/Normalized_multiple_files/")
+PPI_norm = csvReader_T("Normalized_fitness_PPI_all_neg_zero.csv")
+PPI_count = csvReader_T("PPI_environment_count_summary_combine_SD.csv")
+PPI_norm_matrix = matrix(0, nrow(PPI_norm), 11)
+PPI_norm_matrix[,1] = PPI_norm[,1]
+for(i in 1:nrow(PPI_norm)){
+        for(j in 3:12){
+                mean_fit = mean(as.numeric(na.omit(PPI_norm[i,c(j, j + 11)])))
+                if(is.na(mean_fit)){
+                        PPI_norm_matrix[i, j-1] = 0
+                }
+                else{
+                        PPI_norm_matrix[i,j-1] = mean_fit
+                }
+                
+        }  
+}
+
+average = function(a){
+        temp = as.numeric(a)
+        temp_2 = na.omit(temp)
+        temp_3 = mean(temp_2)
+        return(temp_3)
+}
+SD_fit = apply(PPI_norm_matrix[, 2:3], 1, average)
+
+PPI_norm_matrix = cbind(PPI_norm_matrix[,1], SD_fit, PPI_norm_matrix[,4:ncol(PPI_norm_matrix)])
+variation_score = rep(0, nrow(PPI_norm_matrix))
+for(i in 1:length(variation_score)){
+        fitness = as.numeric(PPI_norm_matrix[i,2:10])
+        variation_score[i] = sd(fitness)/mean(fitness)
+}
+environment_number = as.numeric(PPI_count[match(PPI_norm_matrix[,1], PPI_count[,1]),2])
+# Include the variation score into the matrix, and output the matrix
+PPI_norm_matrix_final = cbind(PPI_norm_matrix[,1],environment_number, variation_score,
+                              PPI_norm_matrix[,2:10])
+colnames(PPI_norm_matrix_final) = c("PPI", "Environment_number", "Variation_score",
+                                    "SD_2X", "H2O2", "HU", "Dox", "Forskolin", "Raffinose",
+                                    "NaCl", "16C", "FK506")
+csvWriter(PPI_norm_matrix_final, "Variation_score_PPI_environment_neg_zero_SD_combine.csv")
+cor(environment_number, variation_score, method="spearman") # -0.6990022
+

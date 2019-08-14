@@ -17,23 +17,24 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 #### Make a heatmap to show different groups of PPIs
 setwd("~/Dropbox/PPiSeq_02/")
-PPI_heatmap = dataFrameReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_neg_zero_SD_combine.csv")
-
-#PPI_count = dataFrameReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary_combine_SD.csv")
-
+PPI_heatmap = dataFrameReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_primary.csv")
+### Combine the fitness from the two
+PPI_count = dataFrameReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
 #install.packages("pheatmap")
 library(pheatmap)
 library(RColorBrewer)
-#PPI_heatmap$Environment_number = PPI_count[match(as.character(PPI_heatmap$PPI), as.character(PPI_count[,1])),2]
-#PPI_heatmap_order = PPI_heatmap[order(PPI_heatmap$Environment_number, decreasing=T),]
-heatmap_matrix = PPI_heatmap[,4:12]
-#colnames(heatmap_matrix) = c("SD (2X)",expression('H'[2]* 'O'[2]), "Hydroxyurea", "Doxorubicin",
-                                #"Forskolin", "Raffinose", "NaCl", "16 \u00B0C", "FK506")
+PPI_heatmap$Environment_number = PPI_count[match(as.character(PPI_heatmap$PPI), as.character(PPI_count[,1])),2]
+PPI_heatmap_order = PPI_heatmap[order(PPI_heatmap$Environment_number, decreasing=F),]
+heatmap_matrix = PPI_heatmap_order[,4:13]
+#colnames(heatmap_matrix) = c("SD","SD2", "H2O2", "Hydroxyurea", "Doxorubicin",
+                             #"Forskolin", "Raffinose", "NaCl", "16 \u00B0C", "FK506")
 
 #row_ann = data.frame(Environment = as.character(PPI_heatmap_order$Environment_number))
 #row.names(row_ann) = rownames(PPI_heatmap_order)
 #pdf("~/Desktop/PPI_fitness_across_environment.pdf", height = 5, width =5)
 #color_scale=c("#FFFFFF",colorRampPalette((RColorBrewer::brewer.pal(n=7,name="YlGnBu")))(99))
+col_chosen = c(apple_colors[5], "#e7d4e8",apple_colors[7])
+#color_scale = colorRampPalette(col_chosen)(n=100)
 fitness_all = unique(as.vector(as.matrix(heatmap_matrix)))
 min(fitness_all) # -0.6331257
 max(fitness_all) # 1.555071
@@ -44,7 +45,7 @@ my_palette = c(rep(apple_colors[5], length(bk1)), colorRampPalette(col_chosen)(l
                rep(apple_colors[7], length(bk3)))
 fit_heatmap = pheatmap(heatmap_matrix, cluster_rows = TRUE, cluster_cols = TRUE, show_rownames=FALSE,
                        show_colnames=T, col = my_palette, 
-                       labels_col = c("SD (2X)",expression('H'[2]* 'O'[2]), "Hydroxyurea", "Doxorubicin",
+                       labels_col = c("SD", "SD2",expression('H'[2]* 'O'[2]), "Hydroxyurea", "Doxorubicin",
                                       "Forskolin", "Raffinose", "NaCl", "16 \u00B0C", "FK506"),
                        breaks = c(bk1, bk2, bk3), treeheight_row = 0)
 
@@ -55,4 +56,4 @@ save_pheatmap_pdf <- function(x, filename, width=5, height=5) {
         dev.off()
 }
 
-save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure2/Figure2D_fitness_environment_primary.pdf")
+save_pheatmap_pdf(fit_heatmap, "Working_figure/SFigures/Figure2_related/Fitness_environment_correlated_Figure2D.pdf")

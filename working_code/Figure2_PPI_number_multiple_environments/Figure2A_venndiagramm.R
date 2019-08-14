@@ -1,3 +1,20 @@
+# Source some basic functions froma function.R in Github repository
+source_https <- function(u, unlink.tmp.certs = FALSE) {
+        # load package
+        require(RCurl)
+        # read script lines from website using a security certificate
+        if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
+        script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
+        if(unlink.tmp.certs) unlink("cacert.pem")
+        
+        # parase lines and evealuate in the global environement
+        eval(parse(text = script), envir= .GlobalEnv)
+}
+source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working_code/function.R", unlink.tmp.certs = TRUE)
+
+#Commonly used colors
+apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
+                 "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 
 ### Make a venn diagram to show the overlap the current data with PCA and BIOGRID and fitness distributions for different parts
 # Generate BIOGRID databse that not contain PCA PPIs
@@ -5,7 +22,8 @@ setwd("~/Dropbox/PPiSeq_02/")
 #Here I consider all the PPiSeq search space and compare that to mDHFR PCA screening and BioGrid data
 all_PPI = csvReader_T("Working_data/Positive_PPI_environment/All_PPI_environments_normalized_fit.csv") # 1592109
 #DMSO_only
-DMSO_only = csvReader_T("Paper_data/SD_mean_fitness_positive.csv") # 1445535
+#DMSO_only = csvReader_T("Paper_data/SD_mean_fitness_positive.csv") # 1445535
+
 
 yeast_PPI = read.delim("Working_data/BIOGRID-ORGANISM-3.5.165.tab2/BIOGRID-ORGANISM-Saccharomyces_cerevisiae_S288c-3.5.165.tab2.txt", header = T)
 pos_PPI= yeast_PPI[which(yeast_PPI$Experimental.System.Type == "physical"), c(6:7, 12:14)] # 164992
@@ -59,26 +77,31 @@ PCA_PPiseq_uncover = PPI_PCA[which(!PPI_PCA %in% PCA_PPiseq[,1])] # 388
 
 ####### Check PPIs in DMSO environment
 #Get one direction of positive PPIs called by PPiSeq
-pos_PPI = DMSO_only[which(DMSO_only[,7] == "1"),]
+PPI_count = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
+
+#pos_PPI = DMSO_only[which(DMSO_only[,7] == "1"),]
 #Remove all the control strains
-pos_RRS =pos_PPI[grep("Neg_PPI", pos_PPI[,1]),1] #3
-pos_PRS =pos_PPI[grep("Pos_PPI", pos_PPI[,1]),1] #29
-pos_DHFR =pos_PPI[grep("positive_DHFR", pos_PPI[,1]),1] # 1
-pos_PPI_real = pos_PPI[which(!pos_PPI[,1] %in% c(pos_RRS, pos_PRS, pos_DHFR)),1] # 5145
-pos_PPI_unique_filter = mark_duplicates_fast(pos_PPI_real) # 4753
+#pos_RRS =pos_PPI[grep("Neg_PPI", pos_PPI[,1]),1] #3
+#pos_PRS =pos_PPI[grep("Pos_PPI", pos_PPI[,1]),1] #29
+#pos_DHFR =pos_PPI[grep("positive_DHFR", pos_PPI[,1]),1] # 1
+#pos_PPI_real = pos_PPI[which(!pos_PPI[,1] %in% c(pos_RRS, pos_PRS, pos_DHFR)),1] # 5145
+#pos_PPI_unique_filter = mark_duplicates_fast(pos_PPI_real) # 4753
 
-BIOGRID_PPiseq_overlap = match_both_direction(BIOGRID_PPiseq, pos_PPI_unique_filter[,1])#654
-BIOGRID_PPiseq_PCA_overlap = match_both_direction(BIOGRID_PPiseq_overlap, as.character(PCA_PPiseq[,1])) #454
-PCA_BIOGRID_overlap = match_both_direction(PCA_PPiseq, BIOGRID_PPiseq[,1]) #675
-PCA_PPiseq_overlap = match_both_direction(PCA_PPiseq, pos_PPI_unique_filter[,1]) #1198
+##### Consider a PPI is positive if detected in either SD environment
+pos_PPI_unique_filter = PPI_count[which(as.numeric(PPI_count[,3]) == 1 | as.numeric(PPI_count[,4]) == 1),] # 6296
 
-area1 = nrow(pos_PPI_unique_filter) #4753
+BIOGRID_PPiseq_overlap = match_both_direction(BIOGRID_PPiseq, pos_PPI_unique_filter[,1])
+BIOGRID_PPiseq_PCA_overlap = match_both_direction(BIOGRID_PPiseq_overlap, as.character(PCA_PPiseq[,1])) 
+PCA_BIOGRID_overlap = match_both_direction(PCA_PPiseq, BIOGRID_PPiseq[,1])
+PCA_PPiseq_overlap = match_both_direction(PCA_PPiseq, pos_PPI_unique_filter[,1]) 
+
+area1 = nrow(pos_PPI_unique_filter) #6296
 area2 = nrow(PCA_PPiseq) # 2382
 area3 = nrow(BIOGRID_PPiseq) # 12607
-n12 = nrow(PCA_PPiseq_overlap) # 1198
+n12 = nrow(PCA_PPiseq_overlap) # 1279
 n23 = nrow(PCA_BIOGRID_overlap) # 675
-n13 = nrow(BIOGRID_PPiseq_overlap) # 654
-n123 = nrow(BIOGRID_PPiseq_PCA_overlap) #454
+n13 = nrow(BIOGRID_PPiseq_overlap) # 715
+n123 = nrow(BIOGRID_PPiseq_PCA_overlap) #476
 library(VennDiagram)
 pdf("Working_figure/Figure2/Figure2A_draft_Venn diagram of overlapped PPIs among PPiseq, PCA, BIOGRID_new.pdf", width = 5, height =5)
 draw.triple.venn(area1, area2, area3, n12, n23, n13, n123, category = c("PPiSeq", "mDHFR-PCA", "BIOGRID data excluding mDHFR-PCA"), euler.d = TRUE,

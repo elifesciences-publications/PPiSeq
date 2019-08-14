@@ -17,7 +17,7 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 
 #(2) Get all the possible orders of 9 environments, and check the PPI number changes
 setwd("~/Dropbox/PPiSeq_02/")
-count_summary = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv") # 12333
+count_summary = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary_combine_SD.csv") # 12333
 #count_summary= count_summary[which(count_summary[,2] != "1"),] # 5392
 ### Followsing this order DMSO, H2O2, HU, Dox, Forskolin, Raffinose, NaCl, 16C, FK506
 row_num = c(factorial(9), factorial(8), factorial(7), factorial(6), factorial(5), factorial(4), factorial(3), factorial(2),factorial(1))
@@ -41,7 +41,7 @@ for(i in 1:9){
         column_chosen = as.numeric(count_summary[,i +2])
         matrix_chosen = data.frame(column_chosen, matrix_constructer)
         sum_row = rowSums(matrix_chosen)
-        environ_1_1 = length(which(sum_row >= 1)))
+        environ_1_1 = length(which(sum_row >= 1))
         environ_1_2 = length(which(sum_row >= 2))
         environ_1_3 = length(which(sum_row >= 3))
         environ_1_4 = length(which(sum_row >= 4))

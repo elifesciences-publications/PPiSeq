@@ -109,8 +109,8 @@ PPI_carbon_final_order = rbind(PPI_HXT1_matrix_order, PPI_HXT3_matrix_order,
                                PPI_HXT5_matrix_order, PPI_HXT7_matrix_order,
                                PPI_others_matrix_order)
 # Take the order the same with Figure2A
-PPI_carbon_heatmap = PPI_carbon_final_order[,c(4,8,12,10,9,6,5,7,11)]
-colnames(PPI_carbon_heatmap) = c("SD", "Forskolin", "FK506", "NaCl", "Raffinose", "Hydroxyurea",  
+PPI_carbon_heatmap = PPI_carbon_final_order[,c(4,5,9,13,11,10,7,6,8,12)]
+colnames(PPI_carbon_heatmap) = c("SD", "SD replicate","Forskolin", "FK506", "NaCl", "Raffinose", "Hydroxyurea",  
                                  "H2O2", "Doxorubicin", "16 \u00B0C")
 rownames(PPI_carbon_heatmap) = as.character(PPI_carbon_final[,1])
 #csvWriter(PPI_carbon_heatmap, "~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/PPI_pair_GO/environment/carbonhydrate_transport_network/PPI_carbohydrate_transport_heatmap.csv")
@@ -149,7 +149,7 @@ save_pheatmap_pdf <- function(x, filename, width=5, height=5) {
   grid::grid.draw(x$gtable)
   dev.off()
 }
-save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure3/Figure3B_carbonhydrate_transport_fitness_environment_primary_cluster.pdf")
+save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure4/Figure4A_carbonhydrate_transport_fitness_environment_primary_cluster.pdf")
 
 
 #################################################################################
