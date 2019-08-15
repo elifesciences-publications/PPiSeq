@@ -114,15 +114,28 @@ x = x[,c(1:3, 5:9, 11, 12)] #remove general terms "cellular_component", "membran
 load("~/Dropbox/PPiSeq_02/Working_data/Yolanda_localization/GO_loc_matrix.Rfile")
 g = GO_loc_matrix
 g = g[rownames(x), colnames(x)] #GO predictions
-y = log(x, base = 10)
+y = -log(x, base = 10)
 p = y[which(g == 1)]
 ne = y[which(g == 0)]
-pos = density(p)
-neg = density(ne)
+par(mfrow = c(2,1))
+hist(ne, breaks = 500, xlim = c(0,100))
+abline(v = -log(0.05/10, base = 10), col = "red")
+hist(p, breaks = 500, xlim = c(0,100))
+abline(v = -log(0.05/10, base = 10), col = "red")
+
+#Positive 
+length(which(y > -log(0.005))) #predictions made = 816
+length(which(y > -log(0.005) & g == 1)) #predictions correct = 388
+length(which(y > -log(0.005) & g == 0)) #predictions incorrect = 428
+
+
+
+pos = density(p[!is.na(p)])
+neg = density(ne[!is.na(ne)])
 plot(neg, main = comp, xlab = "log(P-value)")
 polygon(neg, col = rgb(1,0,0,0.2))
-points(pos, type = 'l')
-polygon(pos, col = rgb(0,0,1,0.2))
+#points(pos, type = 'l')
+#polygon(pos, col = rgb(0,0,1,0.2))
 
 
 y = x[,1:3]
