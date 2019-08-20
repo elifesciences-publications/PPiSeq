@@ -41,7 +41,7 @@ name_exchange = csvReader_T("Working_data/Systematic_standard_protein.csv")
 PPI_split = split_string_vector(PPI_carbon_fitness[,1])
 protein_1 = name_exchange[match(PPI_split[,1], name_exchange[,1]),2]
 protein_2 = name_exchange[match(PPI_split[,2], name_exchange[,1]),2]
-weight = as.numeric(PPI_carbon_fitness[,10])
+weight = as.numeric(PPI_carbon_fitness[,12])
 # DMSO:4, H2O2:5, HU:6, Dox:7, Forskolin:8, Raffinose:9, NaCl:10, 16C:11, FK506:12
 #PPI_net = data.frame(protein_1, protein_2, weight, label)
 #PPI_net = PPI_net[which(PPI_net$weight!= 0),]
@@ -87,7 +87,7 @@ E(net)$width <- 2*exp(E(net)$weight)
 #l = layout_on_sphere(net)
 net_clean <- delete.edges(net, which(E(net)$weight == 0))
 
-pdf("Working_figure/Figure4/Figure4B_dynamic_PPI_network/carbohydrate_transport/PPI_carbonhydrate_transport_Raffinose.pdf", height =5, width = 5)
+pdf("Working_figure/Figure4/Figure4B_dynamic_PPI_network/carbohydrate_transport/PPI_carbonhydrate_transport_Fk506.pdf", height =5, width = 5)
 plot(net_clean, layout = l,  vertex.frame.color=NA, vertex.label.color = apple_colors[11],
      vertex.label.cex = 0.35, margin = c(0,0,0,0))
 dev.off()

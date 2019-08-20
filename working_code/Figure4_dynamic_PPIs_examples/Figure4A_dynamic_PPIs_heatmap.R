@@ -19,7 +19,7 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 
 # Input the normalized fitness values for all PPIs in each environment
 setwd("~/Dropbox/PPiSeq_02/")
-PPI_fit = csvReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_primary.csv")
+PPI_fit = csvReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_neg_zero.csv")
 GO_slim = as.matrix(read.table("Working_data/GO_term_files/go_slim_mapping_tab_20190405.txt", header = F, sep = "\t"))
 Gene_carbon = unique(GO_slim[which(GO_slim[,6] == "GO:0008643"), 1])
 Gene_transcription = unique(GO_slim[which(GO_slim[,6] == "GO:0006352"), 1])
@@ -52,7 +52,7 @@ PPI_translation = check_specific_protein(PPI_fit, Gene_translation) #658
 
 # Make a heatmap for each groups
 HXT = c("YHR094C","YDR345C","YHR096C", "YDR342C") # (HXT1, HXT3, HXT5, HXT7)
-PPI_fit = dataFrameReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_primary.csv")
+PPI_fit = dataFrameReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_neg_zero.csv")
 PPI_carbon_fit = PPI_fit[which(as.character(PPI_fit[,1]) %in% PPI_carbon),] #284
 PPI_carbon_order = sort(PPI_carbon_fit[,1]) #284
 PPI_carbon_fit_order = PPI_carbon_fit[match(PPI_carbon_order, PPI_carbon_fit[,1]),]
@@ -93,7 +93,7 @@ PPI_HXT7_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "HXT7"),] # 7
 PPI_others_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "Others"),] # 29
 
 cluster_order = function(PPI_HXT1_matrix){
-        PPI_fitness = PPI_HXT1_matrix[,c(4,8,12,10,9,6,5,7,11)]
+        PPI_fitness = PPI_HXT1_matrix[,4:12]
         hc = hclust(dist(PPI_fitness), method = "complete")
         PPI_HXT1_matrix_order = PPI_HXT1_matrix[hc$order,]
         return(PPI_HXT1_matrix_order)
@@ -109,9 +109,9 @@ PPI_carbon_final_order = rbind(PPI_HXT1_matrix_order, PPI_HXT3_matrix_order,
                                PPI_HXT5_matrix_order, PPI_HXT7_matrix_order,
                                PPI_others_matrix_order)
 # Take the order the same with Figure2A
-PPI_carbon_heatmap = PPI_carbon_final_order[,c(4,5,9,13,11,10,7,6,8,12)]
-colnames(PPI_carbon_heatmap) = c("SD", "SD replicate","Forskolin", "FK506", "NaCl", "Raffinose", "Hydroxyurea",  
-                                 "H2O2", "Doxorubicin", "16 \u00B0C")
+PPI_carbon_heatmap = PPI_carbon_final_order[,c(4,8,10,12,7,9,5,11,6)]
+colnames(PPI_carbon_heatmap) = c("SD", "Forskolin","NaCl", "FK506", "Doxorubicin", 
+                                 "Raffinose",  "H2O2",  "16 \u00B0C", "Hydroxyurea")
 rownames(PPI_carbon_heatmap) = as.character(PPI_carbon_final[,1])
 #csvWriter(PPI_carbon_heatmap, "~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/PPI_pair_GO/environment/carbonhydrate_transport_network/PPI_carbohydrate_transport_heatmap.csv")
 
@@ -139,8 +139,10 @@ col_chosen = c(apple_colors[5], "#e7d4e8",apple_colors[7])
 color_scale = colorRampPalette(col_chosen)(n=100)
 
 library(pheatmap)
-fit_heatmap = pheatmap(PPI_carbon_heatmap, cluster_rows = FALSE, cluster_cols = TRUE, show_rownames=FALSE,
+fit_heatmap = pheatmap(PPI_carbon_heatmap, cluster_rows = FALSE, cluster_cols = T, show_rownames=FALSE,
                        annotation_colors = my_colour,
+                       labels_col  = c("SD", "Forskolin","NaCl", "FK506", "Doxorubicin", 
+                                     "Raffinose",  expression('H'[2]* 'O'[2]),  "16 \u00B0C", "Hydroxyurea"),
                        annotation_row = row_ann, show_colnames=T, col = color_scale)
 
 save_pheatmap_pdf <- function(x, filename, width=5, height=5) {

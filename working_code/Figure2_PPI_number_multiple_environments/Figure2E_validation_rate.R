@@ -54,7 +54,7 @@ reported_PPI = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/multiple_validated_
 all_Tecan_rep = match_both_direction(all_Tecan, reported_PPI[,1]) # 185
 all_Tecan_unrep = all_Tecan[which(!all_Tecan[,1] %in% all_Tecan_rep[,1]),] # 510
 #split validated PPIs into different groups
-PPI_group = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/PPI_environment_count_summary_combine_SD.csv")
+PPI_group = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
 length(which(all_Tecan[,1] %in% PPI_group[,1])) # 646 all in
 
 rep_PPI_matrix = matrix(0, 4,9)
@@ -100,17 +100,17 @@ ratio_all = as.numeric(c(ratio_rep[1], ratio_unrep[1], ratio_rep[2], ratio_unrep
               ratio_rep[5], ratio_unrep[5], ratio_rep[6], ratio_unrep[6],
               ratio_rep[7], ratio_unrep[7], ratio_rep[8], ratio_unrep[8],
               ratio_rep[9], ratio_unrep[9]))
-rep_PPI_matrix[1,] #  2       4      20      16       9      18      30      42      14
-rep_PPI_matrix[3,] # 5       8      24      19       9      27      33      44      14
-unrep_PPI_matrix[1,]#40      35      48      37      41      36      33      40      27
-unrep_PPI_matrix[3,]# 74      68      73      51      48      42      39      40      28
-counts_label = c("2/5", "40/74", "4/8", "35/68", "20/24", "48/73",
-                 "16/19", "37/51", "9/9", "41/48", "18/27", "36/42",
-                 "30/33", "33/39", "42/44", "40/40", "14/14", "27/28")
+rep_PPI_matrix[1,] #  2       3      18      20      12      24      48      19       9
+rep_PPI_matrix[3,] # 5       7      23      21      12      35      50      20       9
+unrep_PPI_matrix[1,]#57      42      42      39      49      48      32      30      19
+unrep_PPI_matrix[3,]# 97      71      67      52      58      56      36      30      20
+counts_label = c("2/5", "57/97", "3/7", "42/71", "18/23", "42/67",
+                 "20/21", "39/52", "12/12", "49/58", "24/35", "48/56",
+                 "48/50", "32/36", "19/20", "30/30", "9/9", "19/20")
 library(RColorBrewer)
 #col_chosen = brewer.pal(3,"Dark2")[1:2]
 col_chosen = c("#d73027","#4575b4")
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2E_Validation_bar_plot.pdf", width= 6, height=5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2E_Validation_bar_plot.pdf", width= 5.5, height=5)
 barCenter = barplot(ratio_all*100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
                     space= c(0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15,
                              0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15),

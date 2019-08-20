@@ -103,16 +103,16 @@ Lineage_plot = function(PPI_pos_DHFR_transform, output){
         
 }
 
-Lineage_plot(PPI_pos_DHFR_transform, "Working_figure/SFigures/FigureSX_SD_lineage_plot_related_Fig1B/Positive DHFR lineages.pdf")
-Lineage_plot(PPI_neg_DHFR_transform, "Working_figure/SFigures/FigureSX_SD_lineage_plot_related_Fig1B/Negative DHFR lineages.pdf")
-Lineage_plot(PRS_transform, "Working_figure/SFigures/FigureSX_SD_lineage_plot_related_Fig1B/PRS lineages.pdf")
-Lineage_plot(RRS_transform, "Working_figure/SFigures/FigureSX_SD_lineage_plot_related_Fig1B/RRS lineages.pdf")
-Lineage_plot(PPI_DHFR12_transform, "Working_figure/SFigures/FigureSX_SD_lineage_plot_related_Fig1B/ORF X DHFR[1,2] lineages.pdf")
-Lineage_plot(PPI_DHFR3_transform, "Working_figure/SFigures/FigureSX_SD_lineage_plot_related_Fig1B/DHFR[3] X ORF lineages.pdf")
-Lineage_plot(PPI_ERP3_transform, "Working_figure/SFigures/FigureSX_SD_lineage_plot_related_Fig1B/ERP3 X ORF lineages.pdf")
-Lineage_plot(PPI_IMD3_transform, "Working_figure/SFigures/FigureSX_SD_lineage_plot_related_Fig1B/ORF X IMD3 lineages.pdf")
-Lineage_plot(PPI_promiscuous_YIL143C_transform, "Working_figure/SFigures/FigureSX_SD_lineage_plot_related_Fig1B/ORF X YIL143C.pdf")
-Lineage_plot(PPI_promiscuous_YPL139C_transform, "Working_figure/SFigures/FigureSX_SD_lineage_plot_related_Fig1B/YPL139C X ORF.pdf")
+Lineage_plot(PPI_pos_DHFR_transform, "Working_figure/SFigures/Figure1_related/FigureSX_SD_lineage_plot_related_Fig1B/Positive DHFR lineages.pdf")
+Lineage_plot(PPI_neg_DHFR_transform, "Working_figure/SFigures/Figure1_related/FigureSX_SD_lineage_plot_related_Fig1B/Negative DHFR lineages.pdf")
+Lineage_plot(PRS_transform, "Working_figure/SFigures/Figure1_related/FigureSX_SD_lineage_plot_related_Fig1B/PRS lineages.pdf")
+Lineage_plot(RRS_transform, "Working_figure/SFigures/Figure1_related/FigureSX_SD_lineage_plot_related_Fig1B/RRS lineages.pdf")
+Lineage_plot(PPI_DHFR12_transform, "Working_figure/SFigures/Figure1_related/FigureSX_SD_lineage_plot_related_Fig1B/ORF X DHFR[1,2] lineages.pdf")
+Lineage_plot(PPI_DHFR3_transform, "Working_figure/SFigures/Figure1_related/FigureSX_SD_lineage_plot_related_Fig1B/DHFR[3] X ORF lineages.pdf")
+Lineage_plot(PPI_ERP3_transform, "Working_figure/SFigures/Figure1_related/FigureSX_SD_lineage_plot_related_Fig1B/ERP3 X ORF lineages.pdf")
+Lineage_plot(PPI_IMD3_transform, "Working_figure/SFigures/Figure1_related/FigureSX_SD_lineage_plot_related_Fig1B/ORF X IMD3 lineages.pdf")
+Lineage_plot(PPI_promiscuous_YIL143C_transform, "Working_figure/SFigures/Figure1_related/FigureSX_SD_lineage_plot_related_Fig1B/ORF X YIL143C.pdf")
+Lineage_plot(PPI_promiscuous_YPL139C_transform, "Working_figure/SFigures/Figure1_related/FigureSX_SD_lineage_plot_related_Fig1B/YPL139C X ORF.pdf")
 
 #Randomly choose some lineages after removing these controls strains and make a plot
 all_control = do.call("rbind", list(PPI_pos_DHFR, PPI_neg_DHFR, PRS, RRS, PPI_DHFR12, PPI_DHFR3))# Combine all the controls

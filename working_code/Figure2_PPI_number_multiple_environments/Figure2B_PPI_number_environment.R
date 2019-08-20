@@ -23,17 +23,17 @@ setwd("~/Dropbox/PPiSeq_02/")
 ######### and then make line plots for all possible combinations
 # Barplot for PPI number in each environment and show number of PPIs in each bin (found in 1-9 environments)
 setwd("~/Dropbox/PPiSeq_02/")
-count_summary = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv") # 15656
+count_summary = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv") # 13650
 ### Combine two SD environments (In either environment a PPI is called the PPI is positive)
-SD_2X = rep(0, nrow(count_summary))
-SD_2X[which(as.numeric(count_summary[,3]) == 1 | as.numeric(count_summary[,4]) == 1)] = 1
-count_summary_2X = cbind(count_summary[,1:2], SD_2X, count_summary[,5:ncol(count_summary)])
-temp = count_summary_2X[,3:ncol(count_summary_2X)]
-temp_num = apply(temp, 2, as.numeric)
-count_summary_2X[,2] = rowSums(temp_num)
-csvWriter(count_summary_2X, "Working_data/Positive_PPI_environment/PPI_environment_count_summary_combine_SD.csv")
+#SD_2X = rep(0, nrow(count_summary))
+#SD_2X[which(as.numeric(count_summary[,3]) == 1 | as.numeric(count_summary[,4]) == 1)] = 1
+#count_summary_2X = cbind(count_summary[,1:2], SD_2X, count_summary[,5:ncol(count_summary)])
+#temp = count_summary_2X[,3:ncol(count_summary_2X)]
+#temp_num = apply(temp, 2, as.numeric)
+#count_summary_2X[,2] = rowSums(temp_num)
+#csvWriter(count_summary_2X, "Working_data/Positive_PPI_environment/PPI_environment_count_summary_combine_SD.csv")
 
-count_summary = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary_combine_SD.csv")
+#count_summary = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary_combine_SD.csv")
 environment_matrix = matrix(0, 9, 9)
 colnames(environment_matrix) = colnames(count_summary)[3:11]
 rownames(environment_matrix) = as.character(1:9)
@@ -42,7 +42,7 @@ for(i in 3:11){
         counts = as.data.frame(table(PPI_chosen[,2]))
         environment_matrix[,i-2] = counts$Freq
 }
-environment_matrix_order = environment_matrix[,c(1,5,9,7,6,2,4,3,8)]
+environment_matrix_order = environment_matrix[,c(1,5,7,9,4,6,2,8,3)]
 csvWriter_rownames(environment_matrix_order, "Working_data/Positive_PPI_environment/Count_summary_04_each_environment.csv")
 
 environment_matrix_order = csvReader_T("Working_data/Positive_PPI_environment/Count_summary_04_each_environment.csv")
@@ -59,12 +59,12 @@ barCenter = barplot(environment_matrix_order, horiz=F, beside=F,  ylab="Number o
                     col= col_purple, axisnames=F, border=NA)
 
 axis(2,at = c(seq(0, 7000, by = 1000)))
-legend(0, 7500, legend=as.character(rev(1:9)), title = c("Number of environments in which the PPI is detected"),
+legend(0, 7200, legend=as.character(rev(1:9)), title = c("Number of environments in which \n the PPI is detected"),
        fill=col_purple[rev(1:9)],  bty="n", border=FALSE, xpd = TRUE, ncol = 3)
 
 text(x= barCenter, y = -150, cex =0.8,
-     labels = rep(c("SD (2X)", "Forskolin", "FK506", "NaCl", "Raffinose", "Hydroxyurea",
-                    expression('H'[2]* 'O'[2]), "Doxorubicin", "16 \u00B0C"),2), 
+     labels = rep(c("SD", "Forskolin","NaCl", "FK506", "Doxorubicin", "Raffinose", 
+                    expression('H'[2]* 'O'[2]),  "16 \u00B0C", "Hydroxyurea"),2), 
      srt= 45, adj = 1, xpd = TRUE)
 
 dev.off()

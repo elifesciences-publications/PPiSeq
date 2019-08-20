@@ -23,7 +23,7 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 # The basic idea of the code is to attach positive environments to each PPI 
 setwd("~/Dropbox/PPiSeq_02/")
 DMSO_pos = csvReader_T("Working_data/Positive_PPI_environment/SD_Pos_PPI_real.csv")
-DMSO2_pos = csvReader_T("Working_data/Positive_PPI_environment/SD2_Pos_PPI_real.csv")
+#DMSO2_pos = csvReader_T("Working_data/Positive_PPI_environment/SD2_Pos_PPI_real.csv")
 H2O2_pos = csvReader_T("Working_data/Positive_PPI_environment/H2O2_Pos_PPI_real.csv")
 HU_pos = csvReader_T("Working_data/Positive_PPI_environment/Hydroxyurea_Pos_PPI_real.csv")
 Dox_pos = csvReader_T("Working_data/Positive_PPI_environment/Doxorubicin_Pos_PPI_real.csv")
@@ -32,14 +32,14 @@ Raffinose_pos = csvReader_T("Working_data/Positive_PPI_environment/Raffinose_Pos
 NaCl_pos = csvReader_T("Working_data/Positive_PPI_environment/NaCl_Pos_PPI_real.csv")
 cold_pos = csvReader_T("Working_data/Positive_PPI_environment/Cold_16C_Pos_PPI_real.csv")
 FK506_pos = csvReader_T("Working_data/Positive_PPI_environment/FK506_Pos_PPI_real.csv")
-PPI_list = list(DMSO_pos[,1], DMSO2_pos[,1], H2O2_pos[,1], HU_pos[,1], Dox_pos[,1], Forskolin_pos[,1],
+PPI_list = list(DMSO_pos[,1],  H2O2_pos[,1], HU_pos[,1], Dox_pos[,1], Forskolin_pos[,1],
                 Raffinose_pos[,1], NaCl_pos[,1], cold_pos[,1], FK506_pos[,1]) # store PPIs of one environment as an element in a list
-all_PPI = unique(c(DMSO_pos[,1], DMSO2_pos[,1], H2O2_pos[,1], HU_pos[,1], Dox_pos[,1], Forskolin_pos[,1],
-                   Raffinose_pos[,1], NaCl_pos[,1], cold_pos[,1], FK506_pos[,1])) #16431
-all_PPI_unique = mark_duplicates_fast(all_PPI) # 15656; 775 duplicates
-all_PPI_matrix = matrix(0, nrow(all_PPI_unique), 11)
+all_PPI = unique(c(DMSO_pos[,1],  H2O2_pos[,1], HU_pos[,1], Dox_pos[,1], Forskolin_pos[,1],
+                   Raffinose_pos[,1], NaCl_pos[,1], cold_pos[,1], FK506_pos[,1])) #14446
+all_PPI_unique = mark_duplicates_fast(all_PPI) # 13650; 796 duplicates
+all_PPI_matrix = matrix(0, nrow(all_PPI_unique), 10)
 all_PPI_matrix[,1] = all_PPI_unique[,1]
-colnames(all_PPI_matrix)= c("PPI","SD", "SD2","H2O2", "HU", "Dox", "Forskolin", "Raffinose", "NaCl", "16C", "FK506")
+colnames(all_PPI_matrix)= c("PPI","SD", "H2O2", "HU", "Dox", "Forskolin", "Raffinose", "NaCl", "16C", "FK506")
 # Check each PPI in each environment, if reported, put a value of 1 into the space.
 for(i in 1:nrow(all_PPI_matrix)){
         if(all_PPI_unique[i,2] != "0"){
@@ -60,9 +60,9 @@ for(i in 1:nrow(all_PPI_matrix)){
 
 environment_number = rep(0, nrow(all_PPI_matrix)) # adding the column of 2:9 in each row will give the number of positive environment
 for(i in 1:length(environment_number)){
-        environment_number[i] = sum(as.numeric(all_PPI_matrix[i,2:11]))
+        environment_number[i] = sum(as.numeric(all_PPI_matrix[i,2:10]))
 }
-all_PPI_matrix_final = cbind(all_PPI_matrix[,1], environment_number, all_PPI_matrix[,2:11])
+all_PPI_matrix_final = cbind(all_PPI_matrix[,1], environment_number, all_PPI_matrix[,2:10])
 csvWriter(all_PPI_matrix_final, "Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
 
 

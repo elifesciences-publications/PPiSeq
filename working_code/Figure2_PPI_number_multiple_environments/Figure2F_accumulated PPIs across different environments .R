@@ -17,7 +17,7 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 
 #(2) Get all the possible orders of 9 environments, and check the PPI number changes
 setwd("~/Dropbox/PPiSeq_02/")
-count_summary = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary_combine_SD.csv") # 12333
+count_summary = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv") # 13650
 #count_summary= count_summary[which(count_summary[,2] != "1"),] # 5392
 ### Followsing this order DMSO, H2O2, HU, Dox, Forskolin, Raffinose, NaCl, 16C, FK506
 row_num = c(factorial(9), factorial(8), factorial(7), factorial(6), factorial(5), factorial(4), factorial(3), factorial(2),factorial(1))
@@ -545,58 +545,58 @@ col_mean_9 = colMeans(matrix_count_9)
 library(scales)
 col_group = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
 col_chosen = alpha(col_group, 0.05)
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2B_cumulative_PPI_number/Figure2B_PPI_number_accumulation_environments_combine.pdf", width= 5, height =5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2F_cumulative_PPI_number/Figure2F_PPI_number_accumulation_environments_combine.pdf", width= 5.5, height =5.5)
 #pdf("~/Desktop/Figure2B_PPI_number_accumulation_environments_combine.pdf", width =5, height =5)
 par(mar = c(4,4,2,4))
-plot(1:9, as.numeric(matrix_count_1[1,]), xlim = c(1,9), ylim = c(0,14000), type = "l",
-     col = col_chosen[1],lwd = 0.5,
+plot(1:9, as.numeric(matrix_count_1[1,]), xlim = c(1,9), ylim = c(0,18000), type = "l",
+     col = col_chosen[1],lwd = 0.5, axes=F,
      xlab = "Number of environments assayed",
      ylab = "Number of PPIs", main = NA, bty = "n")
-axis(2, at= seq(0, 14000, by = 2000), labels = seq(0, 14000, by = 2000))
+axis(2, at= seq(0, 18000, by = 3000), labels = seq(0, 18000, by = 3000))
 axis(1, at= 1:9, labels = 1:9)
 for(i in 2:nrow(matrix_count_1)){
         lines(1:9, as.numeric(matrix_count_1[i,]), col = col_chosen[1], lwd = 0.5)
 }
-lines(1:9, col_mean_1, col = apple_colors[11], lwd = 2, lty = 2)
 
 for(l in 1:nrow(matrix_count_2)){
         lines(2:9, as.numeric(matrix_count_2[l,2:9]), col = col_chosen[2], lwd = 0.5)
 }
-lines(2:9, col_mean_2[2:9], col = apple_colors[11], lwd = 2, lty = 2)
-
 
 for(j in 1:nrow(matrix_count_3)){
         lines(3:9, as.numeric(matrix_count_3[j,3:9]), col = col_chosen[3], lwd = 0.5)
 }
-lines(3:9, col_mean_3[3:9], col = apple_colors[11], lwd = 2, lty = 2)
 
 for(m in 1:nrow(matrix_count_4)){
         lines(4:9, as.numeric(matrix_count_4[m,4:9]), col = col_chosen[4], lwd = 0.5)
 }
-lines(4:9, col_mean_4[4:9], col = apple_colors[11], lwd = 2, lty = 2)
 
 for(k in 1:nrow(matrix_count_5)){
         lines(5:9, as.numeric(matrix_count_5[k,5:9]), col = col_chosen[5], lwd = 0.5)
 }
-lines(5:9, col_mean_5[5:9], col = apple_colors[11], lwd = 2, lty = 2)
 
 for(n in 1:nrow(matrix_count_6)){
         lines(6:9, as.numeric(matrix_count_6[n,6:9]), col = col_chosen[6], lwd = 0.5)
 }
-lines(6:9, col_mean_6[6:9], col = apple_colors[11], lwd = 2, lty = 2)
 
 for(l in 1:nrow(matrix_count_7)){
         lines(7:9, as.numeric(matrix_count_7[l,7:9]), col = col_chosen[7], lwd = 0.5)
 }
-lines(7:9, col_mean_7[7:9], col = apple_colors[11], lwd = 2, lty = 2)
+
 
 for(o in 1:nrow(matrix_count_8)){
         lines(8:9, as.numeric(matrix_count_8[l,8:9]), col = col_chosen[8], lwd = 0.5)
 }
-lines(8:9, col_mean_8[8:9], col = apple_colors[11], lwd = 2, lty = 2)
 
-legend(1,14000, as.character(1:8),lty = 1, col = col_group[1:8], ncol = 3, bty= "n")
-text(4, 14500, "Minimum number of environments\nin which the PPI is observed", xpd = TRUE)
+lines(1:9, col_mean_1, col = apple_colors[11], lwd = 2, lty = 2)
+lines(2:9, col_mean_2[2:9], col = apple_colors[11], lwd = 2, lty = 2)
+lines(3:9, col_mean_3[3:9], col = apple_colors[11], lwd = 2, lty = 2)
+lines(4:9, col_mean_4[4:9], col = apple_colors[11], lwd = 2, lty = 2)
+lines(5:9, col_mean_5[5:9], col = apple_colors[11], lwd = 2, lty = 2)
+lines(6:9, col_mean_6[6:9], col = apple_colors[11], lwd = 2, lty = 2)
+lines(7:9, col_mean_7[7:9], col = apple_colors[11], lwd = 2, lty = 2)
+lines(8:9, col_mean_8[8:9], col = apple_colors[11], lwd = 2, lty = 2)
+legend(1,18000, as.character(1:8),lty = 1, col = col_group[1:8], ncol = 3, bty= "n")
+text(4, 18500, "Minimum number of environments\nin which the PPI is observed", xpd = TRUE)
 dev.off()
 
 

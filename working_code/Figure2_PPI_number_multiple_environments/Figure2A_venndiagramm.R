@@ -88,7 +88,7 @@ PPI_count = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_c
 #pos_PPI_unique_filter = mark_duplicates_fast(pos_PPI_real) # 4753
 
 ##### Consider a PPI is positive if detected in either SD environment
-pos_PPI_unique_filter = PPI_count[which(as.numeric(PPI_count[,3]) == 1 | as.numeric(PPI_count[,4]) == 1),] # 6296
+pos_PPI_unique_filter = PPI_count[which(as.numeric(PPI_count[,3]) == 1),] # 5625
 
 BIOGRID_PPiseq_overlap = match_both_direction(BIOGRID_PPiseq, pos_PPI_unique_filter[,1])
 BIOGRID_PPiseq_PCA_overlap = match_both_direction(BIOGRID_PPiseq_overlap, as.character(PCA_PPiseq[,1])) 

@@ -22,7 +22,7 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 
 # Or make a barplot to show how many of them have been reproted
 setwd("~/Dropbox/PPiSeq_02/")
-all_PPI_matrix_final = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary_combine_SD.csv")
+all_PPI_matrix_final = csvReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
 reported_PPI = csvReader_T("Working_data/multiple_validated_PPI.csv")
 PCA_lower = as.matrix(read.table("Working_data/Tarassov_PPI_PPV_80.txt", header= T, sep = "\t"))
 min(as.numeric(PCA_lower[,ncol(PCA_lower)])) # 80.60
@@ -42,15 +42,15 @@ for(i in 1:9){
   matrix_PPI_env_rep[2,i] = nrow(all_reported_PCA_low)
   matrix_PPI_env_rep[3,i] = nrow(all_reported_BioGrid)
 }
-matrix_PPI_env_rep[3,] # 351 159 114 121 167 216 244 344 211
+matrix_PPI_env_rep[3,] # 312 157 121 127 185 272 314 222 181
 all_PPI_count = matrix_PPI_env_rep[1,] + matrix_PPI_env_rep[2,] + matrix_PPI_env_rep[3,]
-all_PPI_count # 9465 1685  816  656  661  715  585  650  423
+all_PPI_count # 7812 1395  760  698  688  884  632  445  336
 ratio_BioGrid = matrix_PPI_env_rep[3,]/all_PPI_count
-ratio_BioGrid # 0.03708399 0.09436202 0.13970588 0.18445122 0.25264750 0.30209790 0.41709402 0.52923077 0.49881797
-ratio_BioGrid_reported = c("3.7%", "9.4%", "14%", "18.4%", "25.3%", "30.2%", "41.7%", "52.9%", "49.9%")
+ratio_BioGrid # 0.03993856 0.11254480 0.15921053 0.18194842 0.26889535 0.30769231 0.49683544 0.49887640 0.53869048
+ratio_BioGrid_reported = c("4.0%", "11.3%", "15.9%", "18.2%", "26.9%", "30.8%", "49.7%", "49.9%", "53.9%")
 ratio_PCA_low = matrix_PPI_env_rep[2,]/all_PPI_count
-ratio_PCA_low # 0.03222398 0.09139466 0.16911765 0.23170732 0.26021180 0.33426573 0.35897436 0.36923077 0.39007092
-ratio_PCA_low_overlapped = c("3.2%", "9.1%", "16.9%", "23.2%", "26%", "33.4%", "35.9%", "36.9%", "39%")
+ratio_PCA_low # 0.03609831 0.11469534 0.16315789 0.24785100 0.28633721 0.34728507 0.33860759 0.40224719 0.35416667
+ratio_PCA_low_overlapped = c("3.6%", "11.5%", "16.3%", "24.8%", "28.6%", "34.7%", "33.9%", "40.2%", "35.4%")
 
 #col_purple = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
 library(RColorBrewer)

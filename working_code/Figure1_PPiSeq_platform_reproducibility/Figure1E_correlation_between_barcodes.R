@@ -20,16 +20,16 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 # Figure 1D: only consider positive PPIs (removing control strains)
 setwd("~/Dropbox/PPiSeq_02/")
 PPI_lineages = dataFrameReader_T("Paper_data/SD_PPI_barcodes_fitness_counts.csv")
-DMSO_mean = csvReader_T("Paper_data/SD_mean_fitness_positive.csv") # 1459163
+DMSO_mean = csvReader_T("Paper_data/SD_mean_fitness_positive.csv") # 1445535
 # First remove control strains in the data. These strains have larger number of replciates make the analysis more difficult.
 PPI_RRS = DMSO_mean[grep("Neg_PPI", DMSO_mean[,1]),1] #97
 PPI_PRS = DMSO_mean[grep("Pos_PPI", DMSO_mean[,1]),1] #108
 PPI_pos = DMSO_mean[grep("positive_DHFR", DMSO_mean[,1]),1] # 1
 PPI_neg = DMSO_mean[grep("negative_non_DHFR", DMSO_mean[,1]),1] # 1
 PPI_control = c(PPI_PRS, PPI_RRS, PPI_pos, PPI_neg)
-DMSO_pos = DMSO_mean[which(DMSO_mean[,7] == "1"),] # 5069
-DMSO_pos_select = DMSO_pos[which(!DMSO_pos[,1] %in% PPI_control),] #5036
-PPI_lineages_select= PPI_lineages[which(PPI_lineages[,1] %in% DMSO_pos_select[,1]),] #18016
+DMSO_pos = DMSO_mean[which(DMSO_mean[,7] == "1"),] # 6099
+DMSO_pos_select = DMSO_pos[which(!DMSO_pos[,1] %in% PPI_control),] #6065
+PPI_lineages_select= PPI_lineages[which(PPI_lineages[,1] %in% DMSO_pos_select[,1]),] #20781
 
 # put the fitness values of replicates onto the same row
 PPI_unique= unique(DMSO_pos_select[,1])
@@ -66,10 +66,10 @@ PPI_fit_matrix_04 = PPI_indiv_matrix[,c(1, 5,6)]
 PPI_fit_matrix_05 = PPI_indiv_matrix[,c(1, 5,7)]
 PPI_fit_matrix_06 = PPI_indiv_matrix[,c(1, 6,7)]
 PPI_fit_all = rbind(PPI_fit_matrix_01, PPI_fit_matrix_02, PPI_fit_matrix_03,
-                    PPI_fit_matrix_04, PPI_fit_matrix_05, PPI_fit_matrix_06) # 31068
+                    PPI_fit_matrix_04, PPI_fit_matrix_05, PPI_fit_matrix_06) # 36390
 # Remove any pair with at least one value >= 0
-PPI_fit_final = PPI_fit_all[which(as.numeric(PPI_fit_all[,2]) != 0 & as.numeric(PPI_fit_all[,3]) != 0),] # 24490
-cor(as.numeric(PPI_fit_final[,2]), as.numeric(PPI_fit_final[,3]), method = "spearman") # 0.72
+PPI_fit_final = PPI_fit_all[which(as.numeric(PPI_fit_all[,2]) != 0 & as.numeric(PPI_fit_all[,3]) != 0),] # 27167
+cor(as.numeric(PPI_fit_final[,2]), as.numeric(PPI_fit_final[,3]), method = "spearman") # 0.65042
 
 ####### Use ggplot to make scatter plots and hexagon plot
 PPI = as.character(PPI_fit_final[,1])
@@ -89,7 +89,7 @@ ggplot() +
   #add a line that contain equal fitness values
   geom_smooth(aes(x = seq(0, 1.4, by = 0.2), y = seq(0, 1.4, by = 0.2)), linetype =2,
               method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.25, y = 1.3, label = expression(paste("Spearman's ", italic(r), " = 0.72")),  parse = TRUE, col = apple_colors[11]) +
+  annotate("text", x = 0.25, y = 1.3, label = expression(paste("Spearman's ", italic(r), " = 0.65")),  parse = TRUE, col = apple_colors[11]) +
   
   scale_color_manual('', breaks = c("Positive PPI"),
                      values = apple_colors[8]) +
@@ -109,4 +109,4 @@ ggplot() +
   theme(axis.text.x = element_text(size = 10, color = "black"),
         axis.text.y.left = element_text(size = 10, color = "black"))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1/Figure1D_correlation_two_replicates_hexagonlot_SD.pdf", height =5, width =5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1/Figure1E_correlation_two_replicates_hexagonlot_SD.pdf", height =5, width =5)
