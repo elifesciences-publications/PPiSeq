@@ -2,8 +2,8 @@ require(ggplot2)
 
 #get PPI pairs and dynamicity
 setwd("~/Dropbox/PPiSeq_02/")
-load("Working_data/Positive_PPI_environment/variation_score.Rfile")
-v = variation_score
+#load("Working_data/Positive_PPI_environment/variation_score.Rfile")
+v = as.matrix(read.csv("Working_data/Positive_PPI_environmentVariation_score_PPI_environment_neg_zero.csv"))
 a = sapply(as.character(v[,1]), strsplit, "_")
 x = matrix(NA, length(a), 2)
 for(i in 1:length(a)){

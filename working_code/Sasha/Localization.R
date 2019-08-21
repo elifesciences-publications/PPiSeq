@@ -1,9 +1,5 @@
-# This script compares PPIs discoverd by PPiSeq to Localization data from Yolanda et al.
-# It finds that PPIs that are found in DMSO are more likely to colocalize when compared to PPIs discovered across all environments
-# 65% colocalization vs 29%
-# p< 2.2e-16 t-test after 1000 bootstraps
-# Need to test: Is this becasue most PPIs not in DMSO are "dynamic" PPIs and these have different properties from "static" PPIs that are overrepresented in DMSO
-
+# This script compares PPIs discoverd by PPiSeq to Localization data from Yolanda Chong et al.
+# It finds that PPIs that are found in  more environments are more likely to colocalize 
 
 
 #import localization data
@@ -34,6 +30,7 @@ for(i in 1:length(x)){
 #Save the list
 yolanda_loc = y
 save(yolanda_loc, file = "~/Dropbox/PPiSeq_02/Working_data/Yolanda_localization/yolonda_loc.Rfile")
+
 
 #Get mean WT localization
 a = unique(c(rownames(y[[1]]), rownames(y[[2]]), rownames(y[[3]])))
@@ -108,7 +105,7 @@ for(i in 1:ncol(ppi_by_env)){
   y = find_colacalized(x)
   number.of.env.colcalized.in.DMSO[i] = percent_colacalized(y)
 }
-barplot(number.of.env.colcalized.in.DMSO, xlab = "Number of environemnts in which a PPI is observed", 
+barplot(number.of.env.colcalized.in.DMSO, xlab = "Number of environments in which a PPI is observed", 
         ylab = "Percent colocalized in Synthethic Media")
 
 #Find co-localization rate in DMSO for PPIs found in different numbers of environments + found in DMSO
@@ -116,79 +113,36 @@ env.number = apply(ppi_by_env, 1, sum, na.rm = T)
 number.of.env.colcalized.in.DMSO = 1:ncol(ppi_by_env)
 names(number.of.env.colcalized.in.DMSO) = 1:9
 for(i in 1:ncol(ppi_by_env)){
-  x = ppi[env.number == i ,] #PPIs seen in i env
+  x = ppi[env.number == i & ppi_by_env[,"DMSO"] == 1,] #PPIs seen in i env
   y = find_colacalized(x)
   number.of.env.colcalized.in.DMSO[i] = percent_colacalized(y)
 }
-barplot(number.of.env.colcalized.in.DMSO, xlab = "Number of environemnts in which a PPI is observed", 
+barplot(number.of.env.colcalized.in.DMSO, xlab = "Number of environemnts in which a PPI is observed, found in DMSO", 
         ylab = "Percent colocalized in Synthethic Media")
 
-x = find_colacalized(ppi)
 
-
-ppi_pos = sum(x == 1, na.rm = T) #PPIs with detected colocalization
-ppi_neg = sum(x == 0, na.rm = T) #PPIs with no detected colocalization
-ppi_na = sum(is.na(x)) #PPIs without localization data
-
-
-#Load full set of PPIs across all environments
-all = read.csv("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/All_PPI_for_coannotation.csv")
-a = sapply(as.character(all[,1]), strsplit, "_")
-x = matrix(NA, length(a), 2)
-for(i in 1:length(a)){
-  x[i,] = a[[i]]
-}
-control = x
-#Find Overlaps
-x = 1:nrow(control)
-x[] = NA
-for(i in 1:length(x)){
-  a = control[i,1]
-  b = control[i,2]
-  if(a %in% rownames(wt) & b %in% rownames(wt)){
-    t = wt[c(a,b),]
-    t = t > 0
-    u = apply(t, 2, sum)
-    if(sum(u == 2) > 0){
-      x[i] = 1
-    }else{
-      x[i] = 0
-    }
-  }
-}
-control_pos = sum(x == 1, na.rm = T) #PPIs with detected colocalization
-control_neg = sum(x == 0, na.rm = T) #PPIs with no detected colocalization
-control_na = sum(is.na(x))
-
-#Testing for enrichment in co-localization in the benign env for PPIs found in the benign env
-control_pos/(control_neg + control_pos) #Fraction of all PPIs that are colocalized in benign env = 0.29
-ppi_pos/(ppi_neg + ppi_pos) #Fraction of benign enc PPIs that are colocalized in benign env = 0.65
-#conclusion: PPIs found in DMSO are more likely to co-localize in DMSO
-#Need to test: This may be becasue most PPIs not in DMSO are "dynamic" PPIs and these have different properties from static PPIs
-
-
-#Do a bootstrap to see if this difference is significant 
-y = 1:1000
+#Do a bootstrap to get error bars -- sample PPIs with replacement
+number.of.env.colcalized.bootstrap = matrix(NA, 1000, ncol(ppi_by_env))
+colnames(number.of.env.colcalized.bootstrap) = 1:9
 for(j in 1:1000){
-  x = sample(1:nrow(control), nrow(ppi))
-  z = x
-  x[] = NA
-  for(i in z){
-    a = control[i,1]
-    b = control[i,2]
-    if(a %in% rownames(wt) & b %in% rownames(wt)){
-      t = wt[c(a,b),]
-      t = t > 0
-      u = apply(t, 2, sum)
-      if(sum(u == 2) > 0){
-        x[i] = 1
-      }else{
-        x[i] = 0
-      }
-    }
+  b = sample(1:nrow(ppi_by_env), nrow(ppi_by_env), replace = T) #the new bootstrapped indexes
+  ppi_by_env_b = ppi_by_env[b,] #the new bootstrapped ppis
+  ppi_b = ppi[b,]
+  env.number_b = apply(ppi_by_env_b, 1, sum, na.rm = T)
+  for(i in 1:ncol(ppi_by_env_b)){
+    x = ppi_b[env.number_b == i ,] #PPIs seen in i env
+    y = find_colacalized(x)
+    number.of.env.colcalized.bootstrap[j,i] = percent_colacalized(y)
   }
-  y[j] = sum(x == 1, na.rm = T)/(sum(x == 1, na.rm = T) + sum(x == 0, na.rm = T))
 }
-mean(y) #.2913
-sd(y) #.0087
-t.test( y, mu = ppi_pos/(ppi_neg + ppi_pos)) # p< 2.2e-16
+m = apply(number.of.env.colcalized.bootstrap, 2, mean, na.rm = T)*100
+sd = apply(number.of.env.colcalized.bootstrap, 2, sd, na.rm = T)*100
+sem = sd/sqrt(1000)
+u = m+sd
+l = m-sd
+
+pdf(file = "~/Dropbox/PPiSeq_02/Working_figure/Figure3/Figure3B_colocalization_rate.pdf", height = 6, width = 4)
+plot(1:9, m, xlab = "Environments in which a PPI is observed", 
+        ylab = "Percent colocalized in synthethic media", type = 'b', ylim = c(30,90), pch = 16)
+arrows( 1:9, u, 1:9,l,  lwd = 1.5, code = 3, length = 0.05, angle = 90)
+dev.off()
