@@ -437,55 +437,23 @@ legend("topleft", legend= c("SD + Raffinose -", "SD + Raffinose +", "SD - Raffin
        pch = c(16, 16, 16, 16), bty = "n")
 dev.off()
 
-a = Fit_comp[which(as.numeric(Fit_comp[,2]) > 0 & as.numeric(Fit_comp[,3]) > 0),]
-a[order(as.numeric(a[,3]), decreasing = T),]
-intersect(a[,1], c(Fit_comp_02[,1], Fit_comp_03[,1]))
-### Only consider PPIs containing HXT5
 Fit_comp_HXT5 = Fit_comp[grep("YHR096C", Fit_comp[,1]),] # 17
-## Make a barplot to show HXT5 increasing
-#Fit_comp_chosen = rbind(Fit_comp_01, Fit_comp_02)
-PPI_HXT5 = t(Fit_comp_HXT5)
-PPI_HXT5= rbind(as.numeric(PPI_HXT5[2,]), as.numeric(PPI_HXT5[3,]))
-PPI_HXT5 = PPI_HXT5[,order(PPI_HXT5[1,], decreasing = T)]
-colnames(PPI_HXT5) = Fit_comp[,1]
-pdf("barplot_HXT5_Raffinose_SD.pdf", height =5, width = 5)
-barplot(PPI_HXT5,horiz=F, beside=T, axisnames = F, ylab = "Raffinose - SD", 
-        #ylim = c(-0.5, 0.8),
-        main = "HXT5 containing PPIs", col = apple_colors[c(5,7)])
-legend("topright", legend=c("PPiSeq", "TECAN"),
-       fill=apple_colors[c(5,7)], cex=0.8, bty="n", border=FALSE)
-dev.off()
+Fit_comp_HXT3 = Fit_comp[grep("YDR345C", Fit_comp[,1]),] # 16
+Fit_comp_HXT7 = Fit_comp[grep("YDR342C", Fit_comp[,1]),] # 24
+Fit_comp_HXT1 = Fit_comp[grep("YHR094C", Fit_comp[,1]),] # 20
 
-Fit_comp_HXT1 = Fit_comp[grep("YHR094C", Fit_comp[,1]),] # 17
-PPI_HXT1 = t(Fit_comp_HXT1)
-PPI_HXT1= rbind(as.numeric(PPI_HXT1[2,]), as.numeric(PPI_HXT1[3,]))
-PPI_HXT1 = PPI_HXT1[,order(PPI_HXT1[1,], decreasing = T)]
-colnames(PPI_HXT1) = Fit_comp_HXT1[,1]
-pdf("barplot_HXT1_Raffinose_SD.pdf", height =5, width = 5)
-barplot(PPI_HXT1,horiz=F, beside=T, axisnames = F, ylab = "Raffinose - SD", 
-        #ylim = c(-0.5, 0.8),
-        main = "HXT1 containing PPIs", col = apple_colors[c(5,7)])
-legend("topright", legend=c("PPiSeq", "TECAN"),
-       fill=apple_colors[c(5,7)], cex=0.8, bty="n", border=FALSE)
-dev.off()
+transform_matrix = function(Fit_comp_all){
+        PPI_HXT = t(Fit_comp_all)
+        PPI_HXT= rbind(as.numeric(PPI_HXT[2,]), as.numeric(PPI_HXT[3,]))
+        colnames(PPI_HXT) = Fit_comp_all[,1]
+        PPI_HXT = PPI_HXT[,order(PPI_HXT[1,], decreasing = T)]
+        return(PPI_HXT)
+}
 
-Fit_comp_HXT1 = Fit_comp[grep("YDR345C", Fit_comp[,1]),] # 17
-PPI_HXT1 = t(Fit_comp_HXT1)
-PPI_HXT1= rbind(as.numeric(PPI_HXT1[2,]), as.numeric(PPI_HXT1[3,]))
-PPI_HXT1 = PPI_HXT1[,order(PPI_HXT1[1,], decreasing = T)]
-colnames(PPI_HXT1) = Fit_comp_HXT1[,1]
-pdf("barplot_HXT3_Raffinose_SD.pdf", height =5, width = 5)
-barplot(PPI_HXT1,horiz=F, beside=T, axisnames = F, ylab = "Raffinose - SD", 
-        #ylim = c(-0.5, 0.8),
-        main = "HXT3 containing PPIs", col = apple_colors[c(5,7)])
-legend("topright", legend=c("PPiSeq", "TECAN"),
-       fill=apple_colors[c(5,7)], cex=0.8, bty="n", border=FALSE)
-dev.off()
+HXT5 = transform_matrix(Fit_comp_HXT5)
 
-Fit_comp_HXT1 = Fit_comp[grep("YDR342C", Fit_comp[,1]),] # 17
-PPI_HXT1 = t(Fit_comp_HXT1)
-PPI_HXT1= rbind(as.numeric(PPI_HXT1[2,]), as.numeric(PPI_HXT1[3,]))
-PPI_HXT1 = PPI_HXT1[,order(PPI_HXT1[1,], decreasing = T)]
+Fit_comp_all = rbind(Fit_comp_HXT5, Fit_comp_HXT3, Fit_comp_HXT7, Fit_comp_HXT1)
+
 colnames(PPI_HXT1) = Fit_comp_HXT1[,1]
 pdf("barplot_HXT7_Raffinose_SD.pdf", height =5, width = 5)
 barplot(PPI_HXT1,horiz=F, beside=T, axisnames = F, ylab = "Raffinose - SD", 
@@ -494,6 +462,3 @@ barplot(PPI_HXT1,horiz=F, beside=T, axisnames = F, ylab = "Raffinose - SD",
 legend("topright", legend=c("PPiSeq", "TECAN"),
        fill=apple_colors[c(5,7)], cex=0.8, bty="n", border=FALSE)
 dev.off()
-
-
-
