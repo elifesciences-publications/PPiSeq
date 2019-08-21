@@ -387,10 +387,75 @@ for(i in 1:nrow(dip_SD_Raff)){
 
 csvWriter(dip_SD_Raff, "20190820/Raffinose_DMSO_dynamics_Tecan.csv")
 
-##### Get fitness values from PPiSeq
+##### Get normalized fitness values from PPiSeq and calculate the mean dynamics, sd, and p-value
 setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190820/")
-PPI_fit = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/Variation_score_PPI_environment_primary.csv")
-Tecan_SD_NaCl = csvReader_T("Raffinose_DMSO_dynamics_Tecan.csv")
+PPI_fit_SD = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/SD_PPI_barcodes_fitness_counts.csv")
+PPI_fit_Raff = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Raffinose_PPI_barcodes_fitness_counts.csv")
+Tecan = csvReader_T("Raffinose_DMSO_dynamics_Tecan.csv")
+
+SD_chosen = PPI_fit_SD[which(PPI_fit_SD[,1] %in% c(Tecan[,1], "positive_DHFR","negative_non_DHFR")),]
+Raff_chosen = PPI_fit_Raff[which(PPI_fit_Raff[,1] %in% c(Tecan[,1], "positive_DHFR","negative_non_DHFR")),]
+
+Fitness_normalization = function(DMSO_lineage){
+  DMSO_DHFR_Pos= DMSO_lineage[which(DMSO_lineage[,1] == "positive_DHFR"),]
+  DMSO_DHFR_Neg= DMSO_lineage[which(DMSO_lineage[,1] == "negative_non_DHFR"),]
+  
+  DMSO_DHFR_Pos_mean = mean(as.numeric(DMSO_DHFR_Pos[,4])) 
+  DMSO_DHFR_Neg_mean = mean(as.numeric(DMSO_DHFR_Neg[,4])) 
+  
+  DMSO_lineage_chosen = DMSO_lineage[, c(1,2,3,4)]
+  DMSO_lineage_chosen[,4] = (as.numeric(DMSO_lineage_chosen[,4]) - DMSO_DHFR_Neg_mean)/(DMSO_DHFR_Pos_mean - DMSO_DHFR_Neg_mean)
+  return(DMSO_lineage_chosen)
+}
+SD_norm = Fitness_normalization(SD_chosen)
+Raff_norm = Fitness_normalization(Raff_chosen)
+
+
+#### align the PPI score according to their barcodes
+#SD_norm_overlap = SD_norm[which(SD_norm[,1] %in% Overlap),]
+#Raff_norm_overlap = Raff_norm[which(Raff_norm[,1] %in% Overlap),]
+#Raff_matched = Raff_norm[match(SD_norm_overlap[,3], Raff_norm_overlap[,3]),4]
+#SD_Raff_norm = cbind(SD_norm_overlap, Raff_matched)
+#colnames(SD_Raff_norm) = c(colnames(SD_norm_overlap), "Fit_Raff")
+#csvWriter(SD_Raff_norm, "SD_Raff_normalized_Fitness.csv")
+
+Overlap = intersect(SD_norm[,1], Raff_norm[,1]) # 82
+Overlap = Overlap[which(!Overlap %in% c("positive_DHFR", "negative_non_DHFR"))]
+SD_Raff_matrix = matrix(NA, length(Overlap), 6)
+colnames(SD_Raff_matrix) = c("PPI", "BC_1", "BC_2", 
+                             "Mean_diff", "SD_diff", "p-value")
+SD_Raff_matrix[,1] = Overlap
+for(i in 1:length(Overlap)){
+  a = which(SD_norm[,1] == Overlap[i])
+  b = which(Raff_norm[,1] == Overlap[i])
+  SD_Raff_matrix[i,2] = length(a)
+  SD_Raff_matrix[i,3] = length(b)
+  if(length(a) >= 1 & length(b) > 1){
+    fit_SD = as.numeric(SD_norm[a, 4])
+    fit_Raff = as.numeric(Raff_norm[b,4])
+    dynamics = fit_Raff - mean(fit_SD)
+    SD_Raff_matrix[i,4] = mean(dynamics)
+    SD_Raff_matrix[i,5] = sd(dynamics)
+    SD_Raff_matrix[i,6] = t.test(fit_SD, fit_Raff, alternative = "two.sided")$p.value
+  }else{
+    fit_SD = as.numeric(SD_norm[a, 4])
+    fit_Raff = as.numeric(Raff_norm[b,4])
+    dynamics = fit_Raff - mean(fit_SD)
+    SD_Raff_matrix[i,4] = mean(dynamics)
+    SD_Raff_matrix[i,5] = sd(dynamics)
+    SD_Raff_matrix[i,6] = NA
+  }
+  
+}
+csvWriter(SD_Raff_matrix, "SD_Raff_normalized_PPiSeq_Fitness_summary.csv")
+
+#### Combine Tecan data and PPiSeq data
+Tecan_matched = Tecan[match(SD_Raff_matrix[,1], Tecan[,1]),]
+SD_Raff_final = cbind(Tecan_matched, SD_Raff_matrix)
+csvWriter(SD_Raff_final, "SD_Raff_Tecan_PPiSeq_all_comparison.csv")
+
+
+
 PPI_fit_tecan = PPI_fit[which(PPI_fit[,1] %in% Tecan_SD_NaCl[,1]),]
 PPI_NaCl_SD = as.numeric(PPI_fit_tecan[,9]) - as.numeric(PPI_fit_tecan[,4])
 PPI_NaCl_SD_fit = cbind(PPI_fit_tecan[,1], PPI_NaCl_SD)
