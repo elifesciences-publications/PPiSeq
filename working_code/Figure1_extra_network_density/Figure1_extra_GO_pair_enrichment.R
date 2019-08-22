@@ -17,6 +17,7 @@ source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 
+###### Make a heatmap for SD environment
 ## Make a heatmap to show the network density for each pair of GO terms
 setwd("~/Dropbox/PPiSeq_02")
 ### Write a function to produce matrix for pos_PPI_count and pos_PPI_density
@@ -56,28 +57,35 @@ transform_list_matrix = function(all_count_name, pos_count_name, output_pos_coun
 }
 # Cellular compartment
 all_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_CC_new.txt"
-pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_CC_new.txt"
-output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_CC_matrix.txt"
-output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_CC_matrix.txt"
+pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_CC_new.txt"
+output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_CC_matrix.txt"
+output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_density_PPI_CC_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 # Biological process
-all_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
-pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_BP_new.txt"
-output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_BP_matrix.txt"
-output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_BP_matrix.txt"
+all_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
+pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_BP_new.txt"
+output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_BP_matrix.txt"
+output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_density_PPI_BP_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
+# truncated Biological process
+all_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
+pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/BP_truncated/Network_pos_count_PPI_BP_new.txt"
+output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/BP_truncated/Network_pos_count_PPI_BP_matrix.txt"
+output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/BP_truncated/Network_density_PPI_BP_matrix.txt"
+transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
+
 # Molecular function
 all_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_MF_new.txt"
-pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_MF_new.txt"
-output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_pos_count_PPI_MF_matrix.txt"
-output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_MF_matrix.txt"
+pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_MF_new.txt"
+output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_MF_matrix.txt"
+output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_density_PPI_MF_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 
 
 ########### Make a plot to show the enrichment of GO_GO pairs 
 setwd("~/Dropbox/PPiSeq_02")
 # Cellular compartment
-network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_density_PPI_CC_matrix.txt", 
+network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_density_PPI_CC_matrix.txt", 
                                        sep = "\t", header = T))
 colnames(network_density) = gsub("\\.", " ", colnames(network_density))
 network_density_vector = as.vector(network_density) # by column
@@ -110,7 +118,7 @@ extract_random_density = function(order_all_count, pos_count_name, GO_GO_name_or
         return(density_order)
 }
 
-random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/random_network/random_network_density/random_network_CC_pos_count_"
+random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/random_network/random_network_density/random_network_CC_pos_count_"
 density_CC_random = rep(0, length(GO_GO_name_order))
 for (i in 1:1000){
         random_name = paste(random_name_front, as.character(i), ".txt", sep = "")
@@ -157,7 +165,7 @@ ggplot() +
               panel.background=element_rect(fill="white"),
               panel.grid=element_blank(),
               plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"))
-ggsave("Working_figure/Figure3/Figure3A_PPI_GO_pair/Dendrogram_CC_GO_pair_cluster.pdf", width = 3, height = 4.2)
+ggsave("Working_figure/Figure1_extra/Dendrogram_CC_GO_pair_cluster.pdf", width = 3, height = 4.2)
 #ggsave("~/Desktop/Dendrogram_CC_GO_pair_cluster.pdf", width = 3, height = 4.2)
 
 
@@ -189,7 +197,7 @@ ggplot() +
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
         theme(axis.text.x = element_blank(), plot.margin = unit(c(1.5,0.2,0.2,2.2), "cm"),
               axis.text.y.left = element_text(size = 8, color = "black",angle = -30), axis.title = element_blank())
-ggsave("Working_figure/Figure3/Figure3A_PPI_GO_pair/heatmap_density_CC_PPI_network.pdf", width = 8, height =4.5)
+ggsave("Working_figure/Figure1_extra/heatmap_density_CC_PPI_network.pdf", width = 8, height =4.5)
 
 # Only plot the heatmap so that I can cut diagonally
 ggplot() + 
@@ -206,14 +214,14 @@ ggplot() +
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
         theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
               axis.text.y.left = element_blank(), axis.title = element_blank())
-ggsave("Working_figure/Figure3/Figure3A_PPI_GO_pair/heatmap_density_CC_PPI_network_no_label.pdf", 
+ggsave("Working_figure/Figure1_extra/heatmap_density_CC_PPI_network_no_label.pdf", 
        width = 4, height = 4)
 
 
 #### Biological process
 setwd("~/Dropbox/PPiSeq_02/")
 # (1) Generate a full picture for all BP GO terms
-network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/BP_primary/Network_density_PPI_BP_matrix.txt", 
+network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_density_PPI_BP_matrix.txt", 
                                        sep = "\t", header = T))
 colnames(network_density) = gsub("\\.", " ", colnames(network_density))
 network_density_vector = as.vector(network_density) # by column
@@ -230,7 +238,7 @@ all_count_name = gsub(",", " ", all_count_name)
 order_all_count = all_count[match(GO_GO_name_order, all_count_name), 3]
 #overlap = intersect(all_count_name, GO_GO_name_order)
 
-random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/random_network/random_network_density/BP_primary/random_network_BP_pos_count_"
+random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/random_network/random_network_density/random_network_BP_pos_count_"
 density_BP_random = rep(0, length(GO_GO_name_order))
 for (i in 1:1000){
         random_name = paste(random_name_front, as.character(i), ".txt", sep = "")
@@ -288,13 +296,13 @@ ggplot() +
               legend.position = "bottom",
               plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"))
 
-ggsave("Working_figure/Figure3/Figure3A_PPI_GO_pair/Dendrogram_BP_GO_pair_cluster_primary.pdf", width = 4, height =12)
+ggsave("Working_figure/Figure1_extra/Dendrogram_BP_GO_pair_cluster_primary.pdf", width = 4, height =12)
 
 label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),]
-csvWriter(GO_order$label, "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_BP_order.txt")
+csvWriter(GO_order$label, "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_BP_order_primary.txt")
 
-GO_order = read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_BP_order.txt",
+GO_order = read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_BP_order_primary.txt",
                       header = T, sep = "\t")
 
 Network_density = as.numeric(network_density_vector) # 0.11764
@@ -326,7 +334,7 @@ ggplot() +
         theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
               axis.text.y.left = element_text(size = 9, color = "black"), axis.title = element_blank())
 #ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
-ggsave("Working_figure/Figure3/Figure3A_PPI_GO_pair/heatmap_density_BP_PPI_network_primary.pdf", 
+ggsave("Working_figure/Figure1_extra/heatmap_density_BP_PPI_network_primary.pdf", 
        width = 16, height = 12)
 
 ## No label so that I can cut the figure
@@ -351,11 +359,11 @@ geom_point(aes(x = rowv, y = columnv, size =Network_density, color = label), dat
         theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
               axis.text.y.left = element_blank(), axis.title = element_blank())
 #ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
-ggsave("Working_figure/Figure3/Figure3A_PPI_GO_pair/heatmap_density_BP_PPI_network_primary_no_label.pdf", 
+ggsave("Working_figure/Figure1_extra/heatmap_density_BP_PPI_network_primary_no_label.pdf", 
        width = 12, height = 12)
 
 ## (2) Choose only 59 GO terms to make figures
-network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/BP_primary/Network_density_PPI_BP_matrix.txt", 
+network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_density_PPI_BP_matrix.txt", 
                                        sep = "\t", header = T))
 colnames(network_density) = gsub("\\.", " ", colnames(network_density))
 chosen_BP = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/chosen_BP_GO_59.txt",
@@ -371,15 +379,34 @@ columnv = rep(GO_BP, 59)
 GO_GO_name_order = paste(rowv, columnv, sep= "_")### T
 
 #### extract density from each random network and put them as a column into a matrix
-all_count= as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt",sep = "\t", header = T))
+all_count= as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_BP_new.txt",sep = "\t", header = T))
 all_count_name = paste(all_count[,1], all_count[,2], sep = "_")
 all_count_name = gsub("-", " ", all_count_name)
 all_count_name = gsub(",", " ", all_count_name)
 order_all_count = all_count[match(GO_GO_name_order, all_count_name), 3]
 #overlap = intersect(all_count_name, GO_GO_name_order)
 
-random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/random_network/random_network_density/BP_primary/random_network_BP_pos_count_"
+random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/random_network/random_network_density/BP_truncated/random_network_BP_pos_count_"
 density_BP_random = rep(0, length(GO_GO_name_order))
+extract_random_density = function(order_all_count, pos_count_name, GO_GO_name_order){
+     
+        pos_count = as.matrix(read.table(pos_count_name,sep = "\t", header = T))
+        pos_count_name = paste(pos_count[,1], pos_count[,2], sep = "_")
+        order_pos_count = pos_count[match(GO_GO_name_order, pos_count_name),3]
+        order_all_count[is.na(order_all_count)] = 0
+        order_pos_count[is.na(order_pos_count)] = 0
+        density_order = rep(0, length(GO_GO_name_order))
+        for(i in 1:length(density_order)){
+                if(as.numeric(order_pos_count[i]) != 0 & as.numeric(order_all_count[i]) != 0){
+                        density_order[i] = as.numeric(order_pos_count[i])/as.numeric(order_all_count[i])
+                }
+                else{
+                        density_order[i] = 0
+                }
+        }
+        return(density_order)
+}
+
 for (i in 1:1000){
         random_name = paste(random_name_front, as.character(i), ".txt", sep = "")
         random_density = extract_random_density(order_all_count, random_name, GO_GO_name_order)
@@ -436,7 +463,7 @@ ggplot() +
               legend.position = "bottom",
               plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"))
 
-ggsave("Working_figure/Figure3/Figure3A_PPI_GO_pair/Dendrogram_BP_GO_pair_cluster_chosen.pdf", width = 3, height =7.5)
+ggsave("Working_figure/Figure1_extra/Dendrogram_BP_GO_pair_cluster_chosen.pdf", width = 3, height =7.5)
 
 label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),]
@@ -475,7 +502,7 @@ ggplot() +
         theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
               axis.text.y.right = element_text(size = 9, color = "black"), axis.title = element_blank())
 #ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
-ggsave("Working_figure/Figure3/Figure3A_PPI_GO_pair/heatmap_density_BP_PPI_network_chosen.pdf", 
+ggsave("Working_figure/Figure1_extra/heatmap_density_BP_PPI_network_chosen.pdf", 
        width = 12, height = 7.5)
 
 ## No label so that I can cut the figure
@@ -500,5 +527,5 @@ ggplot() +
         theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
               axis.text.y.left = element_blank(), axis.title = element_blank())
 #ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
-ggsave("Working_figure/Figure3/Figure3A_PPI_GO_pair/heatmap_density_BP_PPI_network_chosen_no_label.pdf", 
+ggsave("Working_figure/Figure1_extra/heatmap_density_BP_PPI_network_chosen_no_label.pdf", 
        width = 7.5, height = 7.5)
