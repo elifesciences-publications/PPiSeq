@@ -155,7 +155,40 @@ save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure4/Figure4A_carbonhydrate_tr
 
 
 #################################################################################
+
+
 ##### Transcription correlated PPIs
+setwd("~/Dropbox/PPiSeq_02/")
+PPI_fit = csvReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_primary.csv")
+GO_slim = as.matrix(read.table("Working_data/GO_term_files/go_slim_mapping_tab_20190405.txt", header = F, sep = "\t"))
+Gene_carbon = unique(GO_slim[which(GO_slim[,6] == "GO:0008643"), 1])
+Gene_transcription = unique(GO_slim[which(GO_slim[,6] == "GO:0006352"), 1])
+Gene_translation = unique(GO_slim[which(GO_slim[,6] == "GO:0006413")])
+check_specific_protein = function(PPI, Gene_Carbon){
+        PPI_chosen = "0"
+        protein_pair = split_string_vector(PPI[,1])
+        if(length(Gene_Carbon) > 1){
+                for(i in 1:nrow(protein_pair)){
+                        if(protein_pair[i,1] %in% Gene_Carbon | protein_pair[i,2] %in% Gene_Carbon){
+                                PPI_chosen = c(PPI_chosen, PPI[i,1])
+                        }
+                }  
+        }else {
+                for(i in 1:nrow(protein_pair)){
+                        if(protein_pair[i,1] == Gene_Carbon | protein_pair[i,2] == Gene_Carbon){
+                                PPI_chosen = c(PPI_chosen, PPI[i,1])
+                        }
+                }  
+        }
+        
+        PPI_chosen = PPI_chosen[2:length(PPI_chosen)]
+        return(PPI_chosen)
+}
+
+#PPI_carbon = check_specific_protein(PPI_fit, Gene_carbon) # 284
+PPI_transcription = check_specific_protein(PPI_fit, Gene_transcription) # 731
+PPI_translation = check_specific_protein(PPI_fit, Gene_translation) #658
+
 PPI_fit = dataFrameReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_primary.csv")
 PPI_transcription_fit = PPI_fit[which(as.character(PPI_fit[,1]) %in% PPI_transcription),] #731
 PPI_transcription_order = sort(PPI_transcription_fit[,1]) #731
@@ -200,8 +233,13 @@ library(pheatmap)
 fit_heatmap = pheatmap(PPI_transcription_heatmap, cluster_rows = FALSE, cluster_cols = FALSE, show_rownames=FALSE,
                        annotation_colors = my_colour,
                        annotation_row = row_ann, show_colnames=T, col = color_scale)
-
-save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure3/Figure3B_transcription_fitness_environment_primary.pdf")
+save_pheatmap_pdf <- function(x, filename, width=5, height=5) {
+        pdf(filename, width = width, height = height)
+        grid::grid.newpage()
+        grid::grid.draw(x$gtable)
+        dev.off()
+}
+save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure4/Figure4_transcription_fitness_environment_primary.pdf")
 
 ##### Translation correlated PPIs
 PPI_fit = dataFrameReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_primary.csv")
@@ -249,7 +287,7 @@ fit_heatmap = pheatmap(PPI_translation_heatmap, cluster_rows = FALSE, cluster_co
                        annotation_colors = my_colour,
                        annotation_row = row_ann, show_colnames=T, col = color_scale)
 
-save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure3/Figure3B_translation_fitness_environment_primary.pdf")
+save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure4/Figure4_translation_fitness_environment_primary.pdf")
 
 
 

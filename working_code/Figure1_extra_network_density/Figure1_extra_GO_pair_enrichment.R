@@ -176,7 +176,7 @@ csvWriter(GO_order$label, "Working_data/Positive_PPI_environment/PPI_pair_GO/env
 GO_order = read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_CC_order.txt",
                       header = T, sep = "\t")
 
-Network_density = as.numeric(network_density_vector) # 0.044
+Network_density = as.numeric(network_density_vector) # 0.03579571
 dataf = data.frame(rowv,columnv,
                    Network_density = as.numeric(network_density_vector),
                    label = p_value)
@@ -188,7 +188,7 @@ ggplot() +
         scale_x_discrete(limits = GO_order$x) + 
         scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
         scale_size(name = "Network density", breaks = c(0, 0.01, 0.03, 0.05, 0.07, 0.09, 0.11), 
-                   label = c("0", "1%", "3%", "5%", "7%", "9%", "11%"), range = c(0,1.5))+ ## to tune the size of circles
+                   label = c("0", "1%", "3%", "5%", "7%", "9%", "11%"), range = c(0,1.21))+ ## to tune the size of circles
         theme(legend.justification = "left",
               legend.position= "right", legend.box = 'vertical',legend.box.just = "left",
               legend.key = element_blank(),
@@ -208,7 +208,7 @@ ggplot() +
         scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
         scale_size(name = "Network density", breaks = c(0, 0.01, 0.03, 0.05, 0.07, 0.09, 0.11), 
                    label = c("0", "1%", "3%", "5%", "7%", "9%", "11%"),
-                   range = c(0, 1.5))+ ## to tune the size of circles
+                   range = c(0, 1.21))+ ## to tune the size of circles
         theme(legend.position= "none", plot.margin = margin(0.2, 0.2, 2, 2, "cm")) +
         theme(panel.background = element_blank(), axis.ticks=element_blank(),
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
@@ -379,14 +379,14 @@ columnv = rep(GO_BP, 59)
 GO_GO_name_order = paste(rowv, columnv, sep= "_")### T
 
 #### extract density from each random network and put them as a column into a matrix
-all_count= as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_BP_new.txt",sep = "\t", header = T))
+all_count= as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt",sep = "\t", header = T))
 all_count_name = paste(all_count[,1], all_count[,2], sep = "_")
 all_count_name = gsub("-", " ", all_count_name)
 all_count_name = gsub(",", " ", all_count_name)
 order_all_count = all_count[match(GO_GO_name_order, all_count_name), 3]
 #overlap = intersect(all_count_name, GO_GO_name_order)
 
-random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/random_network/random_network_density/BP_truncated/random_network_BP_pos_count_"
+random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/random_network/random_network_density/random_network_BP_pos_count_"
 density_BP_random = rep(0, length(GO_GO_name_order))
 extract_random_density = function(order_all_count, pos_count_name, GO_GO_name_order){
      
