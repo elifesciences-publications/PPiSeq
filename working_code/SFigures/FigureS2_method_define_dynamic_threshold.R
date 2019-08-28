@@ -134,27 +134,30 @@ for (k in 1: length(reference_name)){
 
 
 #### Figure S2 For the same reference set, different PPV thresholds
+setwd("/Volumes/zmliu_02/PPiseq/DMSO/reference_set_large_Q_range/")
 PPV_threshold = dataFrameReader_T("Fitness_Q_value_PPV_threshold_1_data.csv")
 PPV_chosen = c("PPV_0.5", "PPV_0.56", "PPV_0.6", "PPV_0.64", "PPV_0.71", "PPV_0.75", "PPV_0.8", "PPV_0.9")
 PPV_threshold_chosen = PPV_threshold[which(PPV_threshold$PPV %in% PPV_chosen),]
 PPV_threshold_chosen$PPV = factor(PPV_threshold_chosen$PPV, levels = rev(levels(PPV_threshold_chosen$PPV)))
 col_chosen = rev(c("#3288bd", "#66c2a5", "#abdda4", "#e6f598", "#fee08b", "#fdae61",
                "#f46d43", "#f46d43"))
+library("ggplot2")
 ggplot()+
         geom_line(aes(x = Q_value, y = Fitness, group = PPV, col = PPV), PPV_threshold_chosen) +
         scale_color_manual("", values = col_chosen )+
-        scale_y_continuous(name = "Fitness",
+        scale_y_continuous(name = expression(italic(f)),
                            limits=c(0, 0.7),
                            breaks=seq(0,0.7, by =0.1),
                            labels = seq(0, 0.7, by= 0.1)) +
-        scale_x_continuous(name = "Log10(Q-value)", 
+        scale_x_continuous(name = expression(italic(q)), 
                            limits=c(-3, 0),
                            breaks=seq(-3, 0, by =0.5),
                            labels = seq(-3, 0, by= 0.5))+
         theme(legend.key=element_blank()) +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-        theme(axis.text.x = element_text(size = 10, color = "black"), 
+        theme(axis.text.x = element_text(size = 10, color = "black"),
+              axis.title=element_text(size=14,face="bold"),
               axis.text.y.left = element_text(size = 10, color = "black")) + 
         theme(text = element_text(size=12))
 ggsave("~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS2A_Method_Different_dynamic_PPV_threshold.pdf", width = 6, height = 5)
@@ -206,32 +209,40 @@ plot_threshold = function(specific_PPV, output){
         #######
         
         ggplot() +
-                geom_point(aes(Q_value, Fitness, color = Data_type), real_data, alpha = 0.5)+
-                #geom_line(aes(Q_value, Fitness, color = Data_type), real_data, alpha = 0.5)+
-                geom_line(aes(Q_value, Fitness, color = Data_type), simulated_data) +
-                scale_color_manual('', breaks = c("Discrete_combination", "Dynamic_combination"),
-                                   values = apple_colors[c(8,7)], 
-                                   guide = guide_legend(override.aes = list(linetype = c(NA,1),
-                                                                            shape = c(16, NA)))) +
-                scale_x_continuous(name= "Log10(Q-value)",
-                                   limits = c(-3, 0),
-                                   breaks = seq(-3, 0, by = 0.5),
-                                   labels = seq(-3, 0, by = 0.5)) +
-                #scale_y_continuous(name = "Fitness",
-                #limits = c(0, 0.6),
-                #breaks = seq(0, 0.6, by = 0.1),
-                #labels = seq(0, 0.6, by = 0.1)) +
-                
-                theme(legend.key=element_blank(), legend.position = c(0.3,0.8)) +
-                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                      panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-                theme(axis.text.x = element_text(size = 10, color = "black"), 
-                      axis.text.y.left = element_text(size = 10, color = "black")) + 
-                theme(text = element_text(size=12))
+          #geom_point(aes(Q_value, Fitness, color = Data_type), real_data, alpha = 0.5)+
+          #geom_line(aes(Q_value, Fitness, color = Data_type), real_data, alpha = 0.5)+
+          geom_hex(aes(x= Q_value, y= Fitness), real_data, bins = 50)+
+          scale_fill_gradient(low= apple_colors[10], high = apple_colors[7])+
+          #scale_fill_gradient(low= "white", high = apple_colors[7])+
+          geom_line(aes(Q_value, Fitness), col = apple_colors[11], simulated_data) +
+          #scale_color_manual('', breaks = c("Discrete_combination", "Dynamic_combination"),
+          #values = apple_colors[c(8,7)], 
+          #guide = guide_legend(override.aes = list(linetype = c(NA,1),shape = c(16, NA)))) +
+          scale_x_continuous(name= expression(italic(q)),
+                             limits = c(-3, 0),
+                             breaks = seq(-3, 0, by = 0.5),
+                             labels = seq(-3, 0, by = 0.5)) +
+          ylab(expression(italic(f)))+
+          #scale_y_continuous(name = "Fitness",
+          #limits = c(0, 0.6),
+          #breaks = seq(0, 0.6, by = 0.1),
+          #labels = seq(0, 0.6, by = 0.1)) +
+          
+          theme(legend.key=element_blank(), legend.position = c(0.2,0.75)) +
+          theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+          theme(axis.text.x = element_text(size = 10, color = "black"), 
+                axis.title=element_text(size=14,face="bold"),
+                axis.text.y.left = element_text(size = 10, color = "black")) + 
+          theme(text = element_text(size=12))
         
         ggsave(output, width = 5, height =5, device = "pdf")
+        
         
         
 }
 # Check the linear regression effect of different FPR
 plot_threshold("0.71", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS2B_Method_Different_references_PPV_0.71_threshold_dot.pdf")
+
+
+
