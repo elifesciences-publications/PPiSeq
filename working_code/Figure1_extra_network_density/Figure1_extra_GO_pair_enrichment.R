@@ -529,3 +529,5 @@ ggplot() +
 #ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
 ggsave("Working_figure/Figure1_extra/heatmap_density_BP_PPI_network_chosen_no_label.pdf", 
        width = 7.5, height = 7.5)
+
+

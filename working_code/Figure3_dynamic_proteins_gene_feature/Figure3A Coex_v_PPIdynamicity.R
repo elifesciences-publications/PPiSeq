@@ -3,7 +3,7 @@ require(ggplot2)
 #get PPI pairs and dynamicity
 setwd("~/Dropbox/PPiSeq_02/")
 #load("Working_data/Positive_PPI_environment/variation_score.Rfile")
-v = as.matrix(read.csv("Working_data/Positive_PPI_environmentVariation_score_PPI_environment_neg_zero.csv"))
+v = as.matrix(read.csv("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_neg_zero.csv"))
 a = sapply(as.character(v[,1]), strsplit, "_")
 x = matrix(NA, length(a), 2)
 for(i in 1:length(a)){
@@ -44,7 +44,7 @@ coex = m
 #Save this file
 save(coex, file = "~/Dropbox/PPiSeq_02/Working_data/Coexpression/CoExpressDB.Rfile")
 
-
+load("~/Dropbox/PPiSeq_02/Working_data/Coexpression/CoExpressDB.Rfile")
 #Get CoExpression for all PPIs
 x = 1:length(dynamicity)
 x[] = NA
