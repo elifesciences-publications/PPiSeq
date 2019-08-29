@@ -75,13 +75,13 @@ TECAN_data_AUC = function(data_file_name, map_name,time_window,time_window_low, 
                 Mean_AUC[i] = mean(auc_each_PPI_01)
         }
         auc_PPI_matrix[,4] = Mean_AUC
-        Max_AUC = max(Mean_AUC)
+        #Max_AUC = max(Mean_AUC)
         for(i in 1:length(PPI_unique)){
                 column_each_PPI = which(PPI_map == PPI_unique[i])
                 auc_each_PPI_01 = AUC_PPI(time_select_01, od_robot_select_01, column_each_PPI)
-                auc_PPI_matrix[i,5:7] = (auc_each_PPI_01-Neg_AUC)/(Max_AUC - Neg_AUC)
-                auc_PPI_matrix[i,8] = mean((auc_each_PPI_01-Neg_AUC)/(Max_AUC - Neg_AUC))
-                auc_PPI_matrix[i,9] = sd((auc_each_PPI_01-Neg_AUC)/(Max_AUC - Neg_AUC))
+                auc_PPI_matrix[i,5:7] = (auc_each_PPI_01-Neg_AUC)/Neg_AUC
+                auc_PPI_matrix[i,8] = mean((auc_each_PPI_01-Neg_AUC)/Neg_AUC)
+                auc_PPI_matrix[i,9] = sd((auc_each_PPI_01-Neg_AUC)/Neg_AUC)
                 auc_PPI_matrix[i,10] = t.test(auc_each_PPI_01, Negative_AUC_01, alternative = "greater")$p.value
         }
         auc_PPI_matrix[,10] = p.adjust(auc_PPI_matrix[,10], "BH")
@@ -120,7 +120,63 @@ bad_wells = 0
 matrix_name = "Diploid_carbo_07_Raffinose_MTX_T2.csv"
 TECAN_data_AUC(data_file_name, map_name, time_window,time_window_low, matrix_name, bad_wells) #3 from 30
 
-##### Combine two environments
+##### NaCl environment
+setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190819/")
+data_file_name = "2019-08-16_14-01_Diploid_carbo_NaCl_MTX_01_96_T7.txt"
+map_name = "~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/Final_map/Diploid_carbohydrate_1.csv" 
+time_window = 42
+time_window_low = 0
+bad_wells = 0
+matrix_name = "Diploid_carbo_01_NaCl_MTX_T7.csv"
+TECAN_data_AUC(data_file_name, map_name, time_window,time_window_low, matrix_name, bad_wells) #11 from 30
+
+setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190819/")
+data_file_name = "2019-08-16_15-02_Diploid_carbo_06_NaCl_MTX_96_T14.txt"
+map_name = "~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/Final_map/Diploid_carbohydrate_6.csv" 
+time_window = 42
+time_window_low = 0
+bad_wells = 0
+matrix_name = "Diploid_carbo_06_NaCl_MTX_T14.csv"
+TECAN_data_AUC(data_file_name, map_name, time_window,time_window_low, matrix_name, bad_wells) #11 from 30
+
+setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190819/")
+data_file_name = "2019-08-16_15-03_Diploid_carbo_07_NaCl_MTX_96_T2.txt"
+map_name = "~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/Final_map/Diploid_carbohydrate_7.csv" 
+time_window = 42
+time_window_low = 0
+bad_wells = 0
+matrix_name = "Diploid_carbo_07_NaCl_MTX_T2.csv"
+TECAN_data_AUC(data_file_name, map_name, time_window,time_window_low, matrix_name, bad_wells) #11 from 30
+
+#### SD environment
+setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190819/")
+data_file_name = "2019-08-12_11-53_Diploid_carbo_01_DMSO_MTX_T7_96_T7.txt"
+map_name = "~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/Final_map/Diploid_carbohydrate_1.csv" 
+time_window = 42
+time_window_low = 0
+bad_wells = 0
+matrix_name = "Diploid_carbo_01_SD_MTX_T7.csv"
+TECAN_data_AUC(data_file_name, map_name, time_window,time_window_low, matrix_name, bad_wells) #12 from 30
+
+setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190819/")
+data_file_name = "2019-08-12_11-53_Diploid_carbo_06_DMSO_MTX_96_T14.txt"
+map_name = "~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/Final_map/Diploid_carbohydrate_6.csv" 
+time_window = 42
+time_window_low = 0
+bad_wells = 0
+matrix_name = "Diploid_carbo_06_SD_MTX_T14.csv"
+TECAN_data_AUC(data_file_name, map_name, time_window,time_window_low, matrix_name, bad_wells) #13 from 30
+
+setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190819/")
+data_file_name = "2019-08-12_11-55_Diploid_carbo_07_DMSO_MTX_96_T2.txt"
+map_name = "~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/Final_map/Diploid_carbohydrate_7.csv" 
+time_window = 42
+time_window_low = 0
+bad_wells = 0
+matrix_name = "Diploid_carbo_07_SD_MTX_T2.csv"
+TECAN_data_AUC(data_file_name, map_name, time_window,time_window_low, matrix_name, bad_wells) #4 from 30
+
+##### Combine two environments SD and Raffinose; SD and NaCl
 setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/")
 dip_01_SD = dataFrameReader_T("20190819/Diploid_carbo_01_SD_MTX_T7.csv")
 dip_06_SD = dataFrameReader_T("20190819/Diploid_carbo_06_SD_MTX_T14.csv")
@@ -130,8 +186,29 @@ dip_01_Raff = dataFrameReader_T("20190820/Diploid_carbo_01_Raffinose_MTX_T7.csv"
 dip_06_Raff = dataFrameReader_T("20190820/Diploid_carbo_06_Raffinose_MTX_T14.csv")
 dip_07_Raff = dataFrameReader_T("20190820/Diploid_carbo_07_Raffinose_MTX_T2.csv")
 
+dip_01_NaCl = dataFrameReader_T("20190819/Diploid_carbo_01_NaCl_MTX_T7.csv")
+dip_06_NaCl = dataFrameReader_T("20190819/Diploid_carbo_06_NaCl_MTX_T14.csv")
+dip_07_NaCl = dataFrameReader_T("20190819/Diploid_carbo_07_NaCl_MTX_T2.csv")
+
 dip_SD = rbind(dip_01_SD, dip_06_SD, dip_07_SD)
 dip_Raff = rbind(dip_01_Raff, dip_06_Raff, dip_07_Raff)
+dip_NaCl = rbind(dip_01_NaCl, dip_06_NaCl, dip_07_NaCl)
+
+dip_SD_NaCl = matrix(0, nrow(dip_SD), 7)
+colnames(dip_SD_NaCl) = c("PPI", "Dynamics_01", "Dynamics_02", "Dynamics_03",
+                          "Mean_dynamics", "SD_dynamics", "p-value")
+dip_SD_NaCl[,1] = as.character(dip_SD[,1])
+for(i in 1:nrow(dip_SD_NaCl)){
+        dynamic = as.numeric(dip_NaCl[i,5:7]) - as.numeric(dip_SD[i,5:7])
+        dip_SD_NaCl[i, 2:4] = dynamic
+        dip_SD_NaCl[i,5] = mean(dynamic)
+        dip_SD_NaCl[i,6] = sd(dynamic)
+        dip_SD_NaCl[i,7] = t.test(as.numeric(dip_NaCl[i,5:7]), as.numeric(dip_NaCl[i,5:7]),
+                                  alternative = "two.sided")$p.value
+}
+
+csvWriter(dip_SD_NaCl, "20190819/NaCl_DMSO_dynamics_Tecan.csv")
+
 
 dip_SD_Raff = matrix(0, nrow(dip_SD), 7)
 colnames(dip_SD_Raff) = c("PPI", "Dynamics_01", "Dynamics_02", "Dynamics_03",
@@ -152,10 +229,12 @@ csvWriter(dip_SD_Raff, "20190820/Raffinose_DMSO_dynamics_Tecan.csv")
 setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190820/")
 PPI_fit_SD = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/SD_PPI_barcodes_fitness_counts.csv")
 PPI_fit_Raff = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Raffinose_PPI_barcodes_fitness_counts.csv")
+PPI_fit_NaCl = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/NaCl_PPI_barcodes_fitness_counts.csv")
 Tecan = csvReader_T("Raffinose_DMSO_dynamics_Tecan.csv")
 
 SD_chosen = PPI_fit_SD[which(PPI_fit_SD[,1] %in% c(Tecan[,1], "positive_DHFR","negative_non_DHFR")),]
 Raff_chosen = PPI_fit_Raff[which(PPI_fit_Raff[,1] %in% c(Tecan[,1], "positive_DHFR","negative_non_DHFR")),]
+NaCl_chosen = PPI_fit_NaCl[which(PPI_fit_NaCl[,1] %in% c(Tecan[,1], "positive_DHFR","negative_non_DHFR")),]
 
 Fitness_normalization = function(DMSO_lineage){
         DMSO_DHFR_Pos= DMSO_lineage[which(DMSO_lineage[,1] == "positive_DHFR"),]
@@ -170,7 +249,10 @@ Fitness_normalization = function(DMSO_lineage){
 }
 SD_norm = Fitness_normalization(SD_chosen)
 Raff_norm = Fitness_normalization(Raff_chosen)
-
+NaCl_norm = Fitness_normalization(NaCl_chosen)
+csvWriter(SD_norm, "~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190819/PPiseq_norm_SD_Tecan.csv")
+csvWriter(NaCl_norm, "~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190819/PPiseq_norm_NaCl_Tecan.csv")
+csvWriter(Raff_norm, "~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190820/PPiseq_norm_Raffinose_Tecan.csv")
 
 #### align the PPI score according to their barcodes
 #SD_norm_overlap = SD_norm[which(SD_norm[,1] %in% Overlap),]
@@ -179,7 +261,12 @@ Raff_norm = Fitness_normalization(Raff_chosen)
 #SD_Raff_norm = cbind(SD_norm_overlap, Raff_matched)
 #colnames(SD_Raff_norm) = c(colnames(SD_norm_overlap), "Fit_Raff")
 #csvWriter(SD_Raff_norm, "SD_Raff_normalized_Fitness.csv")
+setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/")
+SD_norm = csvReader_T("20190819/PPiseq_norm_SD_Tecan.csv")
+NaCl_norm = csvReader_T("20190819/PPiseq_norm_NaCl_Tecan.csv")
+Raff_norm = csvReader_T("20190820/PPiseq_norm_Raffinose_Tecan.csv")
 
+### SD an Raffinose
 Overlap = intersect(SD_norm[,1], Raff_norm[,1]) # 82
 Overlap = Overlap[which(!Overlap %in% c("positive_DHFR", "negative_non_DHFR"))]
 SD_Raff_matrix = matrix(NA, length(Overlap), 6)
@@ -191,30 +278,69 @@ for(i in 1:length(Overlap)){
         b = which(Raff_norm[,1] == Overlap[i])
         SD_Raff_matrix[i,2] = length(a)
         SD_Raff_matrix[i,3] = length(b)
-        if(length(a) >= 1 & length(b) > 1){
-                fit_SD = as.numeric(SD_norm[a, 4])
-                fit_Raff = as.numeric(Raff_norm[b,4])
-                dynamics = fit_Raff - mean(fit_SD)
-                SD_Raff_matrix[i,4] = mean(dynamics)
-                SD_Raff_matrix[i,5] = sd(dynamics)
+        fit_SD = as.numeric(SD_norm[a, 4])
+        fit_Raff = as.numeric(Raff_norm[b,4])
+        dynamics = rep(0, length(a) * length(b))
+        z = 1
+        for(m in 1:length(b)){
+                for(n in 1:length(a)){
+                        dynamics[z] = fit_Raff[m] - fit_SD[n]
+                        z = z + 1
+                }
+        }
+        SD_Raff_matrix[i,4] = mean(dynamics)
+        SD_Raff_matrix[i,5] = sd(dynamics)
+        if(length(a) > 1 & length(b) > 1){
                 SD_Raff_matrix[i,6] = t.test(fit_SD, fit_Raff, alternative = "two.sided")$p.value
         }else{
-                fit_SD = as.numeric(SD_norm[a, 4])
-                fit_Raff = as.numeric(Raff_norm[b,4])
-                dynamics = fit_Raff - mean(fit_SD)
-                SD_Raff_matrix[i,4] = mean(dynamics)
-                SD_Raff_matrix[i,5] = sd(dynamics)
                 SD_Raff_matrix[i,6] = NA
         }
         
 }
-csvWriter(SD_Raff_matrix, "SD_Raff_normalized_PPiSeq_Fitness_summary.csv")
+csvWriter(SD_Raff_matrix, "20190820/SD_Raff_normalized_PPiSeq_Fitness_summary.csv")
+
+Tecan_matched = Tecan[match(SD_Raff_matrix[,1], Tecan[,1]),]
+SD_Raff_final = cbind(Tecan_matched, SD_Raff_matrix) # Combine Tecan data and PPiSeq data
+csvWriter(SD_Raff_final, "20190820/SD_Raff_Tecan_PPiSeq_all_comparison.csv")
+
+### SD an NaCl
+Overlap = intersect(SD_norm[,1], NaCl_norm[,1]) # 82
+Overlap = Overlap[which(!Overlap %in% c("positive_DHFR", "negative_non_DHFR"))]
+SD_NaCl_matrix = matrix(NA, length(Overlap), 6)
+colnames(SD_NaCl_matrix) = c("PPI", "BC_1", "BC_2", 
+                             "Mean_diff", "SD_diff", "p-value")
+SD_NaCl_matrix[,1] = Overlap
+for(i in 1:length(Overlap)){
+        a = which(SD_norm[,1] == Overlap[i])
+        b = which(NaCl_norm[,1] == Overlap[i])
+        SD_NaCl_matrix[i,2] = length(a)
+        SD_NaCl_matrix[i,3] = length(b)
+        fit_SD = as.numeric(SD_norm[a, 4])
+        fit_NaCl = as.numeric(NaCl_norm[b,4])
+        dynamics = rep(0, length(a) * length(b))
+        z = 1
+        for(m in 1:length(b)){
+                for(n in 1:length(a)){
+                        dynamics[z] = fit_NaCl[m] - fit_SD[n]
+                        z = z + 1
+                }
+        }
+        SD_NaCl_matrix[i,4] = mean(dynamics)
+        SD_NaCl_matrix[i,5] = sd(dynamics)
+        if(length(a) > 1 & length(b) > 1){
+                SD_NaCl_matrix[i,6] = t.test(fit_SD, fit_NaCl, alternative = "two.sided")$p.value
+        }else{
+                SD_NaCl_matrix[i,6] = NA
+        }
+        
+}
+csvWriter(SD_NaCl_matrix, "20190819/SD_NaCl_normalized_PPiSeq_Fitness_summary.csv")
 
 #### Combine Tecan data and PPiSeq data
-Tecan_matched = Tecan[match(SD_Raff_matrix[,1], Tecan[,1]),]
-SD_Raff_final = cbind(Tecan_matched, SD_Raff_matrix)
-csvWriter(SD_Raff_final, "SD_Raff_Tecan_PPiSeq_all_comparison.csv")
-
+Tecan = csvReader_T("20190819/NaCl_DMSO_dynamics_Tecan.csv")
+Tecan_matched = Tecan[match(SD_NaCl_matrix[,1], Tecan[,1]),]
+SD_NaCl_final = cbind(Tecan_matched, SD_NaCl_matrix)
+csvWriter(SD_NaCl_final, "20190819/SD_NaCl_Tecan_PPiSeq_all_comparison.csv")
 
 ############### Make a scatter plot to show the comparison between Tecan and PPiSeq
 ##### Separate each group by HXT1, HXT3, HXT5, and HXT7
@@ -238,34 +364,47 @@ for(i in 1:length(protein_1)){
         }
         else if(protein_1[i] == "HXT7" | protein_2[i] == "HXT7"){
                 label[i] = "HXT7"
+        }else if(protein_1[i] == "FPS1" | protein_2[i] == "FPS1"){
+                label[i] = "FPS1"
+        }else if(protein_1[i] == "HXT2" | protein_2[i] == "HXT2"){
+                label[i] = "HXT2"
         }else{
-                label[i] = "Others"
+                label[i] = "Other"
         }
 }
 SD_Raff_final = data.frame(protein_1, protein_2, SD_Raff_final, label)
-SD_Raff_final$p.value.1[is.na(SD_Raff_final$p.value.1)] = 1
+P_value = rep("0", nrow(SD_Raff_final))
+P_value[is.na(SD_Raff_final$p.value.1)] = "NA"
+P_value[SD_Raff_final$p.value.1 <= 0.05] = "Significant"
+P_value[SD_Raff_final$p.value.1 > 0.05] = "Non-significant"
+SD_Raff_final$p.value.1 = P_value
 #SD_Raff_final$p.value.1[which(SD_Raff_final$p.value.1 == 0)] = 1e-7
-SD_Raff_final$p.value.1 = -log10(SD_Raff_final$p.value.1)
+#SD_Raff_final$p.value.1 = -log10(SD_Raff_final$p.value.1)
 PPiseq_min = SD_Raff_final$Mean_diff - SD_Raff_final$SD_diff
 PPiseq_max = SD_Raff_final$Mean_diff + SD_Raff_final$SD_diff
 Tecan_min = SD_Raff_final$Mean_dynamics - SD_Raff_final$SD_dynamics
 Tecan_max = SD_Raff_final$Mean_dynamics + SD_Raff_final$SD_dynamics
 SD_Raff_final = data.frame(SD_Raff_final, PPiseq_min, PPiseq_max, Tecan_min, Tecan_max)
+SD_Raff_final$label = factor(SD_Raff_final$label, levels = c("HXT1", "HXT7", "HXT3", "HXT5", "HXT2", "FPS1", "Other"))
+SD_Raff_final$p.value.1 = factor(SD_Raff_final$p.value.1, levels = c("Significant", "Non-significant", "NA"))
 library(ggplot2)
 #"HXT1" = "#7b3294", "HXT3" = "#c2a5cf", "HXT5" = "#d01c8b", "HXT7" = "#a6dba0", "Others" ="#008837"
+cor(SD_Raff_final$Mean_diff, SD_Raff_final$Mean_dynamics, method = "spearman") #0.6020863
 ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+ 
-        geom_point(aes(size = p.value.1, col = label))+
-        geom_errorbarh(aes(xmin = PPiseq_min, xmax = PPiseq_max), col = apple_colors[8], linetype = 2,size = 0.2 )+
-        geom_errorbar(aes(ymin = Tecan_min, ymax = Tecan_max), col = apple_colors[8], linetype = 2, size = 0.2)+
+        geom_point(aes(shape= p.value.1, col = label), size =3)+
+        geom_errorbarh(aes(xmin = PPiseq_min, xmax = PPiseq_max), col = apple_colors[8], size = 0.2 )+
+        geom_errorbar(aes(ymin = Tecan_min, ymax = Tecan_max), col = apple_colors[8], size = 0.2)+
         geom_vline(xintercept = 0, col = apple_colors[11], linetype = 2,size = 0.2)+
         geom_hline(yintercept = 0, col = apple_colors[11], linetype = 2, size = 0.2)+
-        scale_size_continuous(name = "-Log10(P-value)", range= c(0,6)) +
-        scale_color_manual(name = "Hubs", values = c("#1b9e77","#d95f02", "#7570b3", "#e7298a", "#CECED2"))+
-        scale_y_continuous(name = "Dynamics measured by isolate growth curve",
-                           limits=c(-2.5, 2),
-                           breaks=seq(-2.5,2, by =0.5),
-                           labels = seq(-2.5,2, by= 0.5)) +
-        scale_x_continuous(name = "Dynamics measured by PPiSeq", 
+        annotate("text", x = -0.3, y = 0.7, label = expression(paste("Spearman's ", italic(r), " = 0.6")),  
+                 parse = TRUE, col = apple_colors[11]) +
+        scale_shape_manual(name = "", values = c(16, 15, 17)) +
+        scale_color_manual(name = "", values = c("#1b9e77","#e7298a", "#d95f02", "#7570b3", "#1f78b4", "#984ea3", "#CECED2"))+
+        scale_y_continuous(name = "Fitness change in Raffinose by OD595",
+                           limits=c(-0.5, 0.8),
+                           breaks=seq(-0.5,0.8, by =0.1),
+                           labels = seq(-0.5,0.8, by= 0.1)) +
+        scale_x_continuous(name = "Fitness change in Rraffinose by PPiSeq", 
                            limits=c(-0.5, 0.3),
                            breaks=seq(-0.5,0.3, by =0.1),
                            labels = seq(-0.5,0.3, by= 0.1))+
@@ -277,8 +416,77 @@ ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+
               axis.text.y.left = element_text(size = 10, color = "black"))
 ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure4/Figure4C_Raffinose_SD_Tecan_PPiSeq_comparison.pdf", width =6, height =5 )       
 
-
-
+################ NaCl Environment
+setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190819/")
+SD_Raff_final = dataFrameReader_T("SD_NaCl_Tecan_PPiSeq_all_comparison.csv")
+name_exchange = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/Systematic_standard_protein.csv")
+PPI_split = split_string_vector(SD_Raff_final[,1])
+protein_1 = name_exchange[match(PPI_split[,1], name_exchange[,1]),2]
+protein_2 = name_exchange[match(PPI_split[,2], name_exchange[,1]),2]
+label = rep("0", nrow(SD_Raff_final))
+for(i in 1:length(protein_1)){
+        if(protein_1[i] == "HXT1" | protein_2[i] == "HXT1"){
+                label[i] = "HXT1"
+        }
+        else if(protein_1[i] == "HXT5" | protein_2[i] == "HXT5"){
+                label[i] = "HXT5"
+        }
+        else if(protein_1[i] == "HXT3" | protein_2[i] == "HXT3"){
+                label[i] = "HXT3"
+        }
+        else if(protein_1[i] == "HXT7" | protein_2[i] == "HXT7"){
+                label[i] = "HXT7"
+        }else if(protein_1[i] == "FPS1" | protein_2[i] == "FPS1"){
+                label[i] = "FPS1"
+        }else if(protein_1[i] == "HXT2" | protein_2[i] == "HXT2"){
+                label[i] = "HXT2"
+        }else{
+                label[i] = "Other"
+        }
+}
+SD_Raff_final = data.frame(protein_1, protein_2, SD_Raff_final, label)
+P_value = rep("0", nrow(SD_Raff_final))
+P_value[is.na(SD_Raff_final$p.value.1)] = "NA"
+P_value[SD_Raff_final$p.value.1 <= 0.05] = "Significant"
+P_value[SD_Raff_final$p.value.1 > 0.05] = "Non-significant"
+SD_Raff_final$p.value.1 = P_value
+#SD_Raff_final$p.value.1[which(SD_Raff_final$p.value.1 == 0)] = 1e-7
+#SD_Raff_final$p.value.1 = -log10(SD_Raff_final$p.value.1)
+PPiseq_min = SD_Raff_final$Mean_diff - SD_Raff_final$SD_diff
+PPiseq_max = SD_Raff_final$Mean_diff + SD_Raff_final$SD_diff
+Tecan_min = SD_Raff_final$Mean_dynamics - SD_Raff_final$SD_dynamics
+Tecan_max = SD_Raff_final$Mean_dynamics + SD_Raff_final$SD_dynamics
+SD_Raff_final = data.frame(SD_Raff_final, PPiseq_min, PPiseq_max, Tecan_min, Tecan_max)
+SD_Raff_final$label = factor(SD_Raff_final$label, levels = c("HXT1", "HXT7", "HXT3", "HXT5", "HXT2", "FPS1", "Other"))
+SD_Raff_final$p.value.1 = factor(SD_Raff_final$p.value.1, levels = c("Significant", "Non-significant", "NA"))
+library(ggplot2)
+#"HXT1" = "#7b3294", "HXT3" = "#c2a5cf", "HXT5" = "#d01c8b", "HXT7" = "#a6dba0", "Others" ="#008837"
+cor(SD_Raff_final$Mean_diff, SD_Raff_final$Mean_dynamics, method = "spearman") #0.1559781
+ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+ 
+        geom_point(aes(shape= p.value.1, col = label), size = 3)+
+        geom_errorbarh(aes(xmin = PPiseq_min, xmax = PPiseq_max), col = apple_colors[8], size = 0.2 )+
+        geom_errorbar(aes(ymin = Tecan_min, ymax = Tecan_max), col = apple_colors[8], size = 0.2)+
+        geom_vline(xintercept = 0, col = apple_colors[11], linetype = 2,size = 0.2)+
+        geom_hline(yintercept = 0, col = apple_colors[11], linetype = 2, size = 0.2)+
+        annotate("text", x = -0.3, y = 0.2, label = expression(paste("Spearman's ", italic(r), " = 0.16")),  
+                 parse = TRUE, col = apple_colors[11]) +
+        scale_shape_manual(name = "", values = c(16, 15, 17)) +
+        scale_color_manual(name = "", values = c("#1b9e77","#e7298a", "#d95f02", "#7570b3", "#1f78b4", "#984ea3", "#CECED2"))+
+        scale_y_continuous(name = "Fitness change in Raffinose by OD595",
+                           limits=c(-0.4, 0.3),
+                           breaks=seq(-0.4,0.3, by =0.1),
+                           labels = seq(-0.4,0.3, by= 0.1)) +
+        scale_x_continuous(name = "Fitness change in Rraffinose by PPiSeq", 
+                           limits=c(-0.5, 0.3),
+                           breaks=seq(-0.5,0.3, by =0.1),
+                           labels = seq(-0.5,0.3, by= 0.1))+
+        theme(legend.key=element_blank(), legend.text=element_text(size=10)) +
+        #guides(fill=guide_legend(title="Log10(Count)")) + 
+        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+              panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+        theme(axis.text.x = element_text(size = 10, color = "black"),
+              axis.text.y.left = element_text(size = 10, color = "black"))
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure4/Figure4C_NaCl_SD_Tecan_PPiSeq_comparison.pdf", width =6, height =5 )       
 
 
 

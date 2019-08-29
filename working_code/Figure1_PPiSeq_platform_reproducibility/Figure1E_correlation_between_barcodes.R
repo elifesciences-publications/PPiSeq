@@ -102,6 +102,7 @@ ggplot() +
                      limits=c(0, 1.4),
                      breaks=seq(0,1.4, by =0.2),
                      labels = seq(0,1.4, by= 0.2))+
+  labs(fill = expression('Log'[10]* '(count)')) +     
   theme(legend.position =c(0.9,0.2), legend.key=element_blank(), legend.text=element_text(size=10)) +
   #guides(fill=guide_legend(title="Log10(Count)")) + 
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
