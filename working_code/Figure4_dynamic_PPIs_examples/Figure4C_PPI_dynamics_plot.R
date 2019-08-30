@@ -472,11 +472,11 @@ ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+
                  parse = TRUE, col = apple_colors[11]) +
         scale_shape_manual(name = "", values = c(16, 15, 17)) +
         scale_color_manual(name = "", values = c("#1b9e77","#e7298a", "#d95f02", "#7570b3", "#1f78b4", "#984ea3", "#CECED2"))+
-        scale_y_continuous(name = "Fitness change in Raffinose by OD595",
+        scale_y_continuous(name = "Fitness change in NaCl by OD595",
                            limits=c(-0.4, 0.3),
                            breaks=seq(-0.4,0.3, by =0.1),
                            labels = seq(-0.4,0.3, by= 0.1)) +
-        scale_x_continuous(name = "Fitness change in Rraffinose by PPiSeq", 
+        scale_x_continuous(name = "Fitness change in NaCl by PPiSeq", 
                            limits=c(-0.5, 0.3),
                            breaks=seq(-0.5,0.3, by =0.1),
                            labels = seq(-0.5,0.3, by= 0.1))+

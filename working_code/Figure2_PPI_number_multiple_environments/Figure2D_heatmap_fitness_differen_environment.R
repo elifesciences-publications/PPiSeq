@@ -17,7 +17,7 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 #### Make a heatmap to show different groups of PPIs
 setwd("~/Dropbox/PPiSeq_02/")
-PPI_heatmap = dataFrameReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_primary.csv")
+PPI_heatmap = dataFrameReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_neg_zero.csv")
 
 #PPI_count = dataFrameReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary_combine_SD.csv")
 
@@ -35,20 +35,22 @@ heatmap_matrix = PPI_heatmap[,4:12]
 #pdf("~/Desktop/PPI_fitness_across_environment.pdf", height = 5, width =5)
 #color_scale=c("#FFFFFF",colorRampPalette((RColorBrewer::brewer.pal(n=7,name="YlGnBu")))(99))
 fitness_all = unique(as.vector(as.matrix(heatmap_matrix)))
-min(fitness_all) # -0.6331257
-max(fitness_all) # 1.555071
-bk1 = seq(-0.7, -0.05, by = 0.05)
+min(fitness_all) # 0
+max(fitness_all) # 1.351097
+#bk1 = seq(-0.7, -0.05, by = 0.05)
 bk2 = seq(0, 1, by = 0.01)
 bk3 = seq(1.05, 1.6, by = 0.05)
 col_chosen = c(apple_colors[5], "#e7d4e8",apple_colors[7])
 #col_chosen = c(apple_colors[5], "white",apple_colors[7])
-my_palette = c(rep(apple_colors[5], length(bk1)), colorRampPalette(col_chosen)(length(bk2)),
+#my_palette = c(rep(apple_colors[5], length(bk1)), colorRampPalette(col_chosen)(length(bk2)),
+               #rep(apple_colors[7], length(bk3)))
+my_palette = c(colorRampPalette(col_chosen)(length(bk2)),
                rep(apple_colors[7], length(bk3)))
 fit_heatmap = pheatmap(heatmap_matrix, cluster_rows = TRUE, cluster_cols = TRUE, show_rownames=FALSE,
                        show_colnames=T, col = my_palette, 
                        labels_col = c("SD",expression('H'[2]* 'O'[2]), "Hydroxyurea", "Doxorubicin",
                                       "Forskolin", "Raffinose", "NaCl", "16 \u00B0C", "FK506"),
-                       breaks = c(bk1, bk2, bk3), treeheight_row = 0)
+                       breaks = c(bk2, bk3), treeheight_row = 0, angle_col = 45)
 
 save_pheatmap_pdf <- function(x, filename, width=4.5, height=5) {
         pdf(filename, width = width, height = height)

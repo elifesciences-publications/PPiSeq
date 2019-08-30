@@ -59,6 +59,9 @@ PPI_carbon_fit_order = PPI_carbon_fit[match(PPI_carbon_order, PPI_carbon_fit[,1]
 PPI_HXT1 = PPI_carbon_fit[grep("YHR094C", PPI_carbon_fit[,1]),] #71
 Group = rep("HXT1", nrow(PPI_HXT1))
 PPI_HXT1 = data.frame(PPI_HXT1,Group )
+PPI_HXT2 = PPI_carbon_fit[grep("YMR011W", PPI_carbon_fit[,1]),] #5
+Group = rep("HXT2", nrow(PPI_HXT2))
+PPI_HXT2 = data.frame(PPI_HXT2,Group )
 PPI_HXT3 = PPI_carbon_fit[grep("YDR345C", PPI_carbon_fit[,1]),] #68
 Group = rep("HXT3", nrow(PPI_HXT3))
 PPI_HXT3 = data.frame(PPI_HXT3, Group)
@@ -68,8 +71,9 @@ PPI_HXT5 = data.frame(PPI_HXT5, Group)
 PPI_HXT7 = PPI_carbon_fit[grep("YDR342C", PPI_carbon_fit[,1]),] #74
 Group = rep("HXT7", nrow(PPI_HXT7))
 PPI_HXT7 = data.frame(PPI_HXT7, Group)
-PPI_HXT = rbind(PPI_HXT1, PPI_HXT3, PPI_HXT5, PPI_HXT7) # 258
+PPI_HXT = rbind(PPI_HXT1, PPI_HXT7, PPI_HXT3, PPI_HXT5, PPI_HXT2) # 258
 PPI_HXT= PPI_HXT[!duplicated(PPI_HXT[,1]),] #255
+#PPI_FPS1 = PPI_carbon_fit[grep("YLL043W", PPI_carbon_fit[,1]),] #74
 PPI_other = PPI_carbon_fit_order[which(!as.character(PPI_carbon_fit_order[,1]) %in% as.character(PPI_HXT[,1])),] #29
 Group = rep("Others", nrow(PPI_other))
 PPI_other = data.frame(PPI_other, Group)
@@ -90,7 +94,8 @@ PPI_HXT1_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "HXT1"),] # 7
 PPI_HXT3_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "HXT3"),] # 68
 PPI_HXT5_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "HXT5"),] # 43
 PPI_HXT7_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "HXT7"),] # 73
-PPI_others_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "Others"),] # 29
+PPI_HXT2_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "HXT2"),] # 5
+PPI_others_matrix = PPI_carbon_final[which(PPI_carbon_final$Group == "Others"),] # 28
 
 cluster_order = function(PPI_HXT1_matrix){
         PPI_fitness = PPI_HXT1_matrix[,4:12]
@@ -103,10 +108,11 @@ PPI_HXT1_matrix_order = cluster_order(PPI_HXT1_matrix)
 PPI_HXT3_matrix_order = cluster_order(PPI_HXT3_matrix)
 PPI_HXT5_matrix_order = cluster_order(PPI_HXT5_matrix)
 PPI_HXT7_matrix_order = cluster_order(PPI_HXT7_matrix)
+PPI_HXT2_matrix_order = cluster_order(PPI_HXT2_matrix)
 PPI_others_matrix_order = cluster_order(PPI_others_matrix)
 
-PPI_carbon_final_order = rbind(PPI_HXT1_matrix_order, PPI_HXT3_matrix_order, 
-                               PPI_HXT5_matrix_order, PPI_HXT7_matrix_order,
+PPI_carbon_final_order = rbind(PPI_HXT1_matrix_order, PPI_HXT7_matrix_order, PPI_HXT3_matrix_order, 
+                               PPI_HXT5_matrix_order, PPI_HXT2_matrix_order,
                                PPI_others_matrix_order)
 # Take the order the same with Figure2A
 PPI_carbon_heatmap = PPI_carbon_final_order[,c(4,8,10,12,7,9,5,11,6)]
@@ -132,28 +138,31 @@ row_ann = data.frame(Protein = as.character(PPI_carbon_final_order$Group))
 #my_colour = list(Protein = c("HXT1" = "#66c2a5", "HXT3" = "#fc8d62", "HXT5" = "#8da0cb", 
                              #"HXT7" = "#e78ac3", "Others" ="#CECED2"))
 
-my_colour = list(Protein = c("HXT1" = "#1b9e77", "HXT3" = "#d95f02", "HXT5" = "#7570b3", 
-                             "HXT7" = "#e7298a", "Others" ="#CECED2"))
+my_colour = list(Protein = c("HXT1" = "#1b9e77", "HXT7" = "#e7298a","HXT3" = "#d95f02", 
+                             "HXT5" = "#7570b3", "HXT2" = "#1f78b4", "Others" ="#CECED2"))
 row.names(row_ann) = row.names(PPI_carbon_heatmap)
+#col_chosen = c(apple_colors[5], "#e7d4e8",apple_colors[7])
+#color_scale = colorRampPalette(col_chosen)(n=100)
+fitness = as.vector(as.matrix(PPI_carbon_heatmap))
+max(fitness) # 1.252037
+bk2 = seq(0, 1, by = 0.01)
+bk3 = seq(1.05, 1.3, by = 0.05)
 col_chosen = c(apple_colors[5], "#e7d4e8",apple_colors[7])
-color_scale = colorRampPalette(col_chosen)(n=100)
-
+my_palette = c(colorRampPalette(col_chosen)(length(bk2)),
+               rep(apple_colors[7], length(bk3)))
 library(pheatmap)
+library(grid)
 fit_heatmap = pheatmap(PPI_carbon_heatmap, cluster_rows = FALSE, cluster_cols = T, show_rownames=FALSE,
-                       annotation_colors = my_colour,
+                       annotation_colors = my_colour, angle_col = 45, col = my_palette,
+                       breaks = c(bk2, bk3),
                        labels_col  = c("SD", "Forskolin","NaCl", "FK506", "Doxorubicin", 
                                      "Raffinose",  expression('H'[2]* 'O'[2]),  "16 \u00B0C", "Hydroxyurea"),
-                       annotation_row = row_ann, show_colnames=T, col = color_scale)
-
-save_pheatmap_pdf <- function(x, filename, width=5, height=5) {
-  pdf(filename, width = width, height = height)
-  grid::grid.newpage()
-  grid::grid.draw(x$gtable)
-  dev.off()
-}
-save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure4/Figure4A_carbonhydrate_transport_fitness_environment_primary_cluster.pdf")
-
-
+                       annotation_row = row_ann, show_colnames=T)
+pdf("Working_figure/Figure4/Figure4A_carbonhydrate_transport_fitness_environment_primary_cluster.pdf", 
+    width = 7, height = 6)
+grid::grid.newpage()
+grid::grid.draw(fit_heatmap$gtable)
+dev.off()
 #################################################################################
 
 
@@ -284,7 +293,7 @@ col_chosen = c(apple_colors[5], "#e7d4e8",apple_colors[7])
 color_scale = colorRampPalette(col_chosen)(n=100)
 library(pheatmap)
 fit_heatmap = pheatmap(PPI_translation_heatmap, cluster_rows = FALSE, cluster_cols = FALSE, show_rownames=FALSE,
-                       annotation_colors = my_colour,
+                       annotation_colors = my_colour,angle_col = 45,
                        annotation_row = row_ann, show_colnames=T, col = color_scale)
 
 save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure4/Figure4_translation_fitness_environment_primary.pdf")
