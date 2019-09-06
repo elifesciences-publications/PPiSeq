@@ -15,6 +15,9 @@ source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working
 ## This function will generate a degree matrix for PPI network in each environment
 setwd("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/")
 PPI_count = as.matrix(read.csv("PPI_environment_count_summary.csv"))
+PPI_degree_count = protein_degree_count(PPI_count[,1])
+csvWriter(PPI_degree_count, "Protein_all_environment_degree.csv")
+
 protein = unique(as.vector(split_string_vector(PPI_count[,1]))) # 2051
 protein_matrix = matrix(0, length(protein), 10)
 protein_matrix[,1] = protein
