@@ -64,7 +64,7 @@ cluster_same_PPI = function(DMSO_lineage_norm_file, DMSO_multiple, output_file){
 }
 
 ### (1) and (2) normalize each PPI and put the normalized fitness onto the same row
-setwd("/Volumes/zmliu_02/PPiseq_02/Combine_environments/")
+setwd("/Volumes/zmliu_02/PPiseq_03/Combine_environments/")
 SD_lineage = "lineage_fitness_files/SD_PPI_barcodes_fitness_counts.csv"
 SD_multiple = "PPI_multiple_files/SD_PPI_multiple_p.values.csv"
 SD_multiple_normal = "Normalized_multiple_files/SD_normalized_multiple.csv"
@@ -133,11 +133,11 @@ SD_multiple_normal = "Normalized_multiple_files/Cold_16C_normalized_multiple.csv
 Normalize_environment(SD_lineage, SD_multiple, SD_multiple_normal)
 
 ##### (3) Combine different environments and put the same PPI across different environments on the same row
-setwd("/Volumes/zmliu_02/PPiseq_02/Combine_environments/Normalized_multiple_files/")
+setwd("/Volumes/zmliu_02/PPiseq_03/Combine_environments/Normalized_multiple_files/")
 
 # order SD,SD2, Forskolin, FK506, Raffinose, NaCl, H2O2, Dox, 16C, HU
 DMSO_norm = csvReader_T("SD_normalized_multiple.csv")
-#DMSO2_norm = csvReader_T('SD2_normalized_multiple.csv')
+DMSO2_norm = csvReader_T('SD2_normalized_multiple.csv')
 Forskolin_norm = csvReader_T("Forskolin_normalized_multiple.csv")
 FK506_norm = csvReader_T("FK506_normalized_multiple.csv")
 Raffinose_norm = csvReader_T("Raffinose_normalized_multiple.csv")
@@ -148,41 +148,41 @@ cold_norm = csvReader_T("Cold_16C_normalized_multiple.csv")
 HU_norm = csvReader_T("Hydroxyurea_normalized_multiple.csv")
 
 #### Combine all the PPIs that has been barcoded twice in one of environments
-all = unique(c(DMSO_norm[,1], Forskolin_norm[,1], FK506_norm[,1], Raffinose_norm[,1], 
+all = unique(c(DMSO_norm[,1],DMSO2_norm[,1], Forskolin_norm[,1], FK506_norm[,1], Raffinose_norm[,1], 
                    NaCl_norm[,1], H2O2_norm[,1], Dox_norm[,1], cold_norm[,1], HU_norm[,1])) #1578161
 
-matrix_all = matrix(0, length(all), 10)
+matrix_all = matrix(0, length(all), 11)
 matrix_all[,1] = all
 matrix_all[,2] = as.numeric(DMSO_norm[match(all, DMSO_norm[,1]),3])
-#matrix_all[,3] = as.numeric(DMSO2_norm[match(all, DMSO2_norm[,1]),3])
-matrix_all[,3] = as.numeric(H2O2_norm[match(all, H2O2_norm[,1]),3])
-matrix_all[,4] = as.numeric(HU_norm[match(all, HU_norm[,1]),3])
-matrix_all[,5] = as.numeric(Dox_norm[match(all, Dox_norm[,1]),3])
-matrix_all[,6] = as.numeric(Forskolin_norm[match(all, Forskolin_norm[,1]),3])
-matrix_all[,7] = as.numeric(Raffinose_norm[match(all, Raffinose_norm[,1]),3])
-matrix_all[,8] = as.numeric(NaCl_norm[match(all, NaCl_norm[,1]),3])
-matrix_all[,9] = as.numeric(cold_norm[match(all, cold_norm[,1]),3])
-matrix_all[,10] = as.numeric(FK506_norm[match(all, FK506_norm[,1]),3])
+matrix_all[,3] = as.numeric(DMSO2_norm[match(all, DMSO2_norm[,1]),3])
+matrix_all[,4] = as.numeric(H2O2_norm[match(all, H2O2_norm[,1]),3])
+matrix_all[,5] = as.numeric(HU_norm[match(all, HU_norm[,1]),3])
+matrix_all[,6] = as.numeric(Dox_norm[match(all, Dox_norm[,1]),3])
+matrix_all[,7] = as.numeric(Forskolin_norm[match(all, Forskolin_norm[,1]),3])
+matrix_all[,8] = as.numeric(Raffinose_norm[match(all, Raffinose_norm[,1]),3])
+matrix_all[,9] = as.numeric(NaCl_norm[match(all, NaCl_norm[,1]),3])
+matrix_all[,10] = as.numeric(cold_norm[match(all, cold_norm[,1]),3])
+matrix_all[,11] = as.numeric(FK506_norm[match(all, FK506_norm[,1]),3])
 
-colnames(matrix_all) = c("PPI", "SD", "H2O2", "HU", "Dox", "Forskolin", 
+colnames(matrix_all) = c("PPI", "SD", "SD2","H2O2", "HU", "Dox", "Forskolin", 
                          "Raffinose", "NaCl", "16C", "FK506")
 csvWriter(matrix_all, "All_PPI_environments_normalized_fit.csv")
 
 ######## Only consider positive PPIs in one of environments
-DMSO_real = csvReader_T("/Volumes/zmliu_02/PPiseq_02/Combine_environments/Positive_PPI_remove_promiscuous/SD_Pos_PPI_real.csv")
-#DMSO2_real = csvReader_T("/Volumes/zmliu_02/PPiseq/Combine_environments/Positive_PPI_remove_promiscuous/SD2_Pos_PPI_real.csv")
-Forskolin_real = csvReader_T("/Volumes/zmliu_02/PPiseq_02/Combine_environments/Positive_PPI_remove_promiscuous/Forskolin_Pos_PPI_real.csv")
-FK506_real = csvReader_T("/Volumes/zmliu_02/PPiseq_02/Combine_environments/Positive_PPI_remove_promiscuous/FK506_Pos_PPI_real.csv")
-Raffinose_real = csvReader_T("/Volumes/zmliu_02/PPiseq_02/Combine_environments/Positive_PPI_remove_promiscuous/Raffinose_Pos_PPI_real.csv")
-NaCl_real = csvReader_T("/Volumes/zmliu_02/PPiseq_02/Combine_environments/Positive_PPI_remove_promiscuous/NaCl_Pos_PPI_real.csv")
-H2O2_real = csvReader_T("/Volumes/zmliu_02/PPiseq_02/Combine_environments/Positive_PPI_remove_promiscuous/H2O2_Pos_PPI_real.csv")
-Dox_real = csvReader_T("/Volumes/zmliu_02/PPiseq_02/Combine_environments/Positive_PPI_remove_promiscuous/Doxorubicin_Pos_PPI_real.csv")
-cold_real = csvReader_T("/Volumes/zmliu_02/PPiseq_02/Combine_environments/Positive_PPI_remove_promiscuous/Cold_16C_Pos_PPI_real.csv")
-HU_real = csvReader_T("/Volumes/zmliu_02/PPiseq_02/Combine_environments/Positive_PPI_remove_promiscuous/Hydroxyurea_Pos_PPI_real.csv")
+DMSO_real = csvReader_T("/Volumes/zmliu_02/PPiseq_03/Combine_environments/Positive_PPI_remove_promiscuous/SD_Pos_PPI_real.csv")
+DMSO2_real = csvReader_T("/Volumes/zmliu_02/PPiseq_03/Combine_environments/Positive_PPI_remove_promiscuous/SD2_Pos_PPI_real.csv")
+Forskolin_real = csvReader_T("/Volumes/zmliu_02/PPiseq_03/Combine_environments/Positive_PPI_remove_promiscuous/Forskolin_Pos_PPI_real.csv")
+FK506_real = csvReader_T("/Volumes/zmliu_02/PPiseq_03/Combine_environments/Positive_PPI_remove_promiscuous/FK506_Pos_PPI_real.csv")
+Raffinose_real = csvReader_T("/Volumes/zmliu_02/PPiseq_03/Combine_environments/Positive_PPI_remove_promiscuous/Raffinose_Pos_PPI_real.csv")
+NaCl_real = csvReader_T("/Volumes/zmliu_02/PPiseq_03/Combine_environments/Positive_PPI_remove_promiscuous/NaCl_Pos_PPI_real.csv")
+H2O2_real = csvReader_T("/Volumes/zmliu_02/PPiseq_03/Combine_environments/Positive_PPI_remove_promiscuous/H2O2_Pos_PPI_real.csv")
+Dox_real = csvReader_T("/Volumes/zmliu_02/PPiseq_03/Combine_environments/Positive_PPI_remove_promiscuous/Doxorubicin_Pos_PPI_real.csv")
+cold_real = csvReader_T("/Volumes/zmliu_02/PPiseq_03/Combine_environments/Positive_PPI_remove_promiscuous/Cold_16C_Pos_PPI_real.csv")
+HU_real = csvReader_T("/Volumes/zmliu_02/PPiseq_03/Combine_environments/Positive_PPI_remove_promiscuous/Hydroxyurea_Pos_PPI_real.csv")
 
 
 DMSO_norm_pos = DMSO_norm[which(DMSO_norm[,1] %in% DMSO_real[,1]),c(1,3)]
-#DMSO2_norm_pos = DMSO2_norm[which(DMSO2_norm[,1] %in% DMSO2_real[,1]),c(1,3)]
+DMSO2_norm_pos = DMSO2_norm[which(DMSO2_norm[,1] %in% DMSO2_real[,1]),c(1,3)]
 Forskolin_norm_pos = Forskolin_norm[which(Forskolin_norm[,1] %in% Forskolin_real[,1]),c(1,3)]
 FK506_norm_pos = FK506_norm[which(FK506_norm[,1] %in% FK506_real[,1]),c(1,3)]
 Raffinose_norm_pos = Raffinose_norm[which(Raffinose_norm[,1] %in% Raffinose_real[,1]),c(1,3)]
@@ -192,49 +192,49 @@ Dox_norm_pos = Dox_norm[which(Dox_norm[,1] %in% Dox_real[,1]),c(1,3)]
 cold_norm_pos = cold_norm[which(cold_norm[,1] %in% cold_real[,1]),c(1,3)]
 HU_norm_pos = HU_norm[which(HU_norm[,1] %in% HU_real[,1]),c(1,3)]
 
-all_pos = unique(c(DMSO_norm_pos[,1], Forskolin_norm_pos[,1], FK506_norm_pos[,1], Raffinose_norm_pos[,1], 
+all_pos = unique(c(DMSO_norm_pos[,1], DMSO2_norm_pos[,1], Forskolin_norm_pos[,1], FK506_norm_pos[,1], Raffinose_norm_pos[,1], 
                    NaCl_norm_pos[,1], H2O2_norm_pos[,1], Dox_norm_pos[,1], cold_norm_pos[,1], HU_norm_pos[,1])) #14446
 
-matrix_pos = matrix(0, length(all_pos), 10)
+matrix_pos = matrix(0, length(all_pos), 11)
 matrix_pos[,1] = all_pos
 matrix_pos[,2] = as.numeric(DMSO_norm_pos[match(all_pos, DMSO_norm_pos[,1]),2])
-#matrix_pos[,3] = as.numeric(DMSO2_norm_pos[match(all_pos, DMSO2_norm_pos[,1]),2])
-matrix_pos[,3] = as.numeric(H2O2_norm_pos[match(all_pos, H2O2_norm_pos[,1]),2])
-matrix_pos[,4] = as.numeric(HU_norm_pos[match(all_pos, HU_norm_pos[,1]),2])
-matrix_pos[,5] = as.numeric(Dox_norm_pos[match(all_pos, Dox_norm_pos[,1]),2])
-matrix_pos[,6] = as.numeric(Forskolin_norm_pos[match(all_pos, Forskolin_norm_pos[,1]),2])
-matrix_pos[,7] = as.numeric(Raffinose_norm_pos[match(all_pos, Raffinose_norm_pos[,1]),2])
-matrix_pos[,8] = as.numeric(NaCl_norm_pos[match(all_pos, NaCl_norm_pos[,1]),2])
-matrix_pos[,9] = as.numeric(cold_norm_pos[match(all_pos, cold_norm_pos[,1]),2])
-matrix_pos[,10] = as.numeric(FK506_norm_pos[match(all_pos, FK506_norm_pos[,1]),2])
+matrix_pos[,3] = as.numeric(DMSO2_norm_pos[match(all_pos, DMSO2_norm_pos[,1]),2])
+matrix_pos[,4] = as.numeric(H2O2_norm_pos[match(all_pos, H2O2_norm_pos[,1]),2])
+matrix_pos[,5] = as.numeric(HU_norm_pos[match(all_pos, HU_norm_pos[,1]),2])
+matrix_pos[,6] = as.numeric(Dox_norm_pos[match(all_pos, Dox_norm_pos[,1]),2])
+matrix_pos[,7] = as.numeric(Forskolin_norm_pos[match(all_pos, Forskolin_norm_pos[,1]),2])
+matrix_pos[,8] = as.numeric(Raffinose_norm_pos[match(all_pos, Raffinose_norm_pos[,1]),2])
+matrix_pos[,9] = as.numeric(NaCl_norm_pos[match(all_pos, NaCl_norm_pos[,1]),2])
+matrix_pos[,10] = as.numeric(cold_norm_pos[match(all_pos, cold_norm_pos[,1]),2])
+matrix_pos[,11] = as.numeric(FK506_norm_pos[match(all_pos, FK506_norm_pos[,1]),2])
 
-colnames(matrix_pos) = c("PPI", "SD", "H2O2", "HU", "Dox", "Forskolin", 
+colnames(matrix_pos) = c("PPI", "SD", "SD2","H2O2", "HU", "Dox", "Forskolin", 
                          "Raffinose", "NaCl", "16C", "FK506")
 csvWriter(matrix_pos, "Pos_PPI_normalized_fit.csv")
 
 ##############################################################
 # Keep the primary normalized fitness values for PPIs even not detected in an evironment
 
-matrix_pos = matrix(0, length(all_pos), 10)
+matrix_pos = matrix(0, length(all_pos), 11)
 matrix_pos[,1] = all_pos
 matrix_pos[,2] = as.numeric(DMSO_norm[match(all_pos, DMSO_norm[,1]),3])
-#matrix_pos[,3] = as.numeric(DMSO2_norm[match(all_pos, DMSO2_norm[,1]),3])
-matrix_pos[,3] = as.numeric(H2O2_norm[match(all_pos, H2O2_norm[,1]),3])
-matrix_pos[,4] = as.numeric(HU_norm[match(all_pos, HU_norm[,1]),3])
-matrix_pos[,5] = as.numeric(Dox_norm[match(all_pos, Dox_norm[,1]),3])
-matrix_pos[,6] = as.numeric(Forskolin_norm[match(all_pos, Forskolin_norm[,1]),3])
-matrix_pos[,7] = as.numeric(Raffinose_norm[match(all_pos, Raffinose_norm[,1]),3])
-matrix_pos[,8] = as.numeric(NaCl_norm[match(all_pos, NaCl_norm[,1]),3])
-matrix_pos[,9] = as.numeric(cold_norm[match(all_pos, cold_norm[,1]),3])
-matrix_pos[,10] = as.numeric(FK506_norm[match(all_pos, FK506_norm[,1]),3])
+matrix_pos[,3] = as.numeric(DMSO2_norm[match(all_pos, DMSO2_norm[,1]),3])
+matrix_pos[,4] = as.numeric(H2O2_norm[match(all_pos, H2O2_norm[,1]),3])
+matrix_pos[,5] = as.numeric(HU_norm[match(all_pos, HU_norm[,1]),3])
+matrix_pos[,6] = as.numeric(Dox_norm[match(all_pos, Dox_norm[,1]),3])
+matrix_pos[,7] = as.numeric(Forskolin_norm[match(all_pos, Forskolin_norm[,1]),3])
+matrix_pos[,8] = as.numeric(Raffinose_norm[match(all_pos, Raffinose_norm[,1]),3])
+matrix_pos[,9] = as.numeric(NaCl_norm[match(all_pos, NaCl_norm[,1]),3])
+matrix_pos[,10] = as.numeric(cold_norm[match(all_pos, cold_norm[,1]),3])
+matrix_pos[,11] = as.numeric(FK506_norm[match(all_pos, FK506_norm[,1]),3])
 
-colnames(matrix_pos) = c("PPI", "SD", "H2O2", "HU", "Dox", "Forskolin", 
+colnames(matrix_pos) = c("PPI", "SD", "SD2", "H2O2", "HU", "Dox", "Forskolin", 
                          "Raffinose", "NaCl", "16C", "FK506")
 csvWriter(matrix_pos, "Pos_PPI_normalized_fit_primary.csv")
 
 ### (4) Put the fitness of PPI of two orientations across different environments onto the same row
 
-setwd("/Volumes/zmliu_02/PPiseq_02/Combine_environments/Normalized_multiple_files/")
+setwd("/Volumes/zmliu_02/PPiseq_03/Combine_environments/Normalized_multiple_files/")
 PPI_fit_norm = csvReader_T("Pos_PPI_normalized_fit_primary.csv") # 14446
 ## Make the PPI name for the count and normalized fitness consistent
 PPI_count = csvReader_T("PPI_environment_count_summary.csv") 

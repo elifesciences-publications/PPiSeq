@@ -49,11 +49,12 @@ PRS[,1] = "PRS"
 RRS[,1] = "RRS"
 
 # Extract strains that contain ORF X Fragment only strains
-MATa_DHFR12 = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/PPI_barcodes/MATa_genome_combine.csv")
-MATalpha_DHFR3 = csvReader_T("~/Dropbox/PPiSeq_02/Working_data//PPI_barcodes/MATalpha_genome_combine.csv")
-PPI_DHFR12 = PPI_lineages_select[which(PPI_lineages_select[,2] %in% MATa_DHFR12[,3]),]
+bait_ORF_fragment = csvReader_T("Paper_data/PPiseq_barcodes/Bait_ORF_DHFR3_control.csv")
+prey_ORF_fragment = csvReader_T("Paper_data/PPiseq_barcodes/DHFR12_prey_ORF_control.csv")
+
+PPI_DHFR12 = PPI_lineages_select[which(PPI_lineages_select[,2] %in% prey_ORF_fragment[,3]),]
 PPI_DHFR12[,1] = "ORF X DHFR[1,2]"
-PPI_DHFR3 = PPI_lineages_select[which(PPI_lineages_select[,2] %in% MATalpha_DHFR3[,3]),]
+PPI_DHFR3 = PPI_lineages_select[which(PPI_lineages_select[,2] %in% bait_ORF_fragment[,3]),]
 PPI_DHFR3[,1] = "DHFR[3] X ORF"
 
 #Input data of positive PPIs in DMSO
@@ -62,7 +63,7 @@ ORF_fragments[,1] = "ORF X DHFR fragment"
 DMSO_mean = csvReader_T("Paper_data/SD_mean_fitness_positive.csv") # 1445535
 DMSO_pos = DMSO_mean[which(DMSO_mean[,7] == 1),] # 5178
 #Here I only choose these reported PPIs in this figure
-PPI_reported = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/multiple_validated_PPI.csv") # summary of BIOGRID data
+PPI_reported = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Useful_datasets/multiple_validated_PPI.csv") # summary of BIOGRID data
 DMSO_pos = DMSO_pos[which(DMSO_pos[,1] %in% PPI_reported[,1]),] # 862
 fitness_pos = as.numeric(DMSO_pos[,3])
 DMSO_pos_high = DMSO_pos[which(fitness_pos > 0.6 & fitness_pos < 0.8),]

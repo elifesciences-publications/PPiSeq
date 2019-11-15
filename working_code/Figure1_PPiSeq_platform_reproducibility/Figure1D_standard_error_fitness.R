@@ -40,8 +40,8 @@ DMSO_fit = dataFrameReader_T("Paper_data/SD_mean_fitness_positive.csv")
 #col_values = c("2" = "#fc8d62", "3" = "#8da0cb", "4" = "#e78ac3", 
 #               "10" = apple_colors[7], "100" = apple_colors[4])
 
-length(which(DMSO_fit$Positive == 0)) # 1439436
-length(which(DMSO_fit$Positive != 0)) # 6099
+length(which(DMSO_fit$Positive == 0)) # 1443413
+length(which(DMSO_fit$Positive != 0)) # 5286
 
 #DMSO_fit$Positive[which(DMSO_fit$Positive == 0)] = "Negative"
 #DMSO_fit$Positive[which(DMSO_fit$Positive == 1)] = "Positive"
@@ -95,6 +95,7 @@ for(i in 2:length(bin_fit)){
 }
 colnames(matrix_mean_CI_pos) = c("Fitness", "Mean", "Median", "Lower", "Upper")
 
+
 library(ggplot2)
 ggplot() +
         geom_hex(aes(x = Mean_fitness, y = SD, fill = log10(..count..)), DMSO_fit,
@@ -104,8 +105,10 @@ ggplot() +
         #geom_smooth(aes(x = Mean_fitness, y = SD), DMSO_fit, method= 'lm',  
                     #size = 1, se =FALSE, col= apple_colors[6])+
         #geom_line(aes(x = Fitness, y = Mean), matrix_mean_CI, size = 0.2,col = apple_colors[11])+
-        geom_line(aes(x = Fitness, y = Median), matrix_mean_CI,col = apple_colors[11])+
-        geom_line(aes(x = Fitness, y = Median), matrix_mean_CI_pos,col = apple_colors[7])+
+        geom_line(aes(x = Fitness, y = Median), matrix_mean_CI,col = apple_colors[11],
+                  linetype = "dashed")+
+        geom_line(aes(x = Fitness, y = Median), matrix_mean_CI_pos,col = apple_colors[7],
+                  linetype = "dashed")+
         #geom_ribbon(aes(x = Fitness, ymin= Lower, ymax = Upper), matrix_mean_CI, alpha = 0.2) +
     
         #geom_line(aes(x = Fitness, y = Upper), matrix_CI, linetype = "dashed", col = apple_colors[11])+
@@ -119,7 +122,6 @@ ggplot() +
                            limits=c(-0.4, 1.0),
                            breaks=seq(-0.4, 1.0, by =0.2),
                            labels = seq(-0.4, 1.0, by= 0.2)) +
-        labs(fill = expression('Log'[10]* '(count)')) +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black"),
               legend.key=element_blank(), legend.position =c(0.9,0.8)) +
