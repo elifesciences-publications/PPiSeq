@@ -56,36 +56,36 @@ transform_list_matrix = function(all_count_name, pos_count_name, output_pos_coun
         write.table(matrix_density, output_density, sep = "\t", quote=F)
 }
 # Cellular compartment
-all_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_CC_new.txt"
-pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_CC_new.txt"
-output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_CC_matrix.txt"
-output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_density_PPI_CC_matrix.txt"
+all_count_name = "Working_data_2/PPI_pair_GO/Network_all_count_PPI_CC_new.txt"
+pos_count_name = "Working_data_2/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_CC_new.txt"
+output_pos_count = "Working_data_2/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_CC_matrix.txt"
+output_density = "Working_data_2/PPI_pair_GO/environment/DMSO/Network_density_PPI_CC_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 # Biological process
-all_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
-pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_BP_new.txt"
-output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_BP_matrix.txt"
-output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_density_PPI_BP_matrix.txt"
+all_count_name = "Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
+pos_count_name = "Working_data_2/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_BP_new.txt"
+output_pos_count = "Working_data_2/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_BP_matrix.txt"
+output_density = "Working_data_2/PPI_pair_GO/environment/DMSO/Network_density_PPI_BP_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 # truncated Biological process
-all_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
-pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/BP_truncated/Network_pos_count_PPI_BP_new.txt"
-output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/BP_truncated/Network_pos_count_PPI_BP_matrix.txt"
-output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/BP_truncated/Network_density_PPI_BP_matrix.txt"
+all_count_name = "Working_data_2/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
+pos_count_name = "Working_data_2/PPI_pair_GO/environment/DMSO/BP_truncated/Network_pos_count_PPI_BP_new.txt"
+output_pos_count = "Working_data_2/PPI_pair_GO/environment/DMSO/BP_truncated/Network_pos_count_PPI_BP_matrix.txt"
+output_density = "Working_data_2/PPI_pair_GO/environment/DMSO/BP_truncated/Network_density_PPI_BP_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 
 # Molecular function
-all_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_MF_new.txt"
-pos_count_name = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_MF_new.txt"
-output_pos_count = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_MF_matrix.txt"
-output_density = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_density_PPI_MF_matrix.txt"
+all_count_name = "Working_data_2/PPI_pair_GO/Network_all_count_PPI_MF_new.txt"
+pos_count_name = "Working_data_2/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_MF_new.txt"
+output_pos_count = "Working_data_2/PPI_pair_GO/environment/DMSO/Network_pos_count_PPI_MF_matrix.txt"
+output_density = "Working_data_2/PPI_pair_GO/environment/DMSO/Network_density_PPI_MF_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 
 
 ########### Make a plot to show the enrichment of GO_GO pairs 
 setwd("~/Dropbox/PPiSeq_02")
 # Cellular compartment
-network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_density_PPI_CC_matrix.txt", 
+network_density = as.matrix(read.table("Working_data_2/PPI_pair_GO/environment/DMSO/Network_density_PPI_CC_matrix.txt", 
                                        sep = "\t", header = T))
 colnames(network_density) = gsub("\\.", " ", colnames(network_density))
 network_density_vector = as.vector(network_density) # by column
@@ -96,7 +96,7 @@ columnv = rep(GO_CC, 22)
 GO_GO_name_order = paste(rowv, columnv, sep= "_")### This name will be used to match the summary or random network
 
 #### extract density from each random network and put them as a column into a matrix
-all_count= as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/Network_all_count_PPI_CC_new.txt",sep = "\t", header = T))
+all_count= as.matrix(read.table("Working_data_2/PPI_pair_GO/Network_all_count_PPI_CC_new.txt",sep = "\t", header = T))
 all_count_name = paste(all_count[,1], all_count[,2], sep = "_")
 order_all_count = all_count[match(GO_GO_name_order, all_count_name), 3]
 
@@ -118,7 +118,7 @@ extract_random_density = function(order_all_count, pos_count_name, GO_GO_name_or
         return(density_order)
 }
 
-random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/random_network/random_network_density/random_network_CC_pos_count_"
+random_name_front = "Working_data_2/PPI_pair_GO/environment/DMSO/random_network/random_network_density/random_network_CC_pos_count_"
 density_CC_random = rep(0, length(GO_GO_name_order))
 for (i in 1:1000){
         random_name = paste(random_name_front, as.character(i), ".txt", sep = "")
@@ -137,46 +137,13 @@ for(i in 1:length(network_density_vector)){
         density_all = c(m_real, m_random)
         density_name = c("real", rep("random", 1000))
         matrix_compare = cbind.data.frame(density_name, density_all)
-        permutation=oneway_test(density_all~density_name, matrix_compare) # permutation test
+        permutation=oneway_test(density_all~density_name, matrix_compare, alternative = "less") # permutation test
         p_value[i] =  permutation@distribution@pvalue(permutation@statistic@teststatistic)
 }
-# dendrogram
-library(ggplot2)
-library(ggdendro)
-rownames(network_density) = colnames(network_density)
-hc = hclust(dist(network_density))
-dendr = dendro_data(hc, type= "rectangle")
-clust = cutree(hc, k = 3) 
-clust.df <- data.frame(label=names(clust), cluster=factor(clust))
-dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
-#### Plot the dendrogram
-ggplot() + 
-        geom_segment(data=segment(dendr), aes(x=x, y=y, xend=xend, yend=yend)) + 
-        #geom_text(data=label(dendr), aes(x, y, label=label, hjust=0), col = apple_colors[11],size=2) +
-        coord_flip() + scale_y_reverse(expand=c(0.2, 0)) + 
-        theme(axis.line.y=element_blank(),
-              axis.ticks.y=element_blank(),
-              axis.text.y=element_blank(),
-              axis.title.y=element_blank(),
-              axis.line.x=element_blank(),
-              axis.ticks.x=element_blank(),
-              axis.text.x=element_blank(),
-              axis.title.x=element_blank(),
-              panel.background=element_rect(fill="white"),
-              panel.grid=element_blank(),
-              plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"))
-ggsave("Working_figure/Figure1_extra/Dendrogram_CC_GO_pair_cluster.pdf", width = 3, height = 4.2)
-#ggsave("~/Desktop/Dendrogram_CC_GO_pair_cluster.pdf", width = 3, height = 4.2)
 
+GO_order = read.table("Working_data_2/PPI_pair_GO/environment/GO_CC_order.txt",header = T, sep = "\t")
 
-label_GO = label(dendr)
-GO_order = label_GO[order(label_GO$x),]
-csvWriter(GO_order$label, "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_CC_order.txt")
-
-GO_order = read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_CC_order.txt",
-                      header = T, sep = "\t")
-
-Network_density = as.numeric(network_density_vector) # 0.03579571
+Network_density = as.numeric(network_density_vector) 
 dataf = data.frame(rowv,columnv,
                    Network_density = as.numeric(network_density_vector),
                    label = p_value)
@@ -221,7 +188,7 @@ ggsave("Working_figure/Figure1_extra/heatmap_density_CC_PPI_network_no_label.pdf
 #### Biological process
 setwd("~/Dropbox/PPiSeq_02/")
 # (1) Generate a full picture for all BP GO terms
-network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_density_PPI_BP_matrix.txt", 
+network_density = as.matrix(read.table("Working_data_2/PPI_pair_GO/environment/DMSO/Network_density_PPI_BP_matrix.txt", 
                                        sep = "\t", header = T))
 colnames(network_density) = gsub("\\.", " ", colnames(network_density))
 network_density_vector = as.vector(network_density) # by column
@@ -231,14 +198,15 @@ columnv = rep(GO_BP, 99)
 GO_GO_name_order = paste(rowv, columnv, sep= "_")### This name will be used to match the summary or random network
 
 #### extract density from each random network and put them as a column into a matrix
-all_count= as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt",sep = "\t", header = T))
+all_count= as.matrix(read.table("Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt",sep = "\t", header = T))
 all_count_name = paste(all_count[,1], all_count[,2], sep = "_")
 all_count_name = gsub("-", " ", all_count_name)
 all_count_name = gsub(",", " ", all_count_name)
 order_all_count = all_count[match(GO_GO_name_order, all_count_name), 3]
 #overlap = intersect(all_count_name, GO_GO_name_order)
 
-random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/random_network/random_network_density/random_network_BP_pos_count_"
+#random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/random_network/random_network_density/random_network_BP_pos_count_"
+random_name_front = "Working_data_2/PPI_pair_GO/environment/DMSO/random_network/random_network_density/random_network_BP_pos_count_"
 density_BP_random = rep(0, length(GO_GO_name_order))
 for (i in 1:1000){
         random_name = paste(random_name_front, as.character(i), ".txt", sep = "")
@@ -263,49 +231,16 @@ for(i in 1:length(network_density_vector)){
                 density_all = c(m_real, m_random)
                 density_name = c("real", rep("random", 1000))
                 matrix_compare = cbind.data.frame(density_name, density_all)
-                permutation=oneway_test(density_all~density_name, matrix_compare) # permutation test
+                permutation=oneway_test(density_all~density_name, matrix_compare, alternative = "less") # permutation test
                 p_value[i] =  permutation@distribution@pvalue(permutation@statistic@teststatistic)
         }
         
 }
 
-# dendrogram
-library(ggdendro)
-rownames(network_density) = colnames(network_density)
-hc = hclust(dist(network_density))
-
-dendr = dendro_data(hc, type= "rectangle")
-clust = cutree(hc, k = 10) 
-clust.df <- data.frame(label=names(clust), cluster=factor(clust))
-dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
-#### Plot the dendrogram
-ggplot() + 
-        geom_segment(data=segment(dendr), aes(x=x, y=y, xend=xend, yend=yend)) + 
-        #geom_text(data=label(dendr), aes(x, y, label=label, hjust=0), col = apple_colors[11], size=2) +
-        coord_flip() + scale_y_reverse(expand=c(0.2, 0)) + 
-        theme(axis.line.y=element_blank(),
-              axis.ticks.y=element_blank(),
-              axis.text.y=element_blank(),
-              axis.title.y=element_blank(),
-              axis.line.x=element_blank(),
-              axis.ticks.x=element_blank(),
-              axis.text.x=element_blank(),
-              axis.title.x=element_blank(),
-              panel.background=element_rect(fill="white"),
-              panel.grid=element_blank(),
-              legend.position = "bottom",
-              plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"))
-
-ggsave("Working_figure/Figure1_extra/Dendrogram_BP_GO_pair_cluster_primary.pdf", width = 4, height =12)
-
-label_GO = label(dendr)
-GO_order = label_GO[order(label_GO$x),]
-csvWriter(GO_order$label, "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_BP_order_primary.txt")
-
-GO_order = read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_BP_order_primary.txt",
+GO_order = read.table("Working_data_2/PPI_pair_GO/environment/GO_BP_order_primary.txt",
                       header = T, sep = "\t")
 
-Network_density = as.numeric(network_density_vector) # 0.11764
+Network_density = as.numeric(network_density_vector) 
 dataf = data.frame(rowv,columnv,
                    Network_density = as.numeric(network_density_vector),
                    label = p_value)
@@ -363,10 +298,10 @@ ggsave("Working_figure/Figure1_extra/heatmap_density_BP_PPI_network_primary_no_l
        width = 12, height = 12)
 
 ## (2) Choose only 59 GO terms to make figures
-network_density = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/Network_density_PPI_BP_matrix.txt", 
+network_density = as.matrix(read.table("Working_data_2/PPI_pair_GO/environment/DMSO/Network_density_PPI_BP_matrix.txt", 
                                        sep = "\t", header = T))
 colnames(network_density) = gsub("\\.", " ", colnames(network_density))
-chosen_BP = as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/chosen_BP_GO_59.txt",
+chosen_BP = as.matrix(read.table("Working_data_2/PPI_pair_GO/chosen_BP_GO_59.txt",
                        header = F, sep = "\t"))
 all_BP = colnames(network_density)
 row_column_good = which(all_BP %in% chosen_BP[,1])
@@ -376,17 +311,17 @@ network_density_vector = as.vector(network_density) # by column
 GO_BP = colnames(network_density)
 rowv = rep(GO_BP, each = 59)
 columnv = rep(GO_BP, 59)
-GO_GO_name_order = paste(rowv, columnv, sep= "_")### T
+GO_GO_name_order = paste(rowv, columnv, sep= "_")
 
 #### extract density from each random network and put them as a column into a matrix
-all_count= as.matrix(read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt",sep = "\t", header = T))
+all_count= as.matrix(read.table("Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt",sep = "\t", header = T))
 all_count_name = paste(all_count[,1], all_count[,2], sep = "_")
 all_count_name = gsub("-", " ", all_count_name)
 all_count_name = gsub(",", " ", all_count_name)
 order_all_count = all_count[match(GO_GO_name_order, all_count_name), 3]
 #overlap = intersect(all_count_name, GO_GO_name_order)
 
-random_name_front = "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/DMSO/random_network/random_network_density/random_network_BP_pos_count_"
+random_name_front = "Working_data_2/PPI_pair_GO/environment/DMSO/random_network/random_network_density/random_network_BP_pos_count_"
 density_BP_random = rep(0, length(GO_GO_name_order))
 extract_random_density = function(order_all_count, pos_count_name, GO_GO_name_order){
      
@@ -430,49 +365,16 @@ for(i in 1:length(network_density_vector)){
                 density_all = c(m_real, m_random)
                 density_name = c("real", rep("random", 1000))
                 matrix_compare = cbind.data.frame(density_name, density_all)
-                permutation=oneway_test(density_all~density_name, matrix_compare) # permutation test
+                permutation=oneway_test(density_all~density_name, matrix_compare, alternative = "less") # permutation test
                 p_value[i] =  permutation@distribution@pvalue(permutation@statistic@teststatistic)
         }
         
 }
 
-# dendrogram
-library(ggdendro)
-rownames(network_density) = colnames(network_density)
-hc = hclust(dist(network_density))
-
-dendr = dendro_data(hc, type= "rectangle")
-clust = cutree(hc, k = 10) 
-clust.df <- data.frame(label=names(clust), cluster=factor(clust))
-dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
-#### Plot the dendrogram
-ggplot() + 
-        geom_segment(data=segment(dendr), aes(x=x, y=y, xend=xend, yend=yend)) + 
-        #geom_text(data=label(dendr), aes(x, y, label=label, hjust=0), col = apple_colors[11], size=2) +
-        coord_flip() + scale_y_reverse(expand=c(0.2, 0)) + 
-        theme(axis.line.y=element_blank(),
-              axis.ticks.y=element_blank(),
-              axis.text.y=element_blank(),
-              axis.title.y=element_blank(),
-              axis.line.x=element_blank(),
-              axis.ticks.x=element_blank(),
-              axis.text.x=element_blank(),
-              axis.title.x=element_blank(),
-              panel.background=element_rect(fill="white"),
-              panel.grid=element_blank(),
-              legend.position = "bottom",
-              plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"))
-
-ggsave("Working_figure/Figure1_extra/Dendrogram_BP_GO_pair_cluster_chosen.pdf", width = 3, height =7.5)
-
-label_GO = label(dendr)
-GO_order = label_GO[order(label_GO$x),]
-csvWriter(GO_order$label, "Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_BP_order_chosen.txt")
-
 GO_order = read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_BP_order_chosen.txt",
                       header = T, sep = "\t")
 
-Network_density = as.numeric(network_density_vector) # 0.11764
+Network_density = as.numeric(network_density_vector) 
 dataf = data.frame(rowv,columnv,
                    Network_density = as.numeric(network_density_vector),
                    label = p_value)

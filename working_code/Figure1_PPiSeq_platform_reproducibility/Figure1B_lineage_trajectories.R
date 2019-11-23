@@ -16,7 +16,7 @@ setwd("~/Dropbox/PPiSeq_02/")
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 
-PPI_lineages = dataFrameReader_T("Paper_data/SD_PPI_barcodes_fitness_counts.csv")
+PPI_lineages = dataFrameReader_T("Paper_data/Lineage_barcode_fitness_files/SD_PPI_barcodes_fitness_counts.csv")
 PPI_lineages_select = PPI_lineages[, c(1, 3, 4, 6:10)] 
 for (i in 4:8){
         PPI_lineages_select[,i] = frequency(as.numeric(PPI_lineages_select[,i]))
@@ -82,7 +82,7 @@ Lineage_plot = function(PPI_pos_DHFR_transform, output){
           axis.text.y.left = element_text(size = 10, color = "black")) + 
     theme(text = element_text(size=10, color = "black"))
   
-  ggsave(output, width = 5, height = 4)
+  ggsave(output, width = 5, height = 3)
   
 }
 

@@ -20,9 +20,9 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 ### Extract all PPIs that contain proteins that are associated with carbonhydrate transport
 ### and then check network in different environments (SD and Raffinose)
 setwd("~/Dropbox/PPiSeq_02/") # GO:0008643 carbonhydrate transport
-GO_slim = as.matrix(read.table("Working_data/GO_term_files/go_slim_mapping_tab_20190405.txt", header = F, sep = "\t"))
+GO_slim = as.matrix(read.table("Paper_data/Outside_datasets/GO_term_files/go_slim_mapping_tab_20190405.txt", header = F, sep = "\t"))
 Gene_Carbon = unique(GO_slim[which(GO_slim[,6] == "GO:0008643"), 1])
-PPI = csvReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_pos.csv")
+PPI = csvReader_T("Paper_data/Useful_datasets/Variation_score_PPI_environment_neg_zero_SD_merge_filter.csv")
 
 check_specific_protein = function(PPI, Gene_Carbon){
         PPI_chosen = "0"
@@ -42,7 +42,7 @@ name_exchange = csvReader_T("Working_data/Systematic_standard_protein.csv")
 PPI_split = split_string_vector(PPI_carbon_fitness[,1])
 protein_1 = name_exchange[match(PPI_split[,1], name_exchange[,1]),2]
 protein_2 = name_exchange[match(PPI_split[,2], name_exchange[,1]),2]
-weight = as.numeric(PPI_carbon_fitness[,5])
+weight = as.numeric(PPI_carbon_fitness[,12])
 # DMSO:4, H2O2:5, HU:6, Dox:7, Forskolin:8, Raffinose:9, NaCl:10, 16C:11, FK506:12
 #PPI_net = data.frame(protein_1, protein_2, weight, label)
 #PPI_net = PPI_net[which(PPI_net$weight!= 0),]
@@ -95,7 +95,7 @@ E(net)$width <- 2*exp(E(net)$weight)
 #E(net)$color[E(net)$reported == 2 ] = apple_colors[4]
 
 
-#order_random = sample(order(degree(net)), 144, replace = F)
+#order_random = sample(order(degree(net)), 141, replace = F)
 #a = rownames(data.frame(degree(net)))[order(degree(net))]
 #protein = a[order_random]
 #protein_order = cbind(protein, order_random)
@@ -104,7 +104,7 @@ E(net)$width <- 2*exp(E(net)$weight)
 #l = layout_in_circle(net, order=order_random)
 net_clean <- delete.edges(net, which(E(net)$weight == 0))
 
-pdf("Working_figure/Figure4/Figure4B_dynamic_PPI_network/carbohydrate_transport/PPI_carbonhydrate_transport_H2O2.pdf", height =5, width = 5)
+pdf("Working_figure/Figure4/Figure4B_dynamic_PPI_network/carbohydrate_transport/PPI_carbonhydrate_transport_FK506.pdf", height =5, width = 5)
 #pdf("~/Desktop/Figure4/PPI_carbonhydrate_transport_Fk506_circle.pdf", height =5, width = 5)
 plot(net_clean, layout = l,  vertex.frame.color=apple_colors[8], vertex.label.color = apple_colors[11],
      vertex.label.cex = 0.35, margin = c(0,0,0,0))

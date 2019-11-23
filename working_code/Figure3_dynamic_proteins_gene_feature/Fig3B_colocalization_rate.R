@@ -14,7 +14,7 @@ read_excel_allsheets <- function(filename, tibble = FALSE) {
   names(x) <- sheets
   x
 }
-x = read_excel_allsheets("~/Dropbox/PPiSeq_02/Working_data/Yolanda_localization/TableS2_LOC_scores.xlsx")
+x = read_excel_allsheets("~/Dropbox/PPiSeq_02/Paper_data/Outside_datasets/Yolanda_localization/TableS2_LOC_scores.xlsx")
 
 #convert to a list of matrices
 y = x
@@ -29,7 +29,7 @@ for(i in 1:length(x)){
 
 #Save the list
 yolanda_loc = y
-save(yolanda_loc, file = "~/Dropbox/PPiSeq_02/Working_data/Yolanda_localization/yolonda_loc.Rfile")
+save(yolanda_loc, file = "~/Dropbox/PPiSeq_02/Paper_data/Outside_datasets/Yolanda_localization/yolonda_loc.Rfile")
 
 
 #Get mean WT localization for Yolanda
@@ -45,10 +45,10 @@ for(i in 1:length(a)){
   wt[a[i], ] = apply(x, 2, mean, na.rm = T)
 }
 yolonda_benign_loc_matrix = wt
-save(yolonda_benign_loc_matrix, file = "~/Dropbox/PPiSeq_02/Working_data/Yolanda_localization/yolonda_benign_loc_matrix.Rfile")
+save(yolonda_benign_loc_matrix, file = "~/Dropbox/PPiSeq_02/Paper_data/Outside_datasets/Yolanda_localization/yolonda_benign_loc_matrix.Rfile")
 
 #Get GO localization
-x = as.matrix(read.csv("~/Dropbox/PPiSeq_02/Working_data/go_slim_mapping_tab_20190405.txt", sep = '\t'))
+x = as.matrix(read.csv("~/Dropbox/PPiSeq_02/Paper_data/Outside_datasets/GO_term_files/go_slim_mapping_tab_20190405.txt", sep = '\t'))
 x = x[which(x[,4] == "C"),]
 comp = unique(x[,5])
 genes = unique(x[,1])
@@ -60,11 +60,16 @@ for(i in 1:length(comp)){
   y[z, i] = 1
 }
 GO_loc_matrix = y
-save(GO_loc_matrix, file = "~/Dropbox/PPiSeq_02/Working_data/Yolanda_localization/GO_loc_matrix.Rfile")
+save(GO_loc_matrix, file = "~/Dropbox/PPiSeq_02/Paper_data/Outside_datasets/Yolanda_localization/GO_loc_matrix.Rfile")
 GO_loc_matrix = GO_loc_matrix[,c(1, 5:24)] #remove general terms  "other", "membrane",  "cellular_component" 
 
 #Import PPIs by environemnt
-load("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/ppi_by_env.Rfile")
+#load("~/Dropbox/PPiSeq_02/Working_data/Positive_PPI_environment/ppi_by_env.Rfile")
+PPI_count_filter = read.csv("~/Dropbox/PPiSeq_02/Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv")
+PPI_variation = read.csv("~/Dropbox/PPiSeq_02/Paper_data/Useful_datasets/Variation_score_PPI_environment_neg_zero_SD_merge_filter.csv")
+ppi_by_env = PPI_count_filter[,3:ncol(PPI_count_filter)]
+rownames(ppi_by_env) <- PPI_count_filter[,1]
+
 a = sapply(as.character(rownames(ppi_by_env)), strsplit, "_")
 x = matrix(NA, length(a), 2)
 for(i in 1:length(a)){

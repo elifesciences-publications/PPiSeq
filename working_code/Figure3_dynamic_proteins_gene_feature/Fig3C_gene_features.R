@@ -3,9 +3,11 @@ setwd("~/Dropbox/PPiSeq_02/")
 paper.colors = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
 
 #Make a combined data matrix with variation score
-load("Working_data/Positive_PPI_environment/variation_score.Rfile")
-load("Working_data/Positive_PPI_environment/vScore_protein.Rfile")
-load("Working_data/BIOGRID-ORGANISM-3.5.165.tab2/GIcount.Rfile")
+setwd("~/Dropbox/PPiseq_02/")
+variation_score = read.csv("Paper_data/Useful_datasets/Variation_score_PPI_environment_neg_zero_SD_merge_filter.csv")
+#load("Working_data/Positive_PPI_environment/variation_score.Rfile")
+load("Working_data_2/vScore_protein.Rfile")
+load("Paper_data/Outside_datasets/BIOGRID-ORGANISM-3.5.165.tab2/GIcount.Rfile")
 gene_feature = as.matrix(read.table("Working_data/geneFeatures_022415_EK.txt", header = T, sep = "\t")) # 6438, 39
 gene_feature_matched = gene_feature[match(vScore_protein[,1], gene_feature[,1]),]
 gene_feature_matched= cbind(gene_feature_matched, GIcount[vScore_protein[,1]], as.numeric(vScore_protein[,2]))
@@ -83,7 +85,7 @@ for(i in 1:nrow(b.sd)){
 i = ncol(b.mean)
 o = order(b.mean[,i], decreasing = F)
 
-pdf(file = "Working_figure/SFigures/FigureSX_related_to_Fig3C.pdf")
+pdf(file = "Working_figure/SFigures/Figure3_related/FigureSX_related_to_Fig3C.pdf")
 par(mar= c(5,10,1,1))
 barCenter = barplot(b.mean[o, i], horiz=T, beside=F, xlim=c(-0.5, 0.3), 
                     xlab="Spearman correlation with protein interaction dynamicity",

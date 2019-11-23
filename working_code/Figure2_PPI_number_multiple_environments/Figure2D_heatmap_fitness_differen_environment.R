@@ -17,27 +17,14 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 #### Make a heatmap to show different groups of PPIs
 setwd("~/Dropbox/PPiSeq_02/")
-PPI_heatmap = dataFrameReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_neg_zero.csv")
-
-#PPI_count = dataFrameReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary_combine_SD.csv")
-
+PPI_heatmap = dataFrameReader_T("Paper_data/Useful_datasets/Variation_score_PPI_environment_neg_zero_SD_merge_filter.csv")
 #install.packages("pheatmap")
 library(pheatmap)
 library(RColorBrewer)
-#PPI_heatmap$Environment_number = PPI_count[match(as.character(PPI_heatmap$PPI), as.character(PPI_count[,1])),2]
-#PPI_heatmap_order = PPI_heatmap[order(PPI_heatmap$Environment_number, decreasing=T),]
 heatmap_matrix = PPI_heatmap[,4:12]
-#colnames(heatmap_matrix) = c("SD (2X)",expression('H'[2]* 'O'[2]), "Hydroxyurea", "Doxorubicin",
-                                #"Forskolin", "Raffinose", "NaCl", "16 \u00B0C", "FK506")
-
-#row_ann = data.frame(Environment = as.character(PPI_heatmap_order$Environment_number))
-#row.names(row_ann) = rownames(PPI_heatmap_order)
-#pdf("~/Desktop/PPI_fitness_across_environment.pdf", height = 5, width =5)
-#color_scale=c("#FFFFFF",colorRampPalette((RColorBrewer::brewer.pal(n=7,name="YlGnBu")))(99))
 fitness_all = unique(as.vector(as.matrix(heatmap_matrix)))
 min(fitness_all) # 0
 max(fitness_all) # 1.351097
-#bk1 = seq(-0.7, -0.05, by = 0.05)
 bk2 = seq(0, 1, by = 0.01)
 bk3 = seq(1.05, 1.6, by = 0.05)
 col_chosen = c(apple_colors[5], "#e7d4e8",apple_colors[7])

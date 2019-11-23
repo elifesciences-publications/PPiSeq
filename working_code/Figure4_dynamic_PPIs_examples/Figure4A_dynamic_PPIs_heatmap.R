@@ -19,8 +19,12 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 
 # Input the normalized fitness values for all PPIs in each environment
 setwd("~/Dropbox/PPiSeq_02/")
-PPI_fit = csvReader_T("Working_data/Positive_PPI_environment/Variation_score_PPI_environment_neg_zero.csv")
-GO_slim = as.matrix(read.table("Working_data/GO_term_files/go_slim_mapping_tab_20190405.txt", header = F, sep = "\t"))
+PPI_fit = csvReader_T("Paper_data/Useful_datasets/Variation_score_PPI_environment_neg_zero_SD_merge_filter.csv")
+PPI_count = csvReader_T("Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge.csv")
+PPI_count_filter = PPI_count[which(PPI_count[,1] %in% PPI_fit[,1]),]
+csvWriter(PPI_count_filter, "Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv")
+
+GO_slim = as.matrix(read.table("Paper_data/Outside_datasets/GO_term_files/go_slim_mapping_tab_20190405.txt", header = F, sep = "\t"))
 Gene_carbon = unique(GO_slim[which(GO_slim[,6] == "GO:0008643"), 1])
 Gene_transcription = unique(GO_slim[which(GO_slim[,6] == "GO:0006352"), 1])
 Gene_translation = unique(GO_slim[which(GO_slim[,6] == "GO:0006413")])
@@ -46,9 +50,9 @@ check_specific_protein = function(PPI, Gene_Carbon){
   return(PPI_chosen)
 }
 
-PPI_carbon = check_specific_protein(PPI_fit, Gene_carbon) # 284
-PPI_transcription = check_specific_protein(PPI_fit, Gene_transcription) # 731
-PPI_translation = check_specific_protein(PPI_fit, Gene_translation) #658
+PPI_carbon = check_specific_protein(PPI_fit, Gene_carbon) 
+PPI_transcription = check_specific_protein(PPI_fit, Gene_transcription) 
+PPI_translation = check_specific_protein(PPI_fit, Gene_translation) 
 
 # Make a heatmap for each groups
 HXT = c("YHR094C","YDR345C","YHR096C", "YDR342C") # (HXT1, HXT3, HXT5, HXT7)
@@ -79,13 +83,14 @@ Group = rep("Others", nrow(PPI_other))
 PPI_other = data.frame(PPI_other, Group)
 PPI_carbon_final = rbind(PPI_HXT, PPI_other) 
 ## add another annotations (New versus reported)
-PPI_reported = dataFrameReader_T("Working_data/multiple_validated_PPI.csv")
+PPI_reported = dataFrameReader_T("Paper_data/Useful_datasets/multiple_validated_PPI.csv")
 PPI_carbon_final_reported = match_both_direction(PPI_carbon_final, PPI_reported[,1])
 Reported = rep("No", nrow(PPI_carbon_final))
 Reported[which(PPI_carbon_final[,1] %in% PPI_carbon_final_reported[,1])] = "Yes" # 43
 PPI_carbon_final = data.frame(PPI_carbon_final, Reported)
 ## add another annotations (Environment number)
-PPI_count = dataFrameReader_T("Working_data/Positive_PPI_environment/PPI_environment_count_summary.csv")
+PPI_count = dataFrameReader_T("Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv") 
+
 count = PPI_count[match(PPI_carbon_final[,1], PPI_count[,1]),2]
 PPI_carbon_final = data.frame(PPI_carbon_final, count)
 
