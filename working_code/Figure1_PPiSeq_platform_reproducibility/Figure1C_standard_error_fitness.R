@@ -20,45 +20,32 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 setwd("~/Dropbox/PPiSeq_02/")
 DMSO_fit = dataFrameReader_T("Paper_data/PPI_mean_fitness_calling_files/SD_mean_fitness_positive.csv")
 library(scales)
-
-#### Create a matrix that contains the mean, median, and CI of sd in each bin of fitness
-bin_fit = seq(-0.2, 1, by = 0.05)
-matrix_mean_CI = data.frame(bin_fit, rep(0,length(bin_fit)), rep(0,length(bin_fit)),rep(0,length(bin_fit)), rep(0, length(bin_fit)))
-sd = DMSO_fit$sd[which(DMSO_fit$Mean_fitness <= -0.2 & DMSO_fit$Mean_fitness > -0.25)]
-matrix_mean_CI[1,2] = mean(sd)
-matrix_mean_CI[1,3] = median(sd)
-sem_sd= sd(sd)/(length(sd)^0.5)
-matrix_mean_CI[1,4] = mean(sd) - qnorm(0.975)*sem_sd
-matrix_mean_CI[1,5] = mean(sd) + qnorm(0.975)*sem_sd
-for(i in 2:length(bin_fit)){
-  sd = DMSO_fit$sd[which(DMSO_fit$Mean_fitness <= bin_fit[i] & DMSO_fit$Mean_fitness > bin_fit[i-1])]
-  matrix_mean_CI[i,2] = mean(sd)
-  matrix_mean_CI[i,3] = median(sd)
-  sem_sd= (sd(sd)/(length(sd))^0.5)
-  matrix_mean_CI[i,4] = mean(sd) - qnorm(0.975)*sem_sd
-  matrix_mean_CI[i,5] = mean(sd) + qnorm(0.975)*sem_sd
+Create_sliding_matrix = function(DMSO_fit){
+  #### Create a matrix that contains the mean, median, and CI of sd in each bin of fitness
+  bin_fit = seq(-0.2, 1, by = 0.05)
+  matrix_mean_CI = data.frame(bin_fit, rep(0,length(bin_fit)), rep(0,length(bin_fit)),rep(0,length(bin_fit)), rep(0, length(bin_fit)))
+  sd = DMSO_fit$sd[which(DMSO_fit$Mean_fitness <= -0.2 & DMSO_fit$Mean_fitness > -0.25)]
+  matrix_mean_CI[1,2] = mean(sd)
+  matrix_mean_CI[1,3] = median(sd)
+  sem_sd= sd(sd)/(length(sd)^0.5)
+  matrix_mean_CI[1,4] = mean(sd) - qnorm(0.975)*sem_sd
+  matrix_mean_CI[1,5] = mean(sd) + qnorm(0.975)*sem_sd
+  for(i in 2:length(bin_fit)){
+    sd = DMSO_fit$sd[which(DMSO_fit$Mean_fitness <= bin_fit[i] & DMSO_fit$Mean_fitness > bin_fit[i-1])]
+    matrix_mean_CI[i,2] = mean(sd)
+    matrix_mean_CI[i,3] = median(sd)
+    sem_sd= (sd(sd)/(length(sd))^0.5)
+    matrix_mean_CI[i,4] = mean(sd) - qnorm(0.975)*sem_sd
+    matrix_mean_CI[i,5] = mean(sd) + qnorm(0.975)*sem_sd
+  }
+  colnames(matrix_mean_CI) = c("Fitness", "Mean", "Median", "Lower", "Upper")
+  return(matrix_mean_CI)
 }
-colnames(matrix_mean_CI) = c("Fitness", "Mean", "Median", "Lower", "Upper")
 
-##### Make a similar matrix for positive PPIs
-DMSO_pos = DMSO_fit[which(DMSO_fit$Positive != 0),]
-bin_fit = seq(-0.2, 1, by = 0.05)
-matrix_mean_CI_pos = data.frame(bin_fit, rep(0,length(bin_fit)), rep(0,length(bin_fit)),rep(0,length(bin_fit)), rep(0, length(bin_fit)))
-sd = DMSO_pos$sd[which(DMSO_pos$Mean_fitness <= -0.2 & DMSO_pos$Mean_fitness > -0.25)]
-matrix_mean_CI_pos[1,2] = mean(sd)
-matrix_mean_CI_pos[1,3] = median(sd)
-sem_sd= sd(sd)/(length(sd)^0.5)
-matrix_mean_CI_pos[1,4] = mean(sd) - qnorm(0.975)*sem_sd
-matrix_mean_CI_pos[1,5] = mean(sd) + qnorm(0.975)*sem_sd
-for(i in 2:length(bin_fit)){
-        sd = DMSO_pos$sd[which(DMSO_pos$Mean_fitness <= bin_fit[i] & DMSO_pos$Mean_fitness > bin_fit[i-1])]
-        matrix_mean_CI_pos[i,2] = mean(sd)
-        matrix_mean_CI_pos[i,3] = median(sd)
-        sem_sd= (sd(sd)/(length(sd))^0.5)
-        matrix_mean_CI_pos[i,4] = mean(sd) - qnorm(0.975)*sem_sd
-        matrix_mean_CI_pos[i,5] = mean(sd) + qnorm(0.975)*sem_sd
-}
-colnames(matrix_mean_CI_pos) = c("Fitness", "Mean", "Median", "Lower", "Upper")
+DMSO_fit = dataFrameReader_T("Paper_data/PPI_mean_fitness_calling_files/SD_mean_fitness_positive.csv")
+matrix_mean_CI = Create_sliding_matrix(DMSO_fit)
+DMSO_fit_pos = DMSO_fit[which(DMSO_fit$Positive != 0),]
+matrix_mean_CI_pos = Create_sliding_matrix(DMSO_fit_pos)
 
 library(ggplot2)
 ggplot() +
@@ -76,7 +63,7 @@ ggplot() +
                      breaks= seq(0,0.5, by = 0.1),
                      labels =seq(0,0.5, by = 0.1)) +
   
-        scale_x_continuous(name = "Mean fitness of each protein pair", 
+        scale_x_continuous(name = "Estimated mean fitness of each protein pair", 
                            limits=c(-0.4, 1.0),
                            breaks=seq(-0.4, 1.0, by =0.2),
                            labels = seq(-0.4, 1.0, by= 0.2)) +
@@ -86,4 +73,4 @@ ggplot() +
               legend.key=element_blank(), legend.position =c(0.8,0.7)) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
               axis.text.y.left = element_text(size = 10, color = "black"))
-ggsave("Working_figure/Figure1/Figure1C_standard_error_fitness_estimation_Reported_wide.pdf", width = 4, height = 3)
+ggsave("Working_figure/Figure1/Figure1C_SD_standard_error_fitness.pdf", width = 5, height = 5)

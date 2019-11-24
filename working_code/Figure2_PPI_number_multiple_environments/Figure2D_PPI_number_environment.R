@@ -35,7 +35,7 @@ environment_matrix_order = environment_matrix[,c(1,9,2,3,7,5,6,4,8)]
 #col_purple = brewer.pal(9,"Set3")
 #col_purple = c("#313695","#4575b4","#74add1","#abd9e9","#e0f3f8","#fee090", "#fdae61","#f46d43","#d73027", '#a50026')
 col_purple = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
-pdf("Working_figure/Figure2/Figure2B_Number_PPIs_across_environments.pdf", height = 5, width = 5)
+pdf("Working_figure/Figure2/Figure2D_Number_PPIs_across_environments.pdf", height = 5, width = 5)
 par(mar = c(4,4,2,1))
 barCenter = barplot(environment_matrix_order, horiz=F, beside=F,  ylab="Number of PPIs",
                     space= c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2), yaxt="n", ylim = c(0,7000),

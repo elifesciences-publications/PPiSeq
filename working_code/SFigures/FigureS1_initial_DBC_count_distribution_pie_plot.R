@@ -33,7 +33,7 @@ ggplot() + aes(counts) +
               axis.text.y.left = element_text(size = 12, color = "black")) + 
         theme(text = element_text(size=14))
 
-ggsave("~/Dropbox/PPiseq_02/Working_figure/SFigures/paper/FigureS1A_barcode_counts_distribution_01.pdf", width = 5, height = 5)
+ggsave("~/Dropbox/PPiseq_02/Working_figure/SFigures/paper/FigureS1_T0_barcode_distribution/FigureS1A_barcode_counts_distribution_01.pdf", width = 5, height = 5)
 
 #### plot initial barcode counts distribution non-log
 ggplot() + aes(counts) +
@@ -53,7 +53,7 @@ ggplot() + aes(counts) +
         theme(axis.text.x = element_text(size = 12, color = "black"), 
               axis.text.y.left = element_text(size = 12, color = "black")) + 
         theme(text = element_text(size=14))
-ggsave("~/Dropbox/PPiseq_02/Working_figure/SFigures/paper/FigureS1A_barcode_counts_distribution_02.pdf", width = 6, height = 4)
+ggsave("~/Dropbox/PPiseq_02/Working_figure/SFigures/paper/FigureS1_T0_barcode_distribution/FigureS1A_barcode_counts_distribution_02.pdf", width = 6, height = 4)
 
 ### pie plot to show the number of barcoded replicates for each PPI
 known_covered = length(which(barcodes_expected[,2] %in% lineage_T0[,1])) # 6048285
@@ -100,6 +100,6 @@ ggplot(PPI_count_hist, aes(x = factor(1), y = Freq, fill= barcode_count)) +
                           breaks = c(1,2,3,4),
                           labels = c("1", "2", "3", "4"))
 #guides(fill=FALSE)
-ggsave("~/Dropbox/PPiseq_02/Working_figure/SFigures/paper/FigureS1B_barcode_counts_per_PPI_real.pdf", width = 5, height = 5)
+ggsave("~/Dropbox/PPiseq_02/Working_figure/SFigures/paper/FigureS1_T0_barcode_distribution/FigureS1B_barcode_counts_per_PPI_real.pdf", width = 5, height = 5)
 
 

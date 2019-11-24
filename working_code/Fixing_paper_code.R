@@ -126,4 +126,46 @@ PPI_negative_fitness= as.numeric(PPI_negative[,4])
 length(PPI_negative_fitness)#17483
 length(unique(PPI_negative[,1])) # 6071
 
+### (4) Number of PPIs covered by marginal PCA and in these PPIs how many are reported by PPiseq
+setwd("~/Dropbox/PPiseq_02/")
+PCA_lower = as.matrix(read.table("Paper_data/Outside_datasets/Tarassov_PPI_PPV_80.txt", header= T, sep = "\t")) # 10230
+PCA_lower = PCA_lower[which(as.numeric(PCA_lower[,9]) >= 80),] # 10230
+PCA_lower_PPI = paste(PCA_lower[,1], PCA_lower[,4], sep = "_")
+PCA_paper = read.delim(file = "~/Desktop/Big_PPiSeq_paper/PCA_rearray/PPI_set_science.txt", sep=" ")
+PCA_called_PPI = paste(PCA_paper[,1], PCA_paper[,3], sep="_") # 2770
+PCA_called_PPI_reverse = paste(PCA_paper[,3], PCA_paper[,1], sep="_")
+length(intersect(PCA_lower_PPI, PCA_called_PPI)) # 1772
+length(intersect(PCA_lower_PPI, PCA_called_PPI_reverse)) # 1660
+PCA_called_PPI_matrix = cbind(PCA_called_PPI, PCA_called_PPI_reverse)
+nrow(match_both_direction(PCA_called_PPI_matrix, PCA_lower_PPI))# 2770
+PCA_called_PPI_both = unique(c(PCA_called_PPI, PCA_called_PPI_reverse))
+PCA_lower_PPI_not_calling = PCA_lower_PPI[which(!PCA_lower_PPI %in% PCA_called_PPI_both)] # 7034
+PCA_lower_PPI_not_calling_unique = mark_duplicates_fast(PCA_lower_PPI_not_calling) # 6876
 
+fragment_select = csvReader_T("Paper_data/Useful_datasets/Promiscuous_protein_summary_SD_merge.csv")
+fragment_protein = fragment_select[which(fragment_select[,2] >= 2),1]
+
+## Remove PPIs that contain promiscuous proteins from BioGRID
+promiscuous_PCA_lower_select = rep(0, length(PCA_lower_PPI_not_calling_unique[,1]))
+for(i in 1: length(promiscuous_PCA_lower_select)){
+        PPI = split_string(PCA_lower_PPI_not_calling_unique[i])
+        if(PPI[1] %in% fragment_protein | PPI[2] %in% fragment_protein){
+                promiscuous_PCA_lower_select[i] = 1
+        }
+}
+length(which(promiscuous_PCA_lower_select == 1))
+PCA_lower_PPI_not_calling_unique_filter = PCA_lower_PPI_not_calling_unique[which(promiscuous_PCA_lower_select != 1),] # 6786
+
+all_PPI = csvReader_T("Paper_data/Useful_datasets/All_PPI_environments_normalized_fit_SD_merge.csv") 
+pos_PPI = csvReader_T("Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge.csv")
+
+### Marginal PPIs covered by PPiSeq
+nrow(match_both_direction(PCA_lower_PPI_not_calling_unique_filter, all_PPI[,1])) # 5347
+nrow(match_both_direction(PCA_lower_PPI_not_calling_unique_filter, pos_PPI[,1])) # 1838
+
+
+### (5) Checking if one environment PPI outnumbered other PPIs
+PPI_count_filter = csvReader_T("Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv")
+count_freq = as.data.frame(table(PPI_count_filter[,2]))
+count_freq[1,] # 7724
+sum(as.numeric(count_freq[2:nrow(count_freq),2])) # 5257
