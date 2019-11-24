@@ -73,4 +73,4 @@ ggplot() +
               legend.key=element_blank(), legend.position =c(0.8,0.7)) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
               axis.text.y.left = element_text(size = 10, color = "black"))
-ggsave("Working_figure/Figure1/Figure1C_SD_standard_error_fitness.pdf", width = 5, height = 5)
+ggsave("Working_figure/Figure1/Figure1C_SD_standard_error_fitness.pdf", width = 4, height = 4)

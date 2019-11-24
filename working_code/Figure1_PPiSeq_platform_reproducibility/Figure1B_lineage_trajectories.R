@@ -82,7 +82,7 @@ Lineage_plot = function(PPI_pos_DHFR_transform, output){
           axis.text.y.left = element_text(size = 10, color = "black")) + 
     theme(text = element_text(size=10, color = "black"))
   
-  ggsave(output, width = 5, height = 3)
+  ggsave(output, width = 5, height = 4)
   
 }
 

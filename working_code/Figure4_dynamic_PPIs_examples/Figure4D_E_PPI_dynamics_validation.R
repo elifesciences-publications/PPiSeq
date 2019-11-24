@@ -227,9 +227,9 @@ csvWriter(dip_SD_Raff, "20190820/Raffinose_DMSO_dynamics_Tecan.csv")
 
 ##### Get normalized fitness values from PPiSeq and calculate the mean dynamics, sd, and p-value
 setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190820/")
-PPI_fit_SD = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/SD_PPI_barcodes_fitness_counts.csv")
-PPI_fit_Raff = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Raffinose_PPI_barcodes_fitness_counts.csv")
-PPI_fit_NaCl = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/NaCl_PPI_barcodes_fitness_counts.csv")
+PPI_fit_SD = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Lineage_barcode_fitness_files/SD_merge_PPI_barcodes_fitness_counts.csv")
+PPI_fit_Raff = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Lineage_barcode_fitness_files/Raffinose_PPI_barcodes_fitness_counts.csv")
+PPI_fit_NaCl = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Lineage_barcode_fitness_files/NaCl_PPI_barcodes_fitness_counts.csv")
 Tecan = csvReader_T("Raffinose_DMSO_dynamics_Tecan.csv")
 
 SD_chosen = PPI_fit_SD[which(PPI_fit_SD[,1] %in% c(Tecan[,1], "positive_DHFR","negative_non_DHFR")),]
@@ -385,6 +385,7 @@ PPiseq_max = SD_Raff_final$Mean_diff + SD_Raff_final$SD_diff
 Tecan_min = SD_Raff_final$Mean_dynamics - SD_Raff_final$SD_dynamics
 Tecan_max = SD_Raff_final$Mean_dynamics + SD_Raff_final$SD_dynamics
 SD_Raff_final = data.frame(SD_Raff_final, PPiseq_min, PPiseq_max, Tecan_min, Tecan_max)
+cor(SD_Raff_final$Mean_dynamics, SD_Raff_final$Mean_diff, method = "spearman") # 0.61
 SD_Raff_final$label = factor(SD_Raff_final$label, levels = c("HXT1", "HXT7", "HXT3", "HXT5", "HXT2", "FPS1", "Other"))
 SD_Raff_final$p.value.1 = factor(SD_Raff_final$p.value.1, levels = c("Significant", "Non-significant", "NA"))
 library(ggplot2)
@@ -396,7 +397,7 @@ ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+
         geom_errorbar(aes(ymin = Tecan_min, ymax = Tecan_max), col = apple_colors[8], size = 0.2)+
         geom_vline(xintercept = 0, col = apple_colors[11], linetype = 2,size = 0.2)+
         geom_hline(yintercept = 0, col = apple_colors[11], linetype = 2, size = 0.2)+
-        annotate("text", x = -0.3, y = 0.7, label = expression(paste("Spearman's ", italic(r), " = 0.6")),  
+        annotate("text", x = -0.3, y = 0.7, label = expression(paste("Spearman's ", italic(r), " = 0.61")),  
                  parse = TRUE, col = apple_colors[11]) +
         scale_shape_manual(name = "", values = c(16, 15, 17)) +
         scale_color_manual(name = "", values = c("#1b9e77","#e7298a", "#d95f02", "#7570b3", "#1f78b4", "#984ea3", "#CECED2"))+
@@ -414,7 +415,7 @@ ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
               axis.text.y.left = element_text(size = 10, color = "black"))
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure4/Figure4C_Raffinose_SD_Tecan_PPiSeq_comparison.pdf", width =6, height =5 )       
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure4/Figure4D_Raffinose_SD_Tecan_PPiSeq_comparison.pdf", width =5, height =4 )       
 
 ################ NaCl Environment
 setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190819/")
@@ -457,6 +458,7 @@ PPiseq_max = SD_Raff_final$Mean_diff + SD_Raff_final$SD_diff
 Tecan_min = SD_Raff_final$Mean_dynamics - SD_Raff_final$SD_dynamics
 Tecan_max = SD_Raff_final$Mean_dynamics + SD_Raff_final$SD_dynamics
 SD_Raff_final = data.frame(SD_Raff_final, PPiseq_min, PPiseq_max, Tecan_min, Tecan_max)
+cor(SD_Raff_final$Mean_dynamics, SD_Raff_final$Mean_diff, method = "spearman") # 0.21
 SD_Raff_final$label = factor(SD_Raff_final$label, levels = c("HXT1", "HXT7", "HXT3", "HXT5", "HXT2", "FPS1", "Other"))
 SD_Raff_final$p.value.1 = factor(SD_Raff_final$p.value.1, levels = c("Significant", "Non-significant", "NA"))
 library(ggplot2)
@@ -468,7 +470,7 @@ ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+
         geom_errorbar(aes(ymin = Tecan_min, ymax = Tecan_max), col = apple_colors[8], size = 0.2)+
         geom_vline(xintercept = 0, col = apple_colors[11], linetype = 2,size = 0.2)+
         geom_hline(yintercept = 0, col = apple_colors[11], linetype = 2, size = 0.2)+
-        annotate("text", x = -0.3, y = 0.2, label = expression(paste("Spearman's ", italic(r), " = 0.16")),  
+        annotate("text", x = -0.3, y = 0.2, label = expression(paste("Spearman's ", italic(r), " = 0.21")),  
                  parse = TRUE, col = apple_colors[11]) +
         scale_shape_manual(name = "", values = c(16, 15, 17)) +
         scale_color_manual(name = "", values = c("#1b9e77","#e7298a", "#d95f02", "#7570b3", "#1f78b4", "#984ea3", "#CECED2"))+
@@ -486,11 +488,11 @@ ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
               axis.text.y.left = element_text(size = 10, color = "black"))
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure4/Figure4C_NaCl_SD_Tecan_PPiSeq_comparison.pdf", width =6, height =5 )       
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure4/Figure4E_NaCl_SD_Tecan_PPiSeq_comparison.pdf", width =5, height =4 )       
 
 
 
-
+##################################################################################################
 ##### Input the Tecan data and calculate the AUC for each PPI
 
 TECAN_data_AUC = function(data_file_name, map_name,time_window, matrix_name, bad_wells){
