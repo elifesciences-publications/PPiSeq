@@ -134,7 +134,7 @@ library(ggplot2)
 
 ggplot()+
   geom_dotplot(aes(x = PPI, y = fitness, group = PPI, fill = color, col = color), bar_plot_data_real, 
-               binaxis="y", stackdir="center",  binwidth = 0.04, alpha =0.5,show.legend = FALSE)+
+               binaxis="y", stackdir="center",  binwidth = 0.02, alpha =0.5,show.legend = FALSE)+
   geom_jitter(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_neg, width = 0.1, alpha = 0.5) +
   geom_violin(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_control, 
               draw_quantiles = c(0.25, 0.5, 0.75), show.legend = FALSE)+
@@ -152,9 +152,9 @@ ggplot()+
   scale_fill_manual(name = "", breaks = c( "Negative PPI", 'Positive PPI'),
                     values  = apple_colors[c(5,7)])+
   scale_y_continuous(name = "Fitness", 
-                     limits=c(-1, 1.2),
-                     breaks = seq(-1,1.2, by =0.2),
-                     labels = seq(-1,1.2, by= 0.2))+
+                     limits=c(-0.4, 1.2),
+                     breaks = seq(-0.4,1.2, by =0.2),
+                     labels = seq(-0.4,1.2, by= 0.2))+
   guides(color = guide_legend(override.aes = list(size = 2, alpha = 0.5)))+
   theme(legend.key = element_blank(), legend.position = c(0.8,0.2))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -162,5 +162,5 @@ ggplot()+
   theme(axis.text.x = element_text(size = 10, color = "black", angle = 60, hjust =1),
         axis.title.x = element_blank(),axis.text.y.left = element_text(size = 10, color = "black")) + 
   theme(text = element_text(size=10))
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure1/Figure1D_Calling_PPIs_violin_jitter_dot.pdf", width= 4.5, height = 4.5)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure1/Figure1D_Calling_PPIs_violin_jitter_dot.pdf", width= 5, height = 5)
 

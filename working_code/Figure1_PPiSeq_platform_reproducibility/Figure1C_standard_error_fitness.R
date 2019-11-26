@@ -49,28 +49,26 @@ matrix_mean_CI_pos = Create_sliding_matrix(DMSO_fit_pos)
 
 library(ggplot2)
 ggplot() +
-        geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
-                 bins = 60, size = 0.05) +
-        scale_fill_gradient(low= "white", high = apple_colors[8])+
+        #geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
+                 #bins = 60, size = 0.05) +
+        #scale_fill_gradient(low= "white", high = apple_colors[8])+
         geom_line(aes(x = Fitness, y = Median), matrix_mean_CI,col = apple_colors[5], size = 1.2)+
         geom_line(aes(x = Fitness, y = Median), matrix_mean_CI_pos,col = apple_colors[7], size =1.2)+
         #geom_ribbon(aes(x = Fitness, ymin= Lower, ymax = Upper), matrix_mean_CI, alpha = 0.2) +
     
-        #geom_line(aes(x = Fitness, y = Upper), matrix_CI, linetype = "dashed", col = apple_colors[11])+
-        #scale_color_manual(name = "",values = col_values) +
         scale_y_continuous(name = "Standard deviation of fitness",
-                     limits=c(0, 0.5),
-                     breaks= seq(0,0.5, by = 0.1),
-                     labels =seq(0,0.5, by = 0.1)) +
+                     limits=c(0, 0.12),
+                     breaks= seq(0,0.12, by = 0.02),
+                     labels =seq(0,0.12, by = 0.02)) +
   
         scale_x_continuous(name = "Estimated mean fitness of each protein pair", 
-                           limits=c(-0.4, 1.0),
-                           breaks=seq(-0.4, 1.0, by =0.2),
-                           labels = seq(-0.4, 1.0, by= 0.2)) +
+                           limits=c(-0.2, 1.0),
+                           breaks=seq(-0.2, 1.0, by =0.2),
+                           labels = seq(-0.2, 1.0, by= 0.2)) +
         labs(fill = expression('Log'[10]* '(count)')) +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black"),
               legend.key=element_blank(), legend.position =c(0.8,0.7)) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
               axis.text.y.left = element_text(size = 10, color = "black"))
-ggsave("Working_figure/Figure1/Figure1C_SD_standard_error_fitness.pdf", width = 4, height = 4)
+ggsave("Working_figure/Figure1/Figure1C_SD_standard_error_fitness.pdf", width = 4, height = 3)
