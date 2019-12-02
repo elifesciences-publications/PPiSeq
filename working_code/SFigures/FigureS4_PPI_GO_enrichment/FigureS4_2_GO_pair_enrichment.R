@@ -144,6 +144,7 @@ for(i in 1:length(network_density_vector)){
 GO_order = read.table("Working_data_2/PPI_pair_GO/environment/GO_CC_order.txt",header = T, sep = "\t")
 
 Network_density = as.numeric(network_density_vector) 
+max(Network_density) # 0.02793417
 dataf = data.frame(rowv,columnv,
                    Network_density = as.numeric(network_density_vector),
                    label = p_value)
@@ -154,8 +155,8 @@ ggplot() +
                               oob = scales::squish)+  
         scale_x_discrete(limits = GO_order$x) + 
         scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
-        scale_size(name = "Network density", breaks = c(0, 0.01, 0.03, 0.05, 0.07, 0.09, 0.11), 
-                   label = c("0", "1%", "3%", "5%", "7%", "9%", "11%"), range = c(0,1.21))+ ## to tune the size of circles
+        scale_size(name = "Network density", breaks = c(0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07), 
+                   label = c("0", "1%" , "2%", "3%", "4%", "5%", "6%", "7%"), range = c(0,1.257))+ ## to tune the size of circles
         theme(legend.justification = "left",
               legend.position= "right", legend.box = 'vertical',legend.box.just = "left",
               legend.key = element_blank(),
@@ -173,9 +174,9 @@ ggplot() +
                               oob = scales::squish)+  
         scale_x_discrete(limits = GO_order$x) + 
         scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
-        scale_size(name = "Network density", breaks = c(0, 0.01, 0.03, 0.05, 0.07, 0.09, 0.11), 
-                   label = c("0", "1%", "3%", "5%", "7%", "9%", "11%"),
-                   range = c(0, 1.21))+ ## to tune the size of circles
+        scale_size(name = "Network density", breaks = c(0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07), 
+                   label = c("0", "1%" , "2%", "3%", "4%", "5%", "6%", "7%"),
+                   range = c(0, 1.257))+ ## to tune the size of circles
         theme(legend.position= "none", plot.margin = margin(0.2, 0.2, 2, 2, "cm")) +
         theme(panel.background = element_blank(), axis.ticks=element_blank(),
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
@@ -255,9 +256,9 @@ ggplot() +
         #scale_color_gradientn(name = "P value",colors = apple_colors[c(5,3,7)])+  
         scale_x_discrete(limits = GO_order$x) + 
         scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
-        scale_size(name = "Network density", breaks = c(0, 0.01, 0.03, 0.05, 0.07, 0.09, 0.11), 
-                   label =c("0", "1%" , "3%", "5%", "7%", "9%", "11%"), 
-                   range = c(0, 4))+ ## to tune the size of circles
+        scale_size(name = "Network density", breaks = c(0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07), 
+                   label =c("0", "1%" , "2%", "3%", "4%", "5%", "6%", "7%"), 
+                   range = c(0, 3))+ ## to tune the size of circles
         theme(legend.position= "right",legend.key = element_blank(),
               legend.text = element_text(size = 8, color = apple_colors[11])) +
         
@@ -280,9 +281,9 @@ geom_point(aes(x = rowv, y = columnv, size =Network_density, color = label), dat
         #scale_color_gradientn(name = "P value",colors = apple_colors[c(5,3,7)])+  
         scale_x_discrete(limits = GO_order$x) + 
         scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
-        scale_size(name = "Network density", breaks = c(0, 0.01, 0.03, 0.05, 0.07, 0.09, 0.11), 
-                   label =c("0", "1%" , "3%", "5%", "7%", "9%", "11%"), 
-                   range = c(0, 4))+ ## to tune the size of circles
+        scale_size(name = "Network density", breaks = c(0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07), 
+                   label =c("0", "1%" , "2%", "3%", "4%", "5%", "6%", "7%"), 
+                   range = c(0, 3))+ ## to tune the size of circles
         guides(fill=guide_legend(nrow=2,byrow=TRUE))+
         theme(legend.position= "none") +
         
@@ -298,6 +299,7 @@ ggsave("Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/heatmap_density
        width = 12, height = 12)
 
 ## (2) Choose only 59 GO terms to make figures
+setwd("~/Dropbox/PPiseq_02/")
 network_density = as.matrix(read.table("Working_data_2/PPI_pair_GO/environment/DMSO/Network_density_PPI_BP_matrix.txt", 
                                        sep = "\t", header = T))
 colnames(network_density) = gsub("\\.", " ", colnames(network_density))
@@ -371,10 +373,10 @@ for(i in 1:length(network_density_vector)){
         
 }
 
-GO_order = read.table("Working_data/Positive_PPI_environment/PPI_pair_GO/environment/GO_BP_order_chosen.txt",
+GO_order = read.table("Working_data_2/PPI_pair_GO/environment/GO_BP_order_chosen.txt",
                       header = T, sep = "\t")
 
-Network_density = as.numeric(network_density_vector) 
+Network_density = as.numeric(network_density_vector) # 0.0666667 (2.387 folds of network density for cellular compartment)
 dataf = data.frame(rowv,columnv,
                    Network_density = as.numeric(network_density_vector),
                    label = p_value)
@@ -389,9 +391,9 @@ ggplot() +
         #scale_color_gradientn(name = "P value",colors = apple_colors[c(5,3,7)])+  
         scale_x_discrete(limits = GO_order$x) + 
         scale_y_discrete(limits = GO_order$x, position = "right") +## color of the corresponding aes
-        scale_size(name = "Network density", breaks = c(0, 0.01, 0.03, 0.05, 0.07, 0.09, 0.11), 
-                   label =c("0", "1%" , "3%", "5%", "7%", "9%", "11%"), 
-                   range = c(0, 4))+ ## to tune the size of circles
+        scale_size(name = "Network density", breaks = c(0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07), 
+                   label =c("0", "1%" , "2%", "3%", "4%", "5%", "6%", "7%"), 
+                   range = c(0, 3))+ ## to tune the size of circles
         guides(fill=guide_legend(nrow=2,byrow=TRUE))+
         theme(legend.position= "left",legend.key = element_blank(),
               legend.text = element_text(size = 9, color = apple_colors[11])) +
@@ -415,9 +417,9 @@ ggplot() +
         #scale_color_gradientn(name = "P value",colors = apple_colors[c(5,3,7)])+  
         scale_x_discrete(limits = GO_order$x) + 
         scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
-        scale_size(name = "Network density", breaks = c(0, 0.01, 0.03, 0.05, 0.07, 0.09, 0.11), 
-                   label =c("0", "1%" , "3%", "5%", "7%", "9%", "11%"), 
-                   range = c(0, 4))+ ## to tune the size of circles
+        scale_size(name = "Network density", breaks = c(0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07), 
+                   label =c("0", "1%" , "2%", "3%", "4%", "5%", "6%", "7%"), 
+                   range = c(0, 3))+ ## to tune the size of circles
         guides(fill=guide_legend(nrow=2,byrow=TRUE))+
         theme(legend.position= "none") +
         

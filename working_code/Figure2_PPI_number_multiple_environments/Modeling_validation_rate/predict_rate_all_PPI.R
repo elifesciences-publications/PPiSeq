@@ -130,6 +130,11 @@ split_data_generation = function(training, environment_loc, bins, all_Tecan){
 }
 training_data = split_data_generation(vScore_select_Tecan, 4, fitness_bins, all_Tecan)
 fitmodel = lm(val_rate ~ bins + env_count_normal, training_data)
+coeffs = coef(fitmodel)
+#(Intercept)             bins env_count_normal 
+#0.56568422      -0.09742696       0.49596063 
+#predict(fitmodel, data.frame(bins = c(0.2, 0.4), env_count_normal = c(1/9, 5/9)))
+#coeffs[1] + coeffs[2]*0.2 + coeffs[3]* 1/9
 predict_external_test = predict(fitmodel, external_test, type = "response")
 
 cor(external_test$val_rate, predict_external_test, method = "spearman") # 0.9833333
@@ -143,7 +148,73 @@ lines(seq(0.5, 1, by = 0.1), seq(0.5, 1, by = 0.1), col = "black")
 text(0.6, 0.95, labels = expression(paste("Spearman's ", italic(r), " = 0.98")))
 dev.off()
 
+############################################################################
+## Use this model to predict the validation rate for each PPI in each environment
+setwd("~/Dropbox/PPiseq_02/")
+coeffs = c(0.56568422, -0.09742696, 0.49596063)
+PPI_vscore = csvReader_T("Paper_data/Useful_datasets/Variation_score_PPI_environment_neg_zero_SD_merge_filter.csv")
+PPI_count = csvReader_T("Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv")
+matrix_vali = matrix(NA, nrow(PPI_count), ncol(PPI_count))
+colnames(matrix_vali) = c("PPI", colnames(PPI_count)[2:ncol(PPI_count)])
+matrix_vali[,1] = PPI_count[,1]
+matrix_vali[,2] = PPI_count[,2]
+for(i in 1:nrow(PPI_count)){
+        env = as.numeric(PPI_count[i,2])/9
+        for(j in 3:ncol(matrix_vali)){
+                fit = as.numeric(PPI_vscore[i, j + 1])
+                if(as.numeric(PPI_count[i,j]) == 1){
+                        matrix_vali[i,j] = coeffs[1] + coeffs[2]*fit + coeffs[3]*env
+                }else{
+                        matrix_vali[i,j] = NA
+                }
+        } 
+}
 
+env_number_correct = rep(0, nrow(matrix_vali))
+for (i in 1:nrow(matrix_vali)){
+        env_number_correct[i] = mean(as.numeric(matrix_vali[i,3:ncol(matrix_vali)]), na.rm = T)
+}
+
+matrix_vali_add = cbind(matrix_vali[,1:2], env_number_correct, matrix_vali[,3:ncol(matrix_vali)])
+env_bins = 1:9
+env_count_bar = rep(0, 9)
+for(i in 1:length(env_bins)){
+        index = which(as.numeric(matrix_vali_add[,2]) == env_bins[i])
+        env_count_bar[i] = sum(as.numeric(matrix_vali_add[index,3]))
+}
+
+## Checking the validation rate distribution of 16C and NaCl
+hist(as.numeric(matrix_vali_add[,11])) # 16 C
+hist(as.numeric(matrix_vali_add[,10])) # NaCl
+
+env_count_ori = as.data.frame(table(matrix_vali_add[,2]))$Freq
+env_count_ori # 7724         1266        730      579       579       553        497     579       474
+env_count_bar # 4515.6439  809.2100  508.4733  435.2507  466.8102  475.2252  452.9155  554.8506  478.2086
+a = env_count_ori
+b = env_count_bar
+env_count_final = c(a[1], b[1], a[2], b[2], a[3], b[3], a[4], b[4], a[5], b[5],
+                    a[6], b[6], a[7], b[7], a[8], b[8], a[9], b[9])
+
+
+col_chosen = c("#d73027","#4575b4")
+pdf("~/Desktop/Corrected_Validation_bar_plot.pdf", width= 5.5, height=5)
+barCenter = barplot(env_count_final, horiz=F, beside=F, ylim=c(0,10000), ylab="Number of PPIs",
+                    space= c(0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15,
+                             0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15), axisnames=F, 
+                    col= col_chosen, border=NA,  cex.axis=0.8)
+legend("topright", legend=c("Original", "Corrected"), fill=col_chosen, cex=0.8, bty="n", border=FALSE, xpd = TRUE)
+#text(x= barCenter, y = as.numeric(merge_ratio)*100 + 2, labels = counts_label, cex=0.8, xpd = TRUE)
+env_num_loc = rep(0, 9)
+for(i in 1:9){
+        env_num_loc[i] = mean(barCenter[(2*i-1):(2*i)])
+}
+text(x = env_num_loc, y = -300, labels = as.character(1:9), xpd = TRUE)
+text(median(barCenter), y = -800, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
+dev.off()
+
+
+
+##########################################################################
 ##### (2) Directly predict each PPI and compare it with Tecan result
 all_Tecan_select = all_Tecan[match(vScore_select_Tecan[,1], all_Tecan[,1]),]
 Tecan_fit_select = data.frame(vScore_select_Tecan[,1], as.numeric(vScore_select_Tecan[,2])/9,
