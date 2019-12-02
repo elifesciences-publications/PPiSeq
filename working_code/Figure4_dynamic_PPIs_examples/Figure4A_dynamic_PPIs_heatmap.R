@@ -20,9 +20,7 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 # Input the normalized fitness values for all PPIs in each environment
 setwd("~/Dropbox/PPiSeq_02/")
 PPI_fit = csvReader_T("Paper_data/Useful_datasets/Variation_score_PPI_environment_neg_zero_SD_merge_filter.csv")
-PPI_count = csvReader_T("Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge.csv")
-PPI_count_filter = PPI_count[which(PPI_count[,1] %in% PPI_fit[,1]),]
-csvWriter(PPI_count_filter, "Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv")
+PPI_count_filter = csvReader_T("Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv")
 
 GO_slim = as.matrix(read.table("Paper_data/Outside_datasets/GO_term_files/go_slim_mapping_tab_20190405.txt", header = F, sep = "\t"))
 Gene_carbon = unique(GO_slim[which(GO_slim[,6] == "GO:0008643"), 1])

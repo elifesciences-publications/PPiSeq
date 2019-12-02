@@ -311,3 +311,28 @@ matrix_CC_order = matrix_CC[order(matrix_CC[,2], decreasing = T),]
 matrix_BP_order = matrix_BP[order(matrix_BP[,2], decreasing = T),]
 csvWriter(matrix_CC_order, "Variation_single_CC_order.csv")
 csvWriter(matrix_BP_order, "Variation_single_BP_order.csv")
+
+### plot the top 10 most dynamic GO terms
+pdf("~/Dropbox/PPiseq_02/Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/Top10_dynamic_CCs.pdf", width= 5.5, height=5)
+par(mar = c(7,4,1,1))
+barCenter = barplot(as.numeric(matrix_CC_order[1:10,2]), horiz=F, beside=F, ylim=c(0,1.5), 
+                    ylab="Coefficient variration",
+                    #space= c(0.15, 0.15,  0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15),
+                    axisnames=F, border=NA, col = apple_colors[5], cex.axis=0.8)
+#text(x= barCenter, y = as.numeric(merge_ratio)*100, labels = counts_label, cex=0.8, xpd = TRUE)
+text(x = barCenter, y = -0.05, labels = as.character(matrix_CC_order[1:10,1]), 
+     adj = 1, srt =45, xpd = TRUE)
+#text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
+dev.off()
+
+pdf("~/Dropbox/PPiseq_02/Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/Top10_dynamic_BPs.pdf", width= 6, height=6)
+par(mar = c(10,5,1,1))
+barCenter = barplot(as.numeric(matrix_BP_order[1:10,2]), horiz=F, beside=F, ylim=c(0,1.5), 
+                    ylab="Coefficient variration",
+                    #space= c(0.15, 0.15,  0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15),
+                    axisnames=F, border=NA, col = apple_colors[5], cex.axis=0.7)
+#text(x= barCenter, y = as.numeric(merge_ratio)*100, labels = counts_label, cex=0.8, xpd = TRUE)
+text(x = barCenter, y = -0.05, labels = as.character(matrix_BP_order[1:10,1]), 
+     adj = 1, srt =45, xpd = TRUE, cex = 0.6)
+#text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
+dev.off()
