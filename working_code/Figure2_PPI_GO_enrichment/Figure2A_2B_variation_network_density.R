@@ -209,12 +209,12 @@ csvWriter(dataf, "Variation_CC_all_environments.csv")
 library(ggplot2)
 ggplot() + 
         geom_point(aes(x = rowv, y = columnv, size =Network_density, color = Network_density), dataf)  + 
-        scale_color_gradientn(name = "Coefficient variation", colors = apple_colors[c(10,5)], limits = c(0, 3),
-                              oob = scales::squish)+  
+        scale_color_gradient(low = apple_colors[10], high = apple_colors[5], 
+                             breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3))+  
+        scale_size(range = c(0,3), breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3)) +
+        guides(color = guide_legend(), size = guide_legend()) +
         scale_x_discrete(limits = GO_order$x) + 
-        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
-        scale_size(name = "Coefficient variation", breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 1, 2, 3), 
-                   label = c("0", "0.1" , "0.2", "0.3", "0.4", "0.5", "1", "2", "3"), range = c(0,3))+ ## to tune the size of circles
+        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes+ ## to tune the size of circles
         theme(legend.justification = "left",
               legend.position= "right", legend.box = 'vertical',legend.box.just = "left",
               legend.key = element_blank(),
@@ -222,8 +222,25 @@ ggplot() +
         theme(panel.background = element_blank(), axis.ticks=element_blank(),
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
         theme(axis.text.x = element_blank(), plot.margin = unit(c(1.5,0.2,0.2,2.2), "cm"),
-              axis.text.y.left = element_text(size = 8, color = "black"), axis.title = element_blank())
-ggsave("~/Dropbox/PPiseq_02/Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/heatmap_density_CC_PPI_network_variation.pdf", width = 8, height =4.5)
+              axis.text.y.right = element_text(size = 8, color = "black"), axis.title = element_blank())
+ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_CC_PPI_network_variation.pdf", width = 8, height =4.5)
+
+# Only plot the heatmap so that I can cut diagonally
+ggplot() + 
+        geom_point(aes(x = rowv, y = columnv, size =Network_density, color = Network_density), dataf)  + 
+        scale_color_gradient(low = apple_colors[10], high = apple_colors[5], 
+                             breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3))+  
+        scale_size(range = c(0,3), breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3)) +
+        guides(color = guide_legend(), size = guide_legend())+  
+        scale_x_discrete(limits = GO_order$x) + 
+        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
+        theme(legend.position= "none", plot.margin = margin(0.2, 0.2, 2, 2, "cm")) +
+        theme(panel.background = element_blank(), axis.ticks=element_blank(),
+              panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
+        theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
+              axis.text.y.left = element_blank(), axis.title = element_blank())
+ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_CC_PPI_network_variation_no_lable.pdf", 
+       width = 4, height = 4)
 
 # Biological process
 sd_BP_density = as.matrix(read.table("DMSO/Network_density_PPI_BP_matrix.txt", sep = "\t", header = T))
@@ -270,12 +287,12 @@ csvWriter(dataf, "Variation_BP_all_environments.csv")
 library(ggplot2)
 ggplot() + 
         geom_point(aes(x = rowv, y = columnv, size =Network_density, color = Network_density), dataf)  + 
-        scale_color_gradientn(name = "Coefficient variation", colors = apple_colors[c(10,5)], limits = c(0, 3),
-                              oob = scales::squish)+  
+        scale_color_gradient(low = apple_colors[10], high = apple_colors[5], 
+                             breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3))+  
+        scale_size(range = c(0,3), breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3)) +
+        guides(color = guide_legend(), size = guide_legend())+
         scale_x_discrete(limits = GO_order$x) + 
         scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
-        scale_size(name = "Coefficient variation", breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 1, 2, 3), 
-                   label = c("0", "0.1" , "0.2", "0.3", "0.4", "0.5", "1", "2", "3"), range = c(0,3))+ ## to tune the size of circles
         theme(legend.justification = "left",
               legend.position= "right", legend.box = 'vertical',legend.box.just = "left",
               legend.key = element_blank(),
@@ -284,55 +301,25 @@ ggplot() +
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
         theme(axis.text.x = element_blank(), plot.margin = unit(c(1.5,0.2,0.2,2.2), "cm"),
               axis.text.y.left = element_text(size = 8, color = "black"), axis.title = element_blank())
-ggsave("~/Dropbox/PPiseq_02/Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/heatmap_density_BP_PPI_network_variation.pdf", width = 12, height =7.5)
+ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_BP_PPI_network_variation.pdf", width = 12, height =7.5)
 
-#### Take the mean CV for each GO term across all GO terms
-setwd("~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/environment/")
-CC_variation = dataFrameReader_T("Variation_CC_all_environments.csv")
-BP_variation = dataFrameReader_T("Variation_BP_all_environments.csv")
-CC_unique = unique(CC_variation$rowv)
-BP_unique = unique(BP_variation$rowv)
-CC_CV = rep(0, length(CC_unique))
-BP_CV = rep(0, length(BP_unique))
-for(i in 1:length(CC_unique)){
-        index = which(CC_variation$rowv == CC_unique[i])
-        CC_CV[i] = mean(CC_variation[index, 3])
-}
-for(i in 1:length(BP_unique)){
-        index = which(BP_variation$rowv == BP_unique[i])
-        BP_CV[i] = mean(BP_variation[index, 3])
-}
+## No label so that I can cut the figure
+ggplot() + 
+        geom_point(aes(x = rowv, y = columnv, size =Network_density, color = Network_density), dataf)  + 
+        scale_color_gradient(low = apple_colors[10], high = apple_colors[5], 
+                             breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3))+  
+        scale_size(range = c(0,3), breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3)) +
+        guides(color = guide_legend(), size = guide_legend())+ 
+        scale_x_discrete(limits = GO_order$x) + 
+        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
+        
+        theme(legend.position= "none") +
+        theme(panel.background = element_blank(), axis.ticks=element_blank(),
+              panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
+        theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
+              axis.text.y.left = element_blank(), axis.title = element_blank())
+#ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
+ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_BP_PPI_network_variation_no_label.pdf", 
+       width = 7.5, height = 7.5)
 
-matrix_CC = cbind(as.character(CC_unique), CC_CV)
-matrix_BP = cbind(as.character(BP_unique), BP_CV)
-colnames(matrix_CC) = c("CC", "CV")
-colnames(matrix_BP) = c("BP", "CV")
-matrix_CC_order = matrix_CC[order(matrix_CC[,2], decreasing = T),]
-matrix_BP_order = matrix_BP[order(matrix_BP[,2], decreasing = T),]
-csvWriter(matrix_CC_order, "Variation_single_CC_order.csv")
-csvWriter(matrix_BP_order, "Variation_single_BP_order.csv")
 
-### plot the top 10 most dynamic GO terms
-pdf("~/Dropbox/PPiseq_02/Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/Top10_dynamic_CCs.pdf", width= 5.5, height=5)
-par(mar = c(7,4,1,1))
-barCenter = barplot(as.numeric(matrix_CC_order[1:10,2]), horiz=F, beside=F, ylim=c(0,1.5), 
-                    ylab="Coefficient variration",
-                    #space= c(0.15, 0.15,  0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15),
-                    axisnames=F, border=NA, col = apple_colors[5], cex.axis=0.8)
-#text(x= barCenter, y = as.numeric(merge_ratio)*100, labels = counts_label, cex=0.8, xpd = TRUE)
-text(x = barCenter, y = -0.05, labels = as.character(matrix_CC_order[1:10,1]), 
-     adj = 1, srt =45, xpd = TRUE)
-#text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
-dev.off()
-
-pdf("~/Dropbox/PPiseq_02/Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/Top10_dynamic_BPs.pdf", width= 6, height=6)
-par(mar = c(10,5,1,1))
-barCenter = barplot(as.numeric(matrix_BP_order[1:10,2]), horiz=F, beside=F, ylim=c(0,1.5), 
-                    ylab="Coefficient variration",
-                    #space= c(0.15, 0.15,  0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15),
-                    axisnames=F, border=NA, col = apple_colors[5], cex.axis=0.7)
-#text(x= barCenter, y = as.numeric(merge_ratio)*100, labels = counts_label, cex=0.8, xpd = TRUE)
-text(x = barCenter, y = -0.05, labels = as.character(matrix_BP_order[1:10,1]), 
-     adj = 1, srt =45, xpd = TRUE, cex = 0.6)
-#text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
-dev.off()

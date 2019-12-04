@@ -165,7 +165,7 @@ ggplot() +
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
         theme(axis.text.x = element_blank(), plot.margin = unit(c(1.5,0.2,0.2,2.2), "cm"),
               axis.text.y.left = element_text(size = 8, color = "black",angle = -30), axis.title = element_blank())
-ggsave("Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/heatmap_density_CC_PPI_network.pdf", width = 8, height =4.5)
+ggsave("Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_CC_PPI_network.pdf", width = 8, height =4.5)
 
 # Only plot the heatmap so that I can cut diagonally
 ggplot() + 
@@ -182,7 +182,7 @@ ggplot() +
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
         theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
               axis.text.y.left = element_blank(), axis.title = element_blank())
-ggsave("Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/heatmap_density_CC_PPI_network_no_label.pdf", 
+ggsave("Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_CC_PPI_network_no_label.pdf", 
        width = 4, height = 4)
 
 
@@ -270,7 +270,7 @@ ggplot() +
         theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
               axis.text.y.left = element_text(size = 9, color = "black"), axis.title = element_blank())
 #ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
-ggsave("Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/heatmap_density_BP_PPI_network_primary.pdf", 
+ggsave("Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_BP_PPI_network_primary.pdf", 
        width = 16, height = 12)
 
 ## No label so that I can cut the figure
@@ -295,7 +295,7 @@ geom_point(aes(x = rowv, y = columnv, size =Network_density, color = label), dat
         theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
               axis.text.y.left = element_blank(), axis.title = element_blank())
 #ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
-ggsave("Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/heatmap_density_BP_PPI_network_primary_no_label.pdf", 
+ggsave("Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_BP_PPI_network_primary_no_label.pdf", 
        width = 12, height = 12)
 
 ## (2) Choose only 59 GO terms to make figures
@@ -406,7 +406,7 @@ ggplot() +
         theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
               axis.text.y.right = element_text(size = 9, color = "black"), axis.title = element_blank())
 #ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
-ggsave("Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/heatmap_density_BP_PPI_network_chosen.pdf", 
+ggsave("Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_BP_PPI_network_chosen.pdf", 
        width = 12, height = 7.5)
 
 ## No label so that I can cut the figure
@@ -431,7 +431,7 @@ ggplot() +
         theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
               axis.text.y.left = element_blank(), axis.title = element_blank())
 #ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
-ggsave("Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/heatmap_density_BP_PPI_network_chosen_no_label.pdf", 
+ggsave("Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_BP_PPI_network_chosen_no_label.pdf", 
        width = 7.5, height = 7.5)
 
 

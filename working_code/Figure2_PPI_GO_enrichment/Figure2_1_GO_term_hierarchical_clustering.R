@@ -112,7 +112,7 @@ ggplot() +
               panel.background=element_rect(fill="white"),
               panel.grid=element_blank(),
               plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"))
-ggsave("Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO//Dendrogram_CC_GO_pair_cluster.pdf", width = 3, height = 4.2)
+ggsave("Working_figure/Figure2_PPI_enrichment_GO/Dendrogram_CC_GO_pair_cluster.pdf", width = 3, height = 4.2)
 #ggsave("~/Desktop/Dendrogram_CC_GO_pair_cluster.pdf", width = 3, height = 4.2)
 label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),]
@@ -150,7 +150,7 @@ ggplot() +
               legend.position = "bottom",
               plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"))
 
-ggsave("Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/Dendrogram_BP_GO_pair_cluster_truncated.pdf", width = 4, height =12)
+ggsave("Working_figure/Figure2_PPI_enrichment_GO/Dendrogram_BP_GO_pair_cluster_truncated.pdf", width = 4, height =12)
 
 label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),]
@@ -188,7 +188,7 @@ ggplot() +
               legend.position = "bottom",
               plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"))
 
-ggsave("Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/Dendrogram_BP_GO_pair_cluster_primary.pdf", width = 4, height =12)
+ggsave("Working_figure/Figure2_PPI_enrichment_GO/Dendrogram_BP_GO_pair_cluster_primary.pdf", width = 4, height =12)
 
 label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),]
@@ -232,7 +232,7 @@ ggplot() +
               legend.position = "bottom",
               plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"))
 
-ggsave("Working_figure/SFigures/paper/FigureS4_PPI_enrichment_GO/Dendrogram_BP_GO_pair_cluster_chosen.pdf", width = 3, height =7.5)
+ggsave("Working_figure/Figure2_PPI_enrichment_GO/Dendrogram_BP_GO_pair_cluster_chosen.pdf", width = 3, height =7.5)
 
 label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),]

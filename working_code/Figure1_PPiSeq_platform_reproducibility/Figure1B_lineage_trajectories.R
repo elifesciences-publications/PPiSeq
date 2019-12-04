@@ -78,11 +78,11 @@ Lineage_plot = function(PPI_pos_DHFR_transform, output){
                        labels = seq(0,12, by= 3)) +
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-    theme(axis.text.x = element_text(size = 10, color = "black"), 
-          axis.text.y.left = element_text(size = 10, color = "black")) + 
-    theme(text = element_text(size=10, color = "black"))
+    theme(axis.text.x = element_text(size = 8, color = "black"), 
+          axis.text.y.left = element_text(size = 8, color = "black")) + 
+    theme(text = element_text(size=8, color = "black"), legend.key.size = unit(0.35, "cm"))
   
-  ggsave(output, width = 5, height = 4)
+  ggsave(output, width = 3, height = 2)
   
 }
 

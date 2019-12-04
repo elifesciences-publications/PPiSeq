@@ -106,28 +106,17 @@ matrix_final = data.frame(matrix_SD_no_na[,1], as.numeric(matrix_SD_no_na[,2]),
 colnames(matrix_final) = c("PPI", "SD", "SD2")
 csvWriter(matrix_final, "~/Dropbox/PPiSeq_02/Working_data_2/SD_replciates.csv")
 
-matrix_final = dataFrameReader_T("Working_data_2/SD_replicates.csv")
+matrix_final = dataFrameReader_T("~/Dropbox/PPiSeq_02/Working_data_2/SD_replciates.csv")
 
 library(scales)
 library(ggplot2)
 ggplot() +
   geom_hex(aes(x= SD, y= SD2, fill = log10(..count..)), matrix_final, bins = 60)+
   scale_fill_gradient(low= "white", high = apple_colors[7])+
-  #scale_fill_gradientn(colors = apple_colors[c(10,3,7)])+
-  # linear regression is heavily afftected by these small fitness values
-  #geom_smooth(aes(x = fit01, y = fit02), PPI_fit_final_data, method='lm',se = FALSE, 
-  #color = "magenta3", linetype = 2, cex = 0.4)+
-  
-  #add a line that contain equal fitness values
+
   geom_smooth(aes(x = seq(-0.2, 1.2, by = 0.2), y = seq(-0.2, 1.2, by = 0.2)), linetype =2,method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
   annotate("text", x = 0.1, y = 1.1, label = expression(paste("Spearman's ", italic(r), " = 0.73")), 
-           parse = TRUE, col = apple_colors[11]) +
-  
-  #annotate("text", x = 0.2, y = 1.1, label = expression(paste("Spearman's ", italic(r), " = 0.73", "(5935 PPIs)")), 
-           #parse = TRUE, col = apple_colors[11]) +
-  #annotate("text", x = 0, y = 1.0, label = "3637 ++ 61.3%", col = apple_colors[11]) +
-  #annotate("text", x = 0, y = 0.9, label = "2298 -+ 38.7%",  col = apple_colors[11]) +
-  #annotate("text", x = 0, y = 0.8, label = "250 NA+", col = apple_colors[11]) +
+           parse = TRUE, col = apple_colors[11], size = 2) +
 
   scale_y_continuous(name = "Fitness of replicate culture 2",
                      limits=c(-0.2, 1.2),
@@ -138,11 +127,14 @@ ggplot() +
                      breaks=seq(-0.2,1.2, by =0.2),
                      labels = seq(-0.2,1.2, by= 0.2))+
   labs(fill = expression('Log'[10]* '(count)')) +  
-  theme(legend.position =c(0.8,0.3), legend.key=element_blank(), legend.text=element_text(size=10)) +
+  theme(legend.position =c(0.85,0.3), legend.key=element_blank(),
+        legend.text=element_text(size=5),legend.title=element_text(size=6),
+        legend.key.size = unit(0.3, "cm")) +
   #guides(fill=guide_legend(title="Log10(Count)")) + 
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
+  theme(axis.text.x = element_text(size = 6, color = "black"),
+        axis.text.y.left = element_text(size = 6, color = "black"),
+        axis.title=element_text(size= 6))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1/Figure1F_correlation_SD_replicates_hexagonlot.pdf", height =4.5, width =4.5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1/Figure1F_correlation_SD_replicates_hexagonlot.pdf", height = 2.2, width = 2.2)
