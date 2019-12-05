@@ -123,7 +123,7 @@ counts_label = c("9/14", "22/33", "27/37", "20/29", "42/52", "53/63",
 library(RColorBrewer)
 #col_chosen = brewer.pal(3,"Dark2")[1:2]
 col_chosen = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure2/Figure2C_Validation_bar_plot_merge_calling_all.pdf", width= 5.5, height=5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure3_accessory_PPIs/Figure3B_Validation_bar_plot_merge_calling_all.pdf", width= 5.5, height=5)
 barCenter = barplot(as.numeric(merge_ratio) *100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
                     space= c(0.15, 0.15,  0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15),axisnames=F, border=NA, 
                     col = col_chosen, cex.axis=0.8)
