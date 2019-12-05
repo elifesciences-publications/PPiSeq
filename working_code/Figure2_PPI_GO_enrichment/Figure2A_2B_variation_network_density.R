@@ -185,8 +185,8 @@ Raffinose_CC_density = as.matrix(read.table("Raffinose/Network_density_PPI_CC_ma
 cc_list = list(sd_CC_density,cold_CC_density,Dox_CC_density,FK506_CC_density, Forskolin_CC_density,
                H2O2_CC_density,HU_CC_density,NaCl_CC_density,Raffinose_CC_density)
 
-cc_list_mean = apply(simplify2array(cc_list), 1:2, mean)
-cc_list_sd = apply(simplify2array(cc_list), 1:2, sd)
+cc_list_mean = apply(simplify2array(cc_list), 1:2, mean, na.rm= TRUE)
+cc_list_sd = apply(simplify2array(cc_list), 1:2, sd, na.rm = TRUE)
 
 cc_list_CV = cc_list_sd/cc_list_mean
 
@@ -213,8 +213,8 @@ ggplot() +
                              breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3))+  
         scale_size(range = c(0,3), breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3)) +
         guides(color = guide_legend(), size = guide_legend()) +
-        scale_x_discrete(limits = GO_order$x) + 
-        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes+ ## to tune the size of circles
+        scale_x_discrete(limits = rev(GO_order$x)) + 
+        scale_y_discrete(limits = rev(GO_order$x)) +## color of the corresponding aes+ ## to tune the size of circles
         theme(legend.justification = "left",
               legend.position= "right", legend.box = 'vertical',legend.box.just = "left",
               legend.key = element_blank(),
@@ -232,8 +232,8 @@ ggplot() +
                              breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3))+  
         scale_size(range = c(0,3), breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3)) +
         guides(color = guide_legend(), size = guide_legend())+  
-        scale_x_discrete(limits = GO_order$x) + 
-        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
+        scale_x_discrete(limits = rev(GO_order$x)) + 
+        scale_y_discrete(limits = rev(GO_order$x)) +## color of the corresponding aes
         theme(legend.position= "none", plot.margin = margin(0.2, 0.2, 2, 2, "cm")) +
         theme(panel.background = element_blank(), axis.ticks=element_blank(),
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
@@ -256,8 +256,8 @@ Raffinose_BP_density = as.matrix(read.table("Raffinose/Network_density_PPI_BP_ma
 BP_list = list(sd_BP_density,cold_BP_density,Dox_BP_density,FK506_BP_density, Forskolin_BP_density,
                H2O2_BP_density,HU_BP_density,NaCl_BP_density,Raffinose_BP_density)
 
-BP_list_mean = apply(simplify2array(BP_list), 1:2, mean)
-BP_list_sd = apply(simplify2array(BP_list), 1:2, sd)
+BP_list_mean = apply(simplify2array(BP_list), 1:2, mean, na.rm = TRUE)
+BP_list_sd = apply(simplify2array(BP_list), 1:2, sd, na.rm = TRUE)
 
 BP_list_CV = BP_list_sd/BP_list_mean
 
@@ -291,8 +291,8 @@ ggplot() +
                              breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3))+  
         scale_size(range = c(0,3), breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3)) +
         guides(color = guide_legend(), size = guide_legend())+
-        scale_x_discrete(limits = GO_order$x) + 
-        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
+        scale_x_discrete(limits = rev(GO_order$x)) + 
+        scale_y_discrete(limits = rev(GO_order$x)) +## color of the corresponding aes
         theme(legend.justification = "left",
               legend.position= "right", legend.box = 'vertical',legend.box.just = "left",
               legend.key = element_blank(),
@@ -310,8 +310,8 @@ ggplot() +
                              breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3))+  
         scale_size(range = c(0,3), breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3)) +
         guides(color = guide_legend(), size = guide_legend())+ 
-        scale_x_discrete(limits = GO_order$x) + 
-        scale_y_discrete(limits = GO_order$x) +## color of the corresponding aes
+        scale_x_discrete(limits = rev(GO_order$x)) + 
+        scale_y_discrete(limits = rev(GO_order$x)) +## color of the corresponding aes
         
         theme(legend.position= "none") +
         theme(panel.background = element_blank(), axis.ticks=element_blank(),
