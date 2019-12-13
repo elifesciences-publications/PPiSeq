@@ -37,61 +37,43 @@ PPI_network = data.frame(protein_A = PPI_pair[,1], protein_B = PPI_pair[,2],
 library(igraph)
 g = graph_from_data_frame(PPI_network, directed = FALSE)
 
-neighbour_vScore_bin = function(vScore_PPI, bin, g, vScore_protein){
-        stability_1_PPI = vScore_PPI[which(as.numeric(vScore_PPI[,2]) == bin), 1]
-        PPI_pair = split_string_vector(stability_1_PPI)
-        protein_unique = unique(as.vector(PPI_pair))
-        adj_protein = "0"
-        for (i in 1: length(protein_unique)){
-                temp = V(g)$name[neighbors(g, protein_unique[i])]
-                adj_protein = c(adj_protein, temp)
-        }
-        adj_protein = adj_protein[2: length(adj_protein)]
-        adj_protein_unique = unique(adj_protein)
-        #neighbours = adjacent_vertices(g, protein_unique)
-        
-        all_degree = as.numeric(vScore_protein[match(adj_protein_unique, as.character(vScore_protein[,1])), 2])
-        return(all_degree)
-}
 
-stability_1 = data.frame(degree = neighbour_vScore_bin(vScore_PPI, 1, g, vScore_protein))
-stability_2 = data.frame(degree = neighbour_vScore_bin(vScore_PPI, 2, g, vScore_protein))
-stability_3 = data.frame(degree = neighbour_vScore_bin(vScore_PPI, 3, g, vScore_protein))
-stability_4 = data.frame(degree = neighbour_vScore_bin(vScore_PPI, 4, g, vScore_protein))
-stability_5 = data.frame(degree = neighbour_vScore_bin(vScore_PPI, 5, g, vScore_protein))
-stability_6 = data.frame(degree = neighbour_vScore_bin(vScore_PPI, 6, g, vScore_protein))
-stability_7 = data.frame(degree = neighbour_vScore_bin(vScore_PPI, 7, g, vScore_protein))
-stability_8 = data.frame(degree = neighbour_vScore_bin(vScore_PPI, 8, g, vScore_protein))
-stability_9 = data.frame(degree = neighbour_vScore_bin(vScore_PPI, 9, g, vScore_protein))
 
-stability_1$label = "1"
-stability_2$label = "2"
-stability_3$label = "3"
-stability_4$label = "4"
-stability_5$label = "5"
-stability_6$label = "6"
-stability_7$label = "7"
-stability_8$label = "8"
-stability_9$label = "9"
+### Fast greedy algorithm
+fast_greedy = fastgreedy.community(g)
+max(fast_greedy$modularity) # 0.3948459
+fast_greedy_community = cbind(fast_greedy$names, fast_greedy$membership)
 
-stability_bin_degree = rbind(stability_1, stability_2, stability_3,
-                             stability_4, stability_5, stability_6,
-                             stability_7, stability_8, stability_9)
-col_chosen = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
+vSocre_community = as.numeric(vScore_protein[match(fast_greedy_community[,1], vScore_protein[,1]),2])
+vScore_community_data = data.frame(protein = fast_greedy_community[,1], 
+                                   community = fast_greedy_community[,2],
+                                   vScore = vSocre_community)
+csvWriter(vScore_community_data, "Working_data_2/PPI_network/community_fast_greedy.csv")
+
+summary_community = aggregate(vScore~community, data=vScore_community_data, 
+                              FUN=function(x) c(mean=mean(x), count=length(x)))
+summary_community = data.frame(community = summary_community$community,
+                               vScore = summary_community$vScore[,1],
+                               count = summary_community$vScore[,2])
+summary_order = summary_community[order(summary_community[,2], decreasing = T),]
+csvWriter(summary_order, "Working_data_2/PPI_network/community_fast_greedy_summary.csv")
+
+summary_order_select = summary_order[which(summary_order[,3] > 5),]
+
+vScore_community_data_select = vScore_community_data[which(as.character(vScore_community_data$community) %in% 
+                                                                   as.character(summary_order_select[,1])),]
+
+vScore_community_data_select$community = factor(vScore_community_data_select$community , 
+                                levels = c("8","6", "10", "9", "4", "7", "1", "5", "3", "2"))
 library(ggplot2)
-ggplot(stability_bin_degree, aes(x = degree, fill = label, col = label))+
-        geom_density(alpha = 0.3)+
-        scale_color_manual(name = "Positive environment number", values = col_chosen)+
-        scale_fill_manual(name = "Positive environment number", values = col_chosen)+
-        scale_x_continuous(name = "Neighbours' stability score", 
-                           limits=c(0, 3),
-                           breaks = seq(0,3, by =0.5),
-                           labels = seq(0,3, by= 0.5)) +
-        ylab("Density") +
-        guides(fill=guide_legend(ncol=3), col = guide_legend(ncol= 3))+
-        theme(legend.key = element_blank(), legend.position = c(0.75,0.9),
-              legend.text=element_text(size=10),legend.title=element_text(size=10),
-              legend.key.size = unit(0.4, "cm"))+
+ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
+        geom_boxplot(outlier.shape=NA)+
+        geom_dotplot(binaxis="y",stackdir="center",binwidth=0.015, alpha=0.3,dotsize = 0.8,  
+                     fill = apple_colors[5], col = apple_colors[5])+
+        scale_x_discrete(limits = c("8","6", "10", "9", "4", "7", "1", "5", "3", "2"))+
+        xlab("Community")+
+        ylab("Stability Score") +
+       
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
@@ -99,8 +81,154 @@ ggplot(stability_bin_degree, aes(x = degree, fill = label, col = label))+
               axis.title.y=element_text(size=10)) + 
         theme(text = element_text(size=10))
 
-ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/Stability_score_environment_bin.pdf", width =4, height =4)
+ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/fast_greedy_community_stability_score.pdf", width =4, height =4)
+
+### Random walk trap
+walktrap = walktrap.community(g)
+walktrap_community = cbind(walk_trap$names, walk_trap$membership)
+max(walk_trap$modularity) # 0.3575106
+vSocre_community = as.numeric(vScore_protein[match(walktrap_community[,1], vScore_protein[,1]),2])
+vScore_community_data = data.frame(protein = walktrap_community[,1], 
+                                   community = walktrap_community[,2],
+                                   vScore = vSocre_community)
+csvWriter(vScore_community_data, "Working_data_2/PPI_network/community_walktrap.csv")
+
+summary_community = aggregate(vScore~community, data=vScore_community_data, 
+                              FUN=function(x) c(mean=mean(x), count=length(x)))
+summary_community = data.frame(community = summary_community$community,
+                               vScore = summary_community$vScore[,1],
+                               count = summary_community$vScore[,2])
+summary_order = summary_community[order(summary_community[,2], decreasing = T),]
+csvWriter(summary_order, "Working_data_2/PPI_network/community_walktrap_summary.csv")
+
+summary_order_select = summary_order[which(summary_order[,3] > 5),]
+
+vScore_community_data_select = vScore_community_data[which(as.character(vScore_community_data$community) %in% 
+                                                                   as.character(summary_order_select[,1])),]
+
+
+#col_chosen = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
+vScore_community_data_select$community = factor(vScore_community_data_select$community , 
+                                                levels = c("10","9", "24", "6", "17", "1", "12", "3", "21", "4"))
+library(ggplot2)
+ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
+        geom_boxplot(outlier.shape=NA)+
+        geom_dotplot(binaxis="y",stackdir="center",binwidth=0.015, alpha=0.3,dotsize = 0.8,  
+                     fill = apple_colors[5], col = apple_colors[5])+
+        scale_x_discrete(limits = c("10","9", "24", "6", "17", "1", "12", "3", "21", "4"))+
+        xlab("Community")+
+        ylab("Stability Score") +
+        
+        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+              panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+        theme(axis.text.x = element_text(size = 10, color = "black"),
+              axis.text.y.left = element_text(size = 10, color = "black"),
+              axis.title.y=element_text(size=10)) + 
+        theme(text = element_text(size=10))
+
+ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/walktrap_community_stability_score.pdf", width =4, height =4)
 
 
 
+
+#### Label.propagation
+label = label.propagation.community(g)
+max(label$modularity) #0.0004620597,  0.0004620864, 0.3242257,0.0003080685
+#### edge.betweenness
+edge_between = edge.betweenness.community(g, directed = FALSE)
+
+### spinglass.community, Cannot work with unconnected graph
+spinglass = spinglass.community(g)
+walktrap_community = cbind(label$names, label$membership)
+
+## leading.eigenvector.community
+eigenvector = leading.eigenvector.community(g)
+eigenvector_community = cbind(eigenvector$names, eigenvector$membership)
+max(eigenvector$modularity) #0.3461259
+vSocre_community = as.numeric(vScore_protein[match(eigenvector_community[,1], vScore_protein[,1]),2])
+vScore_community_data = data.frame(protein = eigenvector_community[,1], 
+                                   community = eigenvector_community[,2],
+                                   vScore = vSocre_community)
+csvWriter(vScore_community_data, "Working_data_2/PPI_network/community_eigenvector.csv")
+
+summary_community = aggregate(vScore~community, data=vScore_community_data, 
+                              FUN=function(x) c(mean=mean(x), count=length(x)))
+summary_community = data.frame(community = summary_community$community,
+                               vScore = summary_community$vScore[,1],
+                               count = summary_community$vScore[,2])
+summary_order = summary_community[order(summary_community[,2], decreasing = T),]
+csvWriter(summary_order, "Working_data_2/PPI_network/community_eigenvector_summary.csv")
+
+summary_order_select = summary_order[which(summary_order[,3] > 5),]
+
+vScore_community_data_select = vScore_community_data[which(as.character(vScore_community_data$community) %in% 
+                                                                   as.character(summary_order_select[,1])),]
+
+
+#col_chosen = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
+vScore_community_data_select$community = factor(vScore_community_data_select$community , 
+                                                levels = c("7","8", "3", "4", "1", "5"))
+library(ggplot2)
+ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
+        geom_boxplot(outlier.shape=NA)+
+        geom_dotplot(binaxis="y",stackdir="center",binwidth=0.015, alpha=0.3,dotsize = 0.8,  
+                     fill = apple_colors[5], col = apple_colors[5])+
+        scale_x_discrete(limits = c("7","8", "3", "4", "1", "5"))+
+        xlab("Community")+
+        ylab("Stability Score") +
+        
+        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+              panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+        theme(axis.text.x = element_text(size = 10, color = "black"),
+              axis.text.y.left = element_text(size = 10, color = "black"),
+              axis.title.y=element_text(size=10)) + 
+        theme(text = element_text(size=10))
+
+ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/eigenvector_community_stability_score.pdf", width =4, height =4)
+
+### informap
+infomap = infomap.community(g)
+infomap$modularity #0.382528
+infomap_community = cbind(infomap$names, infomap$membership)
+
+vSocre_community = as.numeric(vScore_protein[match(infomap_community[,1], vScore_protein[,1]),2])
+vScore_community_data = data.frame(protein = infomap_community[,1], 
+                                   community = infomap_community[,2],
+                                   vScore = vSocre_community)
+csvWriter(vScore_community_data, "Working_data_2/PPI_network/community_infomap.csv")
+
+summary_community = aggregate(vScore~community, data=vScore_community_data, 
+                              FUN=function(x) c(mean=mean(x), count=length(x)))
+summary_community = data.frame(community = summary_community$community,
+                               vScore = summary_community$vScore[,1],
+                               count = summary_community$vScore[,2])
+summary_order = summary_community[order(summary_community[,2], decreasing = T),]
+csvWriter(summary_order, "Working_data_2/PPI_network/community_infomap_summary.csv")
+
+summary_order_select = summary_order[which(summary_order[,3] > 10),]
+
+vScore_community_data_select = vScore_community_data[which(as.character(vScore_community_data$community) %in% 
+                                                                   as.character(summary_order_select[,1])),]
+
+
+#col_chosen = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
+vScore_community_data_select$community = factor(vScore_community_data_select$community , 
+                                                levels = as.character(summary_order_select$community))
+library(ggplot2)
+ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
+        geom_boxplot(outlier.shape=NA)+
+        geom_dotplot(binaxis="y",stackdir="center",binwidth=0.015, alpha=0.3,dotsize = 0.8,  
+                     fill = apple_colors[5], col = apple_colors[5])+
+        scale_x_discrete(limits = as.character(summary_order_select$community))+
+        xlab("Community")+
+        ylab("Stability Score") +
+        
+        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+              panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+        theme(axis.text.x = element_text(size = 10, color = "black"),
+              axis.text.y.left = element_text(size = 10, color = "black"),
+              axis.title.y=element_text(size=10)) + 
+        theme(text = element_text(size=10))
+
+ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/Infomap_community_stability_score.pdf", width =6, height =4)
 

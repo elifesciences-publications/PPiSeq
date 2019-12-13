@@ -45,9 +45,9 @@ Create_sliding_matrix = function(DMSO_fit){
 library(ggplot2)
 plot_hexagon_sd = function(matrix_mean_CI, matrix_mean_CI_pos, output){
   ggplot() +
-    geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
-             bins = 60, size = 0.05) +
-    scale_fill_gradient(low= "white", high = apple_colors[8])+
+    #geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
+             #bins = 60, size = 0.05) +
+    #scale_fill_gradient(low= "white", high = apple_colors[8])+
     geom_line(aes(x = Fitness, y = Median), matrix_mean_CI,col = apple_colors[5], size = 1.2)+
     geom_line(aes(x = Fitness, y = Median), matrix_mean_CI_pos,col = apple_colors[7], size =1.2)+
     #geom_ribbon(aes(x = Fitness, ymin= Lower, ymax = Upper), matrix_mean_CI, alpha = 0.2) +
@@ -55,21 +55,23 @@ plot_hexagon_sd = function(matrix_mean_CI, matrix_mean_CI_pos, output){
     #geom_line(aes(x = Fitness, y = Upper), matrix_CI, linetype = "dashed", col = apple_colors[11])+
     #scale_color_manual(name = "",values = col_values) +
     scale_y_continuous(name = "Standard deviation of fitness",
-                       limits=c(0, 0.5),
-                       breaks= seq(0,0.5, by = 0.1),
-                       labels =seq(0,0.5, by = 0.1)) +
+                       limits=c(0, 0.3),
+                       breaks= seq(0,0.3, by = 0.05),
+                       labels =seq(0,0.3, by = 0.05)) +
     
     scale_x_continuous(name = "Estimated mean fitness of each protein pair", 
-                       limits=c(-0.4, 1.0),
-                       breaks=seq(-0.4, 1.0, by =0.2),
-                       labels = seq(-0.4, 1.0, by= 0.2)) +
-    labs(fill = expression('Log'[10]* '(count)')) +
+                       limits=c(-0.2, 1.0),
+                       breaks=seq(-0.2, 1.0, by =0.2),
+                       labels = seq(-0.2, 1.0, by= 0.2)) +
+    #labs(fill = expression('Log'[10]* '(count)')) +
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(), axis.line = element_line(colour = "black"),
-          legend.key=element_blank()) +
-    theme(axis.text.x = element_text(size = 10, color = "black"),
-          axis.text.y.left = element_text(size = 10, color = "black"))
-    ggsave(output, width = 5, height = 4)
+          legend.key=element_blank(), legend.position =c(0.8,0.7))+
+  
+    theme(axis.text.x = element_text(size = 7, color = "black"),
+          axis.text.y.left = element_text(size = 7, color = "black"),
+          axis.title=element_text(size=7))
+    ggsave(output, width = 2.5, height = 2.5)
 }
 
 
@@ -80,6 +82,7 @@ DMSO_fit_pos = DMSO_fit[which(DMSO_fit$Positive != 0),]
 matrix_mean_CI_pos = Create_sliding_matrix(DMSO_fit_pos)
 output = "Working_figure/SFigures/paper/FigureS2_sd_sliding_fit_environments/SD2_sd_sliding_fitness.pdf"
 plot_hexagon_sd(matrix_mean_CI, matrix_mean_CI_pos, output)
+
 
 ### FK506
 DMSO_fit = dataFrameReader_T("Paper_data/PPI_mean_fitness_calling_files/FK506_mean_fitness_positive.csv")
@@ -104,9 +107,9 @@ DMSO_fit_pos = DMSO_fit[which(DMSO_fit$Positive != 0),]
 matrix_mean_CI_pos = Create_sliding_matrix(DMSO_fit_pos)
 output = "Working_figure/SFigures/paper/FigureS2_sd_sliding_fit_environments/Hydroxyurea_sd_sliding_fitness.pdf"
 ggplot() +
-  geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
-           bins = 60, size = 0.05) +
-  scale_fill_gradient(low= "white", high = apple_colors[8])+
+  #geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
+           #bins = 60, size = 0.05) +
+  #scale_fill_gradient(low= "white", high = apple_colors[8])+
   geom_line(aes(x = Fitness, y = Median), matrix_mean_CI,col = apple_colors[5], size = 1.2)+
   geom_line(aes(x = Fitness, y = Median), matrix_mean_CI_pos,col = apple_colors[7], size =1.2)+
   #geom_ribbon(aes(x = Fitness, ymin= Lower, ymax = Upper), matrix_mean_CI, alpha = 0.2) +
@@ -114,21 +117,22 @@ ggplot() +
   #geom_line(aes(x = Fitness, y = Upper), matrix_CI, linetype = "dashed", col = apple_colors[11])+
   #scale_color_manual(name = "",values = col_values) +
   scale_y_continuous(name = "Standard deviation of fitness",
-                     limits=c(0, 0.4),
-                     breaks= seq(0,0.4, by = 0.1),
-                     labels =seq(0,0.4, by = 0.1)) +
+                     limits=c(0, 0.3),
+                     breaks= seq(0,0.3, by = 0.05),
+                     labels =seq(0,0.3, by = 0.05)) +
   
   scale_x_continuous(name = "Estimated mean fitness of each protein pair", 
-                     limits=c(-0.3, 0.7),
-                     breaks=seq(-0.3, 0.7, by =0.2),
-                     labels = seq(-0.3, 0.7, by= 0.2)) +
+                     limits=c(-0.2, 0.8),
+                     breaks=seq(-0.2, 0.8, by =0.2),
+                     labels = seq(-0.2, 0.8, by= 0.2)) +
   labs(fill = expression('Log'[10]* '(count)')) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         legend.key=element_blank()) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
-ggsave(output, width = 5, height = 4)
+  theme(axis.text.x = element_text(size = 7, color = "black"),
+        axis.text.y.left = element_text(size = 7, color = "black"),
+        axis.title=element_text(size=7))
+ggsave(output, width = 2.5, height = 2.5)
 
 ### NaCl
 DMSO_fit = dataFrameReader_T("Paper_data/PPI_mean_fitness_calling_files/NaCl_mean_fitness_positive.csv")
@@ -137,9 +141,9 @@ DMSO_fit_pos = DMSO_fit[which(DMSO_fit$Positive != 0),]
 matrix_mean_CI_pos = Create_sliding_matrix(DMSO_fit_pos)
 output = "Working_figure/SFigures/paper/FigureS2_sd_sliding_fit_environments/NaCl_sd_sliding_fitness.pdf"
 ggplot() +
-  geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
-           bins = 60, size = 0.05) +
-  scale_fill_gradient(low= "white", high = apple_colors[8])+
+  #geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
+           #bins = 60, size = 0.05) +
+  #scale_fill_gradient(low= "white", high = apple_colors[8])+
   geom_line(aes(x = Fitness, y = Median), matrix_mean_CI,col = apple_colors[5], size = 1.2)+
   geom_line(aes(x = Fitness, y = Median), matrix_mean_CI_pos,col = apple_colors[7], size =1.2)+
   #geom_ribbon(aes(x = Fitness, ymin= Lower, ymax = Upper), matrix_mean_CI, alpha = 0.2) +
@@ -147,21 +151,22 @@ ggplot() +
   #geom_line(aes(x = Fitness, y = Upper), matrix_CI, linetype = "dashed", col = apple_colors[11])+
   #scale_color_manual(name = "",values = col_values) +
   scale_y_continuous(name = "Standard deviation of fitness",
-                     limits=c(0, 0.4),
-                     breaks= seq(0,0.4, by = 0.1),
-                     labels =seq(0,0.4, by = 0.1)) +
+                     limits=c(0, 0.3),
+                     breaks= seq(0,0.3, by = 0.05),
+                     labels =seq(0,0.3, by = 0.05)) +
   
   scale_x_continuous(name = "Estimated mean fitness of each protein pair", 
-                     limits=c(-0.3, 0.5),
-                     breaks=seq(-0.3, 0.5, by =0.2),
-                     labels = seq(-0.3, 0.5, by= 0.2)) +
+                     limits=c(-0.2, 0.5),
+                     breaks=seq(-0.2, 0.5, by =0.2),
+                     labels = seq(-0.2, 0.5, by= 0.2)) +
   labs(fill = expression('Log'[10]* '(count)')) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         legend.key=element_blank()) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
-ggsave(output, width = 5, height = 4)
+  theme(axis.text.x = element_text(size = 7, color = "black"),
+        axis.text.y.left = element_text(size = 7, color = "black"),
+        axis.title=element_text(size=7))
+ggsave(output, width = 2.5, height = 2.5)
 
 ### Forskolin
 DMSO_fit = dataFrameReader_T("Paper_data/PPI_mean_fitness_calling_files/Forskolin_mean_fitness_positive.csv")
@@ -199,7 +204,35 @@ matrix_mean_CI = Create_sliding_matrix(DMSO_fit)
 DMSO_fit_pos = DMSO_fit[which(DMSO_fit$Positive != 0),]
 matrix_mean_CI_pos = Create_sliding_matrix(DMSO_fit_pos)
 output = "Working_figure/SFigures/paper/FigureS2_sd_sliding_fit_environments/Raffinose_sd_sliding_fitness.pdf"
-plot_hexagon_sd(matrix_mean_CI, matrix_mean_CI_pos, output)
+#plot_hexagon_sd(matrix_mean_CI, matrix_mean_CI_pos, output)
+ggplot() +
+        #geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
+                # bins = 60, size = 0.05) +
+        #scale_fill_gradient(low= "white", high = apple_colors[8])+
+        geom_line(aes(x = Fitness, y = Median), matrix_mean_CI,col = apple_colors[5], size = 1.2)+
+        geom_line(aes(x = Fitness, y = Median), matrix_mean_CI_pos,col = apple_colors[7], size =1.2)+
+        #geom_ribbon(aes(x = Fitness, ymin= Lower, ymax = Upper), matrix_mean_CI, alpha = 0.2) +
+        
+        #geom_line(aes(x = Fitness, y = Upper), matrix_CI, linetype = "dashed", col = apple_colors[11])+
+        #scale_color_manual(name = "",values = col_values) +
+        scale_y_continuous(name = "Standard deviation of fitness",
+                           limits=c(0, 0.5),
+                           breaks= seq(0,0.5, by = 0.1),
+                           labels =seq(0,0.5, by = 0.1)) +
+        
+        scale_x_continuous(name = "Estimated mean fitness of each protein pair", 
+                           limits=c(-0.2, 1),
+                           breaks=seq(-0.2, 1, by =0.2),
+                           labels = seq(-0.2, 1, by= 0.2)) +
+        labs(fill = expression('Log'[10]* '(count)')) +
+        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+              panel.background = element_blank(), axis.line = element_line(colour = "black"),
+              legend.key=element_blank()) +
+        theme(axis.text.x = element_text(size = 7, color = "black"),
+              axis.text.y.left = element_text(size = 7, color = "black"),
+              axis.title=element_text(size=7))
+ggsave(output, width = 2.5, height = 2.5)
+
 
 ### Doxorubicin
 DMSO_fit = dataFrameReader_T("Paper_data/PPI_mean_fitness_calling_files/Doxorubicin_mean_fitness_positive.csv")
@@ -208,9 +241,9 @@ DMSO_fit_pos = DMSO_fit[which(DMSO_fit$Positive != 0),]
 matrix_mean_CI_pos = Create_sliding_matrix(DMSO_fit_pos)
 output = "Working_figure/SFigures/paper/FigureS2_sd_sliding_fit_environments/Doxorubicin_sd_sliding_fitness.pdf"
 ggplot() +
-  geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
-           bins = 60, size = 0.05) +
-  scale_fill_gradient(low= "white", high = apple_colors[8])+
+  #geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
+           #bins = 60, size = 0.05) +
+  #scale_fill_gradient(low= "white", high = apple_colors[8])+
   geom_line(aes(x = Fitness, y = Median), matrix_mean_CI,col = apple_colors[5], size = 1.2)+
   geom_line(aes(x = Fitness, y = Median), matrix_mean_CI_pos,col = apple_colors[7], size =1.2)+
   #geom_ribbon(aes(x = Fitness, ymin= Lower, ymax = Upper), matrix_mean_CI, alpha = 0.2) +
@@ -218,21 +251,22 @@ ggplot() +
   #geom_line(aes(x = Fitness, y = Upper), matrix_CI, linetype = "dashed", col = apple_colors[11])+
   #scale_color_manual(name = "",values = col_values) +
   scale_y_continuous(name = "Standard deviation of fitness",
-                     limits=c(0, 0.4),
-                     breaks= seq(0,0.4, by = 0.1),
-                     labels =seq(0,0.4, by = 0.1)) +
+                     limits=c(0, 0.3),
+                     breaks= seq(0,0.3, by = 0.05),
+                     labels =seq(0,0.3, by = 0.05)) +
   
   scale_x_continuous(name = "Estimated mean fitness of each protein pair", 
-                     limits=c(-0.4, 0.6),
-                     breaks=seq(-0.4, 0.6, by =0.2),
-                     labels = seq(-0.4, 0.6, by= 0.2)) +
+                     limits=c(-0.2, 0.6),
+                     breaks=seq(-0.2, 0.6, by =0.2),
+                     labels = seq(-0.2, 0.6, by= 0.2)) +
   labs(fill = expression('Log'[10]* '(count)')) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         legend.key=element_blank()) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
-ggsave(output, width = 5, height = 4)
+  theme(axis.text.x = element_text(size = 7, color = "black"),
+        axis.text.y.left = element_text(size = 7, color = "black"),
+        axis.title=element_text(size=7))
+ggsave(output, width = 2.5, height = 2.5)
 
 
 ### 16C
@@ -243,9 +277,9 @@ matrix_mean_CI_pos = Create_sliding_matrix(DMSO_fit_pos)
 output = "Working_figure/SFigures/paper/FigureS2_sd_sliding_fit_environments/Cold_16C_sd_sliding_fitness.pdf"
 
 ggplot() +
-  geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
-           bins = 60, size = 0.05) +
-  scale_fill_gradient(low= "white", high = apple_colors[8])+
+  #geom_hex(aes(x = Mean_fitness, y = sd, fill = log10(..count..)), DMSO_fit,
+           #bins = 60, size = 0.05) +
+  #scale_fill_gradient(low= "white", high = apple_colors[8])+
   geom_line(aes(x = Fitness, y = Median), matrix_mean_CI,col = apple_colors[5], size = 1.2)+
   geom_line(aes(x = Fitness, y = Median), matrix_mean_CI_pos,col = apple_colors[7], size =1.2)+
   #geom_ribbon(aes(x = Fitness, ymin= Lower, ymax = Upper), matrix_mean_CI, alpha = 0.2) +
@@ -254,8 +288,8 @@ ggplot() +
   #scale_color_manual(name = "",values = col_values) +
   scale_y_continuous(name = "Standard deviation of fitness",
                      limits=c(0, 0.3),
-                     breaks= seq(0,0.3, by = 0.1),
-                     labels =seq(0,0.3, by = 0.1)) +
+                     breaks= seq(0,0.3, by = 0.05),
+                     labels =seq(0,0.3, by = 0.05)) +
   
   scale_x_continuous(name = "Estimated mean fitness of each protein pair", 
                      limits=c(-0.2, 0.3),
@@ -265,9 +299,10 @@ ggplot() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         legend.key=element_blank()) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
-ggsave(output, width = 5, height = 4)
+  theme(axis.text.x = element_text(size = 7, color = "black"),
+        axis.text.y.left = element_text(size = 7, color = "black"),
+        axis.title=element_text(size=7))
+ggsave(output, width = 2.5, height = 2.5)
 
 
 

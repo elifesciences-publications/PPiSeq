@@ -86,17 +86,11 @@ library(ggplot2)
 ggplot() +
   geom_hex(aes(x= fit01, y= fit02, fill = log10(..count..)), PPI_fit_final_data, bins = 60)+
   scale_fill_gradient(low= "white", high = apple_colors[7])+
-  # linear regression is heavily afftected by these small fitness values
-  #geom_smooth(aes(x = fit01, y = fit02), PPI_fit_final_data, method='lm',se = FALSE, 
-  #color = "magenta3", linetype = 2, cex = 0.4)+
-  
-  #add a line that contain equal fitness values
+
   geom_smooth(aes(x = seq(0, 2.1, by = 0.3), y = seq(0, 2.1, by = 0.3)), linetype =2,
               method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.2, y = 0.9, label = expression(paste("Spearman's ", italic(r), " = 0.77")),  parse = TRUE, col = apple_colors[11]) +
-  
-  scale_color_manual('', breaks = c("Positive PPI"),
-                     values = apple_colors[8]) +
+  annotate("text", x = 0.2, y = 0.9, label = expression(paste("Spearman's ", italic(r), " = 0.77")), 
+           parse = TRUE, col = apple_colors[11], size = 2) +
   
   scale_y_continuous(name = "Fitness of replicate strain 2",
                      limits=c(0, 1),
@@ -106,14 +100,17 @@ ggplot() +
                      limits=c(0, 1),
                      breaks=seq(0, 1, by =0.2),
                      labels = seq(0, 1, by= 0.2))+
-  theme(legend.position =c(0.9,0.2), legend.key=element_blank(), legend.text=element_text(size=10)) +
+  theme(legend.position =c(0.9,0.3), legend.key=element_blank(), 
+        legend.text=element_text(size=5),legend.title=element_text(size=6),
+        legend.key.size = unit(0.3, "cm")) +
   labs(fill = expression('Log'[10]* '(count)'))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
+  theme(axis.text.x = element_text(size = 6, color = "black"),
+        axis.text.y.left = element_text(size = 6, color = "black"),
+        axis.title=element_text(size= 6))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_SD2.pdf", height =5, width =5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_SD2.pdf", height =2.5, width =2.5)
 
 
 ##FK506
@@ -126,17 +123,11 @@ library(ggplot2)
 ggplot() +
   geom_hex(aes(x= fit01, y= fit02, fill = log10(..count..)), PPI_fit_final_data, bins = 60)+
   scale_fill_gradient(low= "white", high = apple_colors[7])+
-  # linear regression is heavily afftected by these small fitness values
-  #geom_smooth(aes(x = fit01, y = fit02), PPI_fit_final_data, method='lm',se = FALSE, 
-  #color = "magenta3", linetype = 2, cex = 0.4)+
-  
-  #add a line that contain equal fitness values
+
   geom_smooth(aes(x = seq(0, 2, by = 0.2), y = seq(0, 2, by = 0.2)), linetype =2,
               method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.55, y = 1.9, label = expression(paste("Spearman's ", italic(r), " = 0.83")),  parse = TRUE, col = apple_colors[11]) +
-  
-  scale_color_manual('', breaks = c("Positive PPI"),
-                     values = apple_colors[8]) +
+  annotate("text", x = 0.55, y = 1.9, label = expression(paste("Spearman's ", italic(r), " = 0.83")), 
+           parse = TRUE, col = apple_colors[11], size = 2) +
   
   scale_y_continuous(name = "Fitness of replicate strain 2",
                      limits=c(0.2, 2),
@@ -146,14 +137,17 @@ ggplot() +
                      limits=c(0.2, 2),
                      breaks=seq(0.2, 2, by =0.2),
                      labels = seq(0.2, 2, by= 0.2))+
-  theme(legend.position =c(0.9,0.2), legend.key=element_blank(), legend.text=element_text(size=10)) +
+  theme(legend.position =c(0.9,0.3), legend.key=element_blank(), 
+        legend.text=element_text(size=5),legend.title=element_text(size=6),
+        legend.key.size = unit(0.3, "cm")) +
   labs(fill = expression('Log'[10]* '(count)'))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
+  theme(axis.text.x = element_text(size = 6, color = "black"),
+        axis.text.y.left = element_text(size = 6, color = "black"),
+        axis.title=element_text(size= 6))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_FK506.pdf", height =5, width =5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_FK506.pdf", height =2.5, width =2.5)
 
 
 ##H2O2
@@ -166,17 +160,11 @@ library(ggplot2)
 ggplot() +
   geom_hex(aes(x= fit01, y= fit02, fill = log10(..count..)), PPI_fit_final_data, bins = 60)+
   scale_fill_gradient(low= "white", high = apple_colors[7])+
-  # linear regression is heavily afftected by these small fitness values
-  #geom_smooth(aes(x = fit01, y = fit02), PPI_fit_final_data, method='lm',se = FALSE, 
-  #color = "magenta3", linetype = 2, cex = 0.4)+
   
-  #add a line that contain equal fitness values
   geom_smooth(aes(x = seq(0, 2, by = 0.2), y = seq(0, 2, by = 0.2)), linetype =2,
               method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.15, y = 0.95, label = expression(paste("Spearman's ", italic(r), " = 0.73")),  parse = TRUE, col = apple_colors[11]) +
-  
-  scale_color_manual('', breaks = c("Positive PPI"),
-                     values = apple_colors[8]) +
+  annotate("text", x = 0.2, y = 0.95, label = expression(paste("Spearman's ", italic(r), " = 0.73")), 
+           parse = TRUE, col = apple_colors[11], size = 2) +
   
   scale_y_continuous(name = "Fitness of replicate strain 2",
                      limits=c(0, 1),
@@ -186,14 +174,17 @@ ggplot() +
                      limits=c(0, 1),
                      breaks=seq(0, 1, by =0.2),
                      labels = seq(0, 1, by= 0.2))+
-  theme(legend.position =c(0.9,0.2), legend.key=element_blank(), legend.text=element_text(size=10)) +
+  theme(legend.position =c(0.9,0.3), legend.key=element_blank(), 
+        legend.text=element_text(size=5),legend.title=element_text(size=6),
+        legend.key.size = unit(0.3, "cm")) +
   labs(fill = expression('Log'[10]* '(count)'))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
+  theme(axis.text.x = element_text(size = 6, color = "black"),
+        axis.text.y.left = element_text(size = 6, color = "black"),
+        axis.title=element_text(size= 6))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_H2O2.pdf", height =5, width =5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_H2O2.pdf", height =2.5, width =2.5)
 
 ##Hydroxyurea
 PPI_lineages = dataFrameReader_T("Paper_data/Lineage_barcode_fitness_files/Hydroxyurea_PPI_barcodes_fitness_counts.csv")
@@ -205,17 +196,10 @@ library(ggplot2)
 ggplot() +
   geom_hex(aes(x= fit01, y= fit02, fill = log10(..count..)), PPI_fit_final_data, bins = 60)+
   scale_fill_gradient(low= "white", high = apple_colors[7])+
-  # linear regression is heavily afftected by these small fitness values
-  #geom_smooth(aes(x = fit01, y = fit02), PPI_fit_final_data, method='lm',se = FALSE, 
-  #color = "magenta3", linetype = 2, cex = 0.4)+
-  
-  #add a line that contain equal fitness values
   geom_smooth(aes(x = seq(0, 2, by = 0.2), y = seq(0, 2, by = 0.2)), linetype =2,
               method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.15, y = 0.75, label = expression(paste("Spearman's ", italic(r), " = 0.72")),  parse = TRUE, col = apple_colors[11]) +
-  
-  scale_color_manual('', breaks = c("Positive PPI"),
-                     values = apple_colors[8]) +
+  annotate("text", x = 0.15, y = 0.75, label = expression(paste("Spearman's ", italic(r), " = 0.72")),
+           parse = TRUE, col = apple_colors[11], size = 2) +
   
   scale_y_continuous(name = "Fitness of replicate strain 2",
                      limits=c(0, 0.8),
@@ -225,14 +209,18 @@ ggplot() +
                      limits=c(0, 0.8),
                      breaks=seq(0, 0.8, by =0.2),
                      labels = seq(0, 0.8, by= 0.2))+
-  theme(legend.position =c(0.9,0.2), legend.key=element_blank(), legend.text=element_text(size=10)) +
+  theme(legend.position =c(0.9,0.3), legend.key=element_blank(), 
+        legend.text=element_text(size=5),legend.title=element_text(size=6),
+        legend.key.size = unit(0.3, "cm")) +
   labs(fill = expression('Log'[10]* '(count)'))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
+  theme(axis.text.x = element_text(size = 6, color = "black"),
+        axis.text.y.left = element_text(size = 6, color = "black"),
+        axis.title=element_text(size= 6))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_Hydroxyurea.pdf", height =5, width =5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_Hydroxyurea.pdf", 
+       height =2.5, width =2.5)
 
 ## NaCl
 PPI_lineages = dataFrameReader_T("Paper_data/Lineage_barcode_fitness_files/NaCl_PPI_barcodes_fitness_counts.csv")
@@ -244,17 +232,10 @@ library(ggplot2)
 ggplot() +
   geom_hex(aes(x= fit01, y= fit02, fill = log10(..count..)), PPI_fit_final_data, bins = 60)+
   scale_fill_gradient(low= "white", high = apple_colors[7])+
-  # linear regression is heavily afftected by these small fitness values
-  #geom_smooth(aes(x = fit01, y = fit02), PPI_fit_final_data, method='lm',se = FALSE, 
-  #color = "magenta3", linetype = 2, cex = 0.4)+
-  
-  #add a line that contain equal fitness values
   geom_smooth(aes(x = seq(0, 2, by = 0.1), y = seq(0, 2, by = 0.1)), linetype =2,
               method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.1, y = 0.55, label = expression(paste("Spearman's ", italic(r), " = 0.68")),  parse = TRUE, col = apple_colors[11]) +
-  
-  scale_color_manual('', breaks = c("Positive PPI"),
-                     values = apple_colors[8]) +
+  annotate("text", x = 0.1, y = 0.55, label = expression(paste("Spearman's ", italic(r), " = 0.68")),  
+           parse = TRUE, col = apple_colors[11], size = 2) +
   
   scale_y_continuous(name = "Fitness of replicate strain 2",
                      limits=c(0, 0.6),
@@ -264,14 +245,18 @@ ggplot() +
                      limits=c(0, 0.6),
                      breaks=seq(0, 0.6, by =0.1),
                      labels = seq(0, 0.6, by= 0.1))+
-  theme(legend.position =c(0.9,0.2), legend.key=element_blank(), legend.text=element_text(size=10)) +
+  theme(legend.position =c(0.9,0.3), legend.key=element_blank(), 
+        legend.text=element_text(size=5),legend.title=element_text(size=6),
+        legend.key.size = unit(0.3, "cm")) +
   labs(fill = expression('Log'[10]* '(count)'))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
+  theme(axis.text.x = element_text(size = 6, color = "black"),
+        axis.text.y.left = element_text(size = 6, color = "black"),
+        axis.title=element_text(size= 6))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_NaCl.pdf", height =5, width =5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_NaCl.pdf", 
+       height =2.5, width =2.5)
 
 
 ##Forskolin
@@ -284,17 +269,11 @@ library(ggplot2)
 ggplot() +
   geom_hex(aes(x= fit01, y= fit02, fill = log10(..count..)), PPI_fit_final_data, bins = 60)+
   scale_fill_gradient(low= "white", high = apple_colors[7])+
-  # linear regression is heavily afftected by these small fitness values
-  #geom_smooth(aes(x = fit01, y = fit02), PPI_fit_final_data, method='lm',se = FALSE, 
-  #color = "magenta3", linetype = 2, cex = 0.4)+
-  
-  #add a line that contain equal fitness values
+
   geom_smooth(aes(x = seq(0, 2, by = 0.2), y = seq(0, 2, by = 0.2)), linetype =2,
               method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.5, y = 1.5, label = expression(paste("Spearman's ", italic(r), " = 0.76")),  parse = TRUE, col = apple_colors[11]) +
-  
-  scale_color_manual('', breaks = c("Positive PPI"),
-                     values = apple_colors[8]) +
+  annotate("text", x = 0.5, y = 1.5, label = expression(paste("Spearman's ", italic(r), " = 0.76")),  
+           parse = TRUE, col = apple_colors[11], size = 2) +
   
   scale_y_continuous(name = "Fitness of replicate strain 2",
                      limits=c(0.2, 1.6),
@@ -304,14 +283,18 @@ ggplot() +
                      limits=c(0.2, 1.6),
                      breaks=seq(0.2, 1.6, by =0.2),
                      labels = seq(0.2, 1.6, by= 0.2))+
-  theme(legend.position =c(0.9,0.2), legend.key=element_blank(), legend.text=element_text(size=10)) +
+  theme(legend.position =c(0.9,0.3), legend.key=element_blank(), 
+        legend.text=element_text(size=5),legend.title=element_text(size=6),
+        legend.key.size = unit(0.3, "cm")) +
   labs(fill = expression('Log'[10]* '(count)'))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
+  theme(axis.text.x = element_text(size = 6, color = "black"),
+        axis.text.y.left = element_text(size = 6, color = "black"),
+        axis.title=element_text(size= 6))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_Forskolin.pdf", height =5, width =5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_Forskolin.pdf", 
+       height = 2.5, width = 2.5)
 
 ##Raffinose
 PPI_lineages = dataFrameReader_T("Paper_data/Lineage_barcode_fitness_files/Raffinose_PPI_barcodes_fitness_counts.csv")
@@ -323,18 +306,11 @@ library(ggplot2)
 ggplot() +
   geom_hex(aes(x= fit01, y= fit02, fill = log10(..count..)), PPI_fit_final_data, bins = 60)+
   scale_fill_gradient(low= "white", high = apple_colors[7])+
-  # linear regression is heavily afftected by these small fitness values
-  #geom_smooth(aes(x = fit01, y = fit02), PPI_fit_final_data, method='lm',se = FALSE, 
-  #color = "magenta3", linetype = 2, cex = 0.4)+
-  
-  #add a line that contain equal fitness values
   geom_smooth(aes(x = seq(0, 3, by = 0.2), y = seq(0, 3, by = 0.2)), linetype =2,
               method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.7, y = 2.9, label = expression(paste("Spearman's ", italic(r), " = 0.8")),  parse = TRUE, col = apple_colors[11]) +
-  
-  scale_color_manual('', breaks = c("Positive PPI"),
-                     values = apple_colors[8]) +
-  
+  annotate("text", x = 0.7, y = 2.9, label = expression(paste("Spearman's ", italic(r), " = 0.8")),  
+           parse = TRUE, col = apple_colors[11], size = 2) +
+
   scale_y_continuous(name = "Fitness of replicate strain 2",
                      limits=c(0.2, 3),
                      breaks=seq(0.2,3, by =0.2),
@@ -343,14 +319,18 @@ ggplot() +
                      limits=c(0.2, 3),
                      breaks=seq(0.2, 3, by =0.2),
                      labels = seq(0.2, 3, by= 0.2))+
-  theme(legend.position =c(0.9,0.2), legend.key=element_blank(), legend.text=element_text(size=10)) +
+  theme(legend.position =c(0.9,0.3), legend.key=element_blank(), 
+        legend.text=element_text(size=5),legend.title=element_text(size=6),
+        legend.key.size = unit(0.3, "cm")) +
   labs(fill = expression('Log'[10]* '(count)'))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
+  theme(axis.text.x = element_text(size = 6, color = "black"),
+        axis.text.y.left = element_text(size = 6, color = "black"),
+        axis.title=element_text(size= 6))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_Raffinose.pdf", height =5, width =5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_Raffinose.pdf", 
+       height = 2.5, width = 2.5)
 
 ## Doxorubicin
 PPI_lineages = dataFrameReader_T("Paper_data/Lineage_barcode_fitness_files/Doxorubicin_PPI_barcodes_fitness_counts.csv")
@@ -362,18 +342,12 @@ library(ggplot2)
 ggplot() +
   geom_hex(aes(x= fit01, y= fit02, fill = log10(..count..)), PPI_fit_final_data, bins = 60)+
   scale_fill_gradient(low= "white", high = apple_colors[7])+
-  # linear regression is heavily afftected by these small fitness values
-  #geom_smooth(aes(x = fit01, y = fit02), PPI_fit_final_data, method='lm',se = FALSE, 
-  #color = "magenta3", linetype = 2, cex = 0.4)+
   
-  #add a line that contain equal fitness values
   geom_smooth(aes(x = seq(0, 2, by = 0.1), y = seq(0, 2, by = 0.1)), linetype =2,
               method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.15, y = 0.75, label = expression(paste("Spearman's ", italic(r), " = 0.82")),  parse = TRUE, col = apple_colors[11]) +
-  
-  scale_color_manual('', breaks = c("Positive PPI"),
-                     values = apple_colors[8]) +
-  
+  annotate("text", x = 0.15, y = 0.75, label = expression(paste("Spearman's ", italic(r), " = 0.82")),  
+           parse = TRUE, col = apple_colors[11], size = 2) +
+
   scale_y_continuous(name = "Fitness of replicate strain 2",
                      limits=c(0, 0.8),
                      breaks=seq(0,0.8, by =0.1),
@@ -382,14 +356,18 @@ ggplot() +
                      limits=c(0, 0.8),
                      breaks=seq(0, 0.8, by =0.1),
                      labels = seq(0, 0.8, by= 0.1))+
-  theme(legend.position =c(0.9,0.2), legend.key=element_blank(), legend.text=element_text(size=10)) +
+  theme(legend.position =c(0.9,0.2), legend.key=element_blank(), 
+        legend.text=element_text(size=5),legend.title=element_text(size=6),
+        legend.key.size = unit(0.3, "cm")) +
   labs(fill = expression('Log'[10]* '(count)'))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
+  theme(axis.text.x = element_text(size = 6, color = "black"),
+        axis.text.y.left = element_text(size = 6, color = "black"),
+        axis.title=element_text(size= 6))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_Doxorubicin.pdf", height =5, width =5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_Doxorubicin.pdf",
+       height = 2.5, width = 2.5)
 
 ## 16C
 PPI_lineages = dataFrameReader_T("Paper_data/Lineage_barcode_fitness_files/Cold_16C_PPI_barcodes_fitness_counts.csv")
@@ -401,18 +379,11 @@ library(ggplot2)
 ggplot() +
   geom_hex(aes(x= fit01, y= fit02, fill = log10(..count..)), PPI_fit_final_data, bins = 60)+
   scale_fill_gradient(low= "white", high = apple_colors[7])+
-  # linear regression is heavily afftected by these small fitness values
-  #geom_smooth(aes(x = fit01, y = fit02), PPI_fit_final_data, method='lm',se = FALSE, 
-  #color = "magenta3", linetype = 2, cex = 0.4)+
-  
-  #add a line that contain equal fitness values
   geom_smooth(aes(x = seq(0, 2, by = 0.1), y = seq(0, 2, by = 0.1)), linetype =2,
               method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.06, y = 0.38, label = expression(paste("Spearman's ", italic(r), " = 0.91")),  parse = TRUE, col = apple_colors[11]) +
-  
-  scale_color_manual('', breaks = c("Positive PPI"),
-                     values = apple_colors[8]) +
-  
+  annotate("text", x = 0.08, y = 0.38, label = expression(paste("Spearman's ", italic(r), " = 0.91")), 
+           parse = TRUE, col = apple_colors[11], size = 2) +
+
   scale_y_continuous(name = "Fitness of replicate strain 2",
                      limits=c(0, 0.4),
                      breaks=seq(0,0.4, by =0.1),
@@ -421,12 +392,16 @@ ggplot() +
                      limits=c(0, 0.4),
                      breaks=seq(0, 0.4, by =0.1),
                      labels = seq(0, 0.4, by= 0.1))+
-  theme(legend.position =c(0.9,0.3), legend.key=element_blank(), legend.text=element_text(size=10)) +
+  theme(legend.position =c(0.9,0.3), legend.key=element_blank(), 
+        legend.text=element_text(size=5),legend.title=element_text(size=6),
+        legend.key.size = unit(0.3, "cm")) +
   labs(fill = expression('Log'[10]* '(count)'))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  theme(axis.text.x = element_text(size = 10, color = "black"),
-        axis.text.y.left = element_text(size = 10, color = "black"))
+  theme(axis.text.x = element_text(size = 6, color = "black"),
+        axis.text.y.left = element_text(size = 6, color = "black"),
+        axis.title=element_text(size= 6))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_16C.pdf", height =5, width =5)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/SFigures/paper/FigureS3_strain_replicates_environments/correlation_two_replicates_16C.pdf", 
+       height =2.5, width =2.5)
 
