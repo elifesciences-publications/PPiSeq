@@ -69,9 +69,9 @@ stability_bin_degree = rbind(stability_1, stability_2, stability_3,
 col_chosen = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
 library(ggplot2)
 ggplot(stability_bin_degree, aes(x = degree, fill = label, col = label))+
-        geom_density(alpha = 0.3)+
-        scale_color_manual(name = "Positive environment number", values = col_chosen)+
-        scale_fill_manual(name = "Positive environment number", values = col_chosen)+
+        geom_density(alpha = 0.05)+
+        scale_color_manual(name = "PPI positive environment number", values = col_chosen)+
+        scale_fill_manual(name = "PPI positive environment number", values = col_chosen)+
         scale_x_continuous(name = "Degree", 
                            limits=c(0, 120),
                            breaks = seq(0,120, by =20),

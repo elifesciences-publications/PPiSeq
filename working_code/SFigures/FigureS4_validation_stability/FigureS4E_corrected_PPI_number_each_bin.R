@@ -1,14 +1,14 @@
 # Source some basic functions froma function.R in Github repository
 source_https <- function(u, unlink.tmp.certs = FALSE) {
-  # load package
-  require(RCurl)
-  # read script lines from website using a security certificate
-  if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
-  script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
-  if(unlink.tmp.certs) unlink("cacert.pem")
-  
-  # parase lines and evealuate in the global environement
-  eval(parse(text = script), envir= .GlobalEnv)
+        # load package
+        require(RCurl)
+        # read script lines from website using a security certificate
+        if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
+        script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
+        if(unlink.tmp.certs) unlink("cacert.pem")
+        
+        # parase lines and evealuate in the global environement
+        eval(parse(text = script), envir= .GlobalEnv)
 }
 source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working_code/function.R", unlink.tmp.certs = TRUE)
 
@@ -81,8 +81,8 @@ fitness_bins = c(0.25, seq(0.26, 0.39, by = 0.01), seq(0.42, 0.66, by = 0.04), c
 SD_fit_count = data.frame(as.numeric(vScore[,4]), as.numeric(vScore[,2]))
 stability_mean = rep(0, 9)
 for(i in 1:9){
-  index = which(as.numeric(SD_fit_count[,2]) == i)
-  stability_mean[i] = mean(SD_fit_count[index,1])
+        index = which(as.numeric(SD_fit_count[,2]) == i)
+        stability_mean[i] = mean(SD_fit_count[index,1])
 }
 count_normal = 1:9/9
 # Calculate validation rate
@@ -96,37 +96,37 @@ external_test = data.frame(val_rate = merge_ratio, bins = stability_mean, env_co
 
 #### Function to prepare the training data
 split_data_generation = function(training, environment_loc, bins, all_Tecan){
-  val_rate = rep(0, length(bins))
-  env_count = rep(0, length(bins))
-  PPI_count = rep(0, length(bins))
-  for(i in 1:length(bins)){
-    if(i == 1){
-      fit_bin = c(0, bins[i])
-    }
-    else{
-      fit_bin = c(bins[i-1], bins[i])
-    }
-    training_fitness = as.numeric(training[,environment_loc])
-    index_chosen = which(training_fitness >= fit_bin[1] & training_fitness <= fit_bin[2])
-    PPI_chosen = training[index_chosen, 1]
-    PPI_count[i] = length(which(training_fitness >= fit_bin[1] & training_fitness <= fit_bin[2]))
-    env_count[i] = mean(as.numeric(training[index_chosen, 2]))
-    Tecan_select = match_both_direction(all_Tecan, PPI_chosen)
-    if (length(Tecan_select) > 11){
-      validate_PPI_count = length(which(as.numeric(Tecan_select[,11]) <= 0.05))
-      val_rate[i] = validate_PPI_count/nrow(Tecan_select)
-    }else if(length(Tecan_select) == 11){
-      validate_PPI_count = as.numeric(Tecan_select[11]) <= 0.05
-      val_rate[i] = validate_PPI_count/1
-    }else{
-      val_rate[i] = NA
-    }
-    
-  }
-  env_count = as.numeric(env_count)
-  env_count_normal = env_count/9
-  var_matrix = na.omit(data.frame(val_rate, bins, env_count_normal))
-  return(var_matrix)
+        val_rate = rep(0, length(bins))
+        env_count = rep(0, length(bins))
+        PPI_count = rep(0, length(bins))
+        for(i in 1:length(bins)){
+                if(i == 1){
+                        fit_bin = c(0, bins[i])
+                }
+                else{
+                        fit_bin = c(bins[i-1], bins[i])
+                }
+                training_fitness = as.numeric(training[,environment_loc])
+                index_chosen = which(training_fitness >= fit_bin[1] & training_fitness <= fit_bin[2])
+                PPI_chosen = training[index_chosen, 1]
+                PPI_count[i] = length(which(training_fitness >= fit_bin[1] & training_fitness <= fit_bin[2]))
+                env_count[i] = mean(as.numeric(training[index_chosen, 2]))
+                Tecan_select = match_both_direction(all_Tecan, PPI_chosen)
+                if (length(Tecan_select) > 11){
+                        validate_PPI_count = length(which(as.numeric(Tecan_select[,11]) <= 0.05))
+                        val_rate[i] = validate_PPI_count/nrow(Tecan_select)
+                }else if(length(Tecan_select) == 11){
+                        validate_PPI_count = as.numeric(Tecan_select[11]) <= 0.05
+                        val_rate[i] = validate_PPI_count/1
+                }else{
+                        val_rate[i] = NA
+                }
+                
+        }
+        env_count = as.numeric(env_count)
+        env_count_normal = env_count/9
+        var_matrix = na.omit(data.frame(val_rate, bins, env_count_normal))
+        return(var_matrix)
 }
 training_data = split_data_generation(vScore_select_Tecan, 4, fitness_bins, all_Tecan)
 fitmodel = lm(val_rate ~ bins + env_count_normal, training_data)
@@ -139,7 +139,7 @@ predict_external_test = predict(fitmodel, external_test, type = "response")
 
 cor(external_test$val_rate, predict_external_test, method = "spearman") # 0.9833333
 
-pdf("~/Desktop/Predicting_validation_rate.pdf", width =5, height =5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure3_accessory_PPIs/Model_Predicted_observed_rate.pdf", width =5, height =5)
 plot(external_test$val_rate, predict_external_test, pch = 16, col = "blue",
      type = "p", xlim = c(0.5, 1), ylim = c(0.5,1), xlab = "Observed validation rate",
      ylab = "Predicted validation rate")
@@ -190,15 +190,29 @@ hist(as.numeric(matrix_vali_add[,10])) # NaCl
 env_count_ori = as.data.frame(table(matrix_vali_add[,2]))$Freq
 env_count_ori # 7724         1266        730      579       579       553        497     579       474
 env_count_bar # 4515.6439  809.2100  508.4733  435.2507  466.8102  475.2252  452.9155  554.8506  478.2086
+
+### Only plot the corrected counts of PPIs
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure3_accessory_PPIs/Figure3C_Corrected_Validation_bar_plot.pdf", width= 5.5, height=5)
+barCenter = barplot(env_count_bar, horiz=F, beside=F, ylim=c(0,5000), ylab="Corrected number of PPIs",
+                    space= c(0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4), axisnames=F, 
+                    col= apple_colors[1], border=NA,  cex.axis=0.8)
+
+text(x = barCenter, y = -300, labels = as.character(1:9), xpd = TRUE)
+text(median(barCenter), y = -800, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
+dev.off()
+
+
+
+#### Plot both the corrected and original PPI counts in each bin
 a = env_count_ori
 b = env_count_bar
 env_count_final = c(a[1], b[1], a[2], b[2], a[3], b[3], a[4], b[4], a[5], b[5],
                     a[6], b[6], a[7], b[7], a[8], b[8], a[9], b[9])
 
 
-col_chosen = c("#d73027","#4575b4")
-pdf("Working_figure/Figure3_accessory_PPIs/Figure3C_Corrected_Validation_bar_plot.pdf", width= 5.5, height=5)
-barCenter = barplot(env_count_final, horiz=F, beside=F, ylim=c(0,10000), ylab="Number of PPIs",
+col_chosen = apple_colors[c(1,4)]
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure3_accessory_PPIs/Figure_3C_Corrected_Validation_bar_plot_not_use.pdf", width= 5.5, height=5)
+barCenter = barplot(env_count_final, horiz=F, beside=F, ylim=c(0,10000), ylab="Corrected number of PPIs",
                     space= c(0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15,
                              0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15), axisnames=F, 
                     col= col_chosen, border=NA,  cex.axis=0.8)
@@ -208,9 +222,7 @@ env_num_loc = rep(0, 9)
 for(i in 1:9){
         env_num_loc[i] = mean(barCenter[(2*i-1):(2*i)])
 }
-text(x = env_num_loc, y = -300, labels = as.character(1:9), xpd = TRUE)
-text(median(barCenter), y = -800, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
+text(x = env_num_loc, y = -400, labels = as.character(1:9), xpd = TRUE)
+text(median(barCenter), y = -900, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
 dev.off()
-
-
 

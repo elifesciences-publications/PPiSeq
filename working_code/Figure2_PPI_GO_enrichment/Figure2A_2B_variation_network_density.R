@@ -54,6 +54,22 @@ transform_list_matrix = function(all_count_name, pos_count_name, output_pos_coun
         write.table(matrix_pos_count, output_pos_count, sep = "\t", quote = F)
         write.table(matrix_density, output_density, sep = "\t", quote=F)
 }
+
+## SD
+# Cellular compartment
+all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/Network_all_count_PPI_CC_new.txt"
+pos_count_name = "DMSO/Network_pos_count_PPI_CC_new.txt"
+output_pos_count = "DMSO/Network_pos_count_PPI_CC_matrix.txt"
+output_density = "DMSO/Network_density_PPI_CC_matrix.txt"
+transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
+# Biological process
+all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
+pos_count_name = "DMSO/Network_pos_count_PPI_BP_new.txt"
+output_pos_count = "DMSO/Network_pos_count_PPI_BP_matrix.txt"
+output_density = "DMSO/Network_density_PPI_BP_matrix.txt"
+transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
+
+
 ## 16C
 # Cellular compartment
 all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/Network_all_count_PPI_CC_new.txt"
@@ -62,7 +78,7 @@ output_pos_count = "16C/Network_pos_count_PPI_CC_matrix.txt"
 output_density = "16C/Network_density_PPI_CC_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 # Biological process
-all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
+all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
 pos_count_name = "16C/Network_pos_count_PPI_BP_new.txt"
 output_pos_count = "16C/Network_pos_count_PPI_BP_matrix.txt"
 output_density = "16C/Network_density_PPI_BP_matrix.txt"
@@ -76,7 +92,7 @@ output_pos_count = "Dox/Network_pos_count_PPI_CC_matrix.txt"
 output_density = "Dox/Network_density_PPI_CC_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 # Biological process
-all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
+all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
 pos_count_name = "Dox/Network_pos_count_PPI_BP_new.txt"
 output_pos_count = "Dox/Network_pos_count_PPI_BP_matrix.txt"
 output_density = "Dox/Network_density_PPI_BP_matrix.txt"
@@ -90,7 +106,7 @@ output_pos_count = "FK506/Network_pos_count_PPI_CC_matrix.txt"
 output_density = "FK506/Network_density_PPI_CC_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 # Biological process
-all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
+all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
 pos_count_name = "FK506/Network_pos_count_PPI_BP_new.txt"
 output_pos_count = "FK506/Network_pos_count_PPI_BP_matrix.txt"
 output_density = "FK506/Network_density_PPI_BP_matrix.txt"
@@ -104,7 +120,7 @@ output_pos_count = "Forskolin/Network_pos_count_PPI_CC_matrix.txt"
 output_density = "Forskolin/Network_density_PPI_CC_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 # Biological process
-all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
+all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
 pos_count_name = "Forskolin/Network_pos_count_PPI_BP_new.txt"
 output_pos_count = "Forskolin/Network_pos_count_PPI_BP_matrix.txt"
 output_density = "Forskolin/Network_density_PPI_BP_matrix.txt"
@@ -118,7 +134,7 @@ output_pos_count = "H2O2/Network_pos_count_PPI_CC_matrix.txt"
 output_density = "H2O2/Network_density_PPI_CC_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 # Biological process
-all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
+all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
 pos_count_name = "H2O2/Network_pos_count_PPI_BP_new.txt"
 output_pos_count = "H2O2/Network_pos_count_PPI_BP_matrix.txt"
 output_density = "H2O2/Network_density_PPI_BP_matrix.txt"
@@ -132,7 +148,7 @@ output_pos_count = "HU/Network_pos_count_PPI_CC_matrix.txt"
 output_density = "HU/Network_density_PPI_CC_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 # Biological process
-all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
+all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
 pos_count_name = "HU/Network_pos_count_PPI_BP_new.txt"
 output_pos_count = "HU/Network_pos_count_PPI_BP_matrix.txt"
 output_density = "HU/Network_density_PPI_BP_matrix.txt"
@@ -146,7 +162,7 @@ output_pos_count = "NaCl/Network_pos_count_PPI_CC_matrix.txt"
 output_density = "NaCl/Network_density_PPI_CC_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 # Biological process
-all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
+all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
 pos_count_name = "NaCl/Network_pos_count_PPI_BP_new.txt"
 output_pos_count = "NaCl/Network_pos_count_PPI_BP_matrix.txt"
 output_density = "NaCl/Network_density_PPI_BP_matrix.txt"
@@ -160,7 +176,7 @@ output_pos_count = "Raffinose/Network_pos_count_PPI_CC_matrix.txt"
 output_density = "Raffinose/Network_density_PPI_CC_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 # Biological process
-all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
+all_count_name = "~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/Network_all_count_PPI_BP_new.txt"
 pos_count_name = "Raffinose/Network_pos_count_PPI_BP_new.txt"
 output_pos_count = "Raffinose/Network_pos_count_PPI_BP_matrix.txt"
 output_density = "Raffinose/Network_density_PPI_BP_matrix.txt"
@@ -199,7 +215,7 @@ network_density_vector = as.vector(cc_list_CV) # by column
 CV = as.numeric(network_density_vector)
 hist(CV)
 max(as.numeric(network_density_vector), na.rm = T) # 3
-min(as.numeric(network_density_vector), na.rm = T) # 0.180
+min(as.numeric(network_density_vector), na.rm = T) # 0.1801661
 GO_order = read.table("~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/environment/GO_CC_order.txt",header = T, sep = "\t")
 
 dataf = data.frame(rowv,columnv,

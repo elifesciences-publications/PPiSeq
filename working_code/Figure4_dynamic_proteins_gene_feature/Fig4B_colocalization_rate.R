@@ -184,7 +184,7 @@ ugo = mgo+sdgo
 lgo = mgo-sdgo
 
 
-pdf(file = "~/Dropbox/PPiSeq_02/Working_figure/Figure3/Figure3B_colocalization_rate.pdf", height = 7, width = 4 )
+pdf(file = "~/Dropbox/PPiSeq_02/Working_figure/Figure4_date_party_hubs/Figure4B_colocalization_rate.pdf", height = 7, width = 4 )
 plot(1:9, m, xlab = "Environments in which a PPI is observed", 
      ylab = "Percent colocalized", type = 'l', ylim = c(30,100), pch = 16, cex = 1.7, lwd =2, col = "black" ) 
 points(1:9, m,  ylim = c(30,90), pch = 16, cex = 1.7, col = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027"))

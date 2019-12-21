@@ -33,7 +33,7 @@ for(i in 1:nrow(PPI_norm)){
 variation_score = rep(0, nrow(PPI_norm_matrix))
 for(i in 1:length(variation_score)){
         fitness = as.numeric(PPI_norm_matrix[i,2:10])
-        variation_score[i] = sd(fitness)/mean(fitness)
+        variation_score[i] = mean(fitness)/sd(fitness)
 }
 environment_number = as.numeric(PPI_count[match(PPI_norm_matrix[,1], PPI_count[,1]),2])
 # Include the variation score into the matrix, and output the matrix

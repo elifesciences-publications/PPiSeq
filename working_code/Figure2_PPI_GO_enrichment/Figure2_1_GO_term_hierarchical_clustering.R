@@ -67,12 +67,6 @@ pos_count_name = "Working_data_2/PPI_pair_GO/Network_pos_count_PPI_BP_new.txt"
 output_pos_count = "Working_data_2/PPI_pair_GO/Network_pos_count_PPI_BP_matrix.txt"
 output_density = "Working_data_2/PPI_pair_GO/Network_density_PPI_BP_matrix.txt"
 transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
-# Primary Biological process
-all_count_name = "Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt"
-pos_count_name = "Working_data_2/PPI_pair_GO/BP_primary/Network_pos_count_PPI_BP_new.txt"
-output_pos_count = "Working_data_2/PPI_pair_GO/BP_primary/Network_pos_count_PPI_BP_matrix.txt"
-output_density = "Working_data_2/PPI_pair_GO/BP_primary/Network_density_PPI_BP_matrix.txt"
-transform_list_matrix(all_count_name, pos_count_name, output_pos_count, output_density)
 
 # Molecular function
 all_count_name = "Working_data_2/PPI_pair_GO/Network_all_count_PPI_MF_new.txt"
@@ -118,7 +112,7 @@ label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),]
 csvWriter(GO_order$label, "Working_data_2/PPI_pair_GO/environment/GO_CC_order.txt")
 
-#### Biological process (first truncated)
+#### Biological process 
 network_density = as.matrix(read.table("Working_data_2/PPI_pair_GO/Network_density_PPI_BP_matrix.txt", 
                                        sep = "\t", header = T))
 colnames(network_density) = gsub("\\.", " ", colnames(network_density))
@@ -156,43 +150,6 @@ label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),]
 csvWriter(GO_order$label, "Working_data_2/PPI_pair_GO/environment/GO_BP_order_truncated.txt")
 
-#### Biological process (Primary)
-network_density = as.matrix(read.table("Working_data_2/PPI_pair_GO/BP_primary/Network_density_PPI_BP_matrix.txt", 
-                                       sep = "\t", header = T))
-colnames(network_density) = gsub("\\.", " ", colnames(network_density))
-
-# dendrogram
-library(ggdendro)
-rownames(network_density) = colnames(network_density)
-hc = hclust(dist(network_density))
-
-dendr = dendro_data(hc, type= "rectangle")
-clust = cutree(hc, k = 10) 
-clust.df <- data.frame(label=names(clust), cluster=factor(clust))
-dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
-#### Plot the dendrogram
-ggplot() + 
-        geom_segment(data=segment(dendr), aes(x=x, y=y, xend=xend, yend=yend)) + 
-        #geom_text(data=label(dendr), aes(x, y, label=label, hjust=0), col = apple_colors[11], size=2) +
-        coord_flip() + scale_y_reverse(expand=c(0.2, 0)) + 
-        theme(axis.line.y=element_blank(),
-              axis.ticks.y=element_blank(),
-              axis.text.y=element_blank(),
-              axis.title.y=element_blank(),
-              axis.line.x=element_blank(),
-              axis.ticks.x=element_blank(),
-              axis.text.x=element_blank(),
-              axis.title.x=element_blank(),
-              panel.background=element_rect(fill="white"),
-              panel.grid=element_blank(),
-              legend.position = "bottom",
-              plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"))
-
-ggsave("Working_figure/Figure2_PPI_enrichment_GO/Dendrogram_BP_GO_pair_cluster_primary.pdf", width = 4, height =12)
-
-label_GO = label(dendr)
-GO_order = label_GO[order(label_GO$x),]
-csvWriter(GO_order$label, "Working_data_2/PPI_pair_GO/environment/GO_BP_order_primary.txt")
 
 #### Biological process (Chosen)
 

@@ -73,7 +73,7 @@ counts_label = c("0/1", "9/13", "0/1", "22/32", "5/6", "22/31",
                  "23/27", "30/32", "43/44", "37/38", "16/16", "26/27")
 library(RColorBrewer)
 #col_chosen = brewer.pal(3,"Dark2")[1:2]
-col_chosen = c("#d73027","#4575b4")
+col_chosen = apple_colors[c(1,4)]
 pdf("~/Dropbox/PPiSeq_02/Working_figure/Sfigures/paper/FigureS4_validation_each_stability_bin/FigureS4B_Validation_bar_plot_merge_reported_unreported.pdf", 
     width= 6, height=5)
 barCenter = barplot(ratio_all*100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",

@@ -16,7 +16,7 @@ source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working
 #Commonly used colors
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
-## Figure2C A barplot to show the validation rate
+
 setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_PPI/Combine_TECAN/")
 ### Combine all the chosen PPIs 
 d_1_1 = csvReader_T("Diploid_01_01_both_T5.csv")
