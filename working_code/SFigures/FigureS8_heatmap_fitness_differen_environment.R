@@ -46,4 +46,4 @@ save_pheatmap_pdf <- function(x, filename, width=4.5, height=5) {
         dev.off()
 }
 
-save_pheatmap_pdf(fit_heatmap, "Working_figure/Figure2/Figure2E_fitness_environment_primary.pdf")
+save_pheatmap_pdf(fit_heatmap, "Working_figure/SFigures/paper/FigureS8_heatmap_fitness_all_environmemnts/FigureS8_fitness_environment_primary.pdf")

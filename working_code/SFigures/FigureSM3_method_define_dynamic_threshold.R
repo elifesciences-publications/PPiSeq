@@ -1,16 +1,29 @@
-source("/Volumes/zmliu_02/PPiseq/HU/R_code/function.R")
+# Source some basic functions froma function.R in Github repository
+source_https <- function(u, unlink.tmp.certs = FALSE) {
+        # load package
+        require(RCurl)
+        # read script lines from website using a security certificate
+        if(!file.exists("cacert.pem")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile = "cacert.pem")
+        script <- getURL(u, followlocation = TRUE, cainfo = "cacert.pem")
+        if(unlink.tmp.certs) unlink("cacert.pem")
+        
+        # parase lines and evealuate in the global environement
+        eval(parse(text = script), envir= .GlobalEnv)
+}
+source_https("https://raw.githubusercontent.com/sashaflevy/PPiSeq/master/working_code/function.R", unlink.tmp.certs = TRUE)
+
+#Commonly used colors
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 
-setwd("/Volumes/zmliu_02/PPiseq/DMSO/reference_set_large_Q_range/")
-## First get the thresholds for larger Q-value range (-3, 0) instead of (-1.3, 0)
+setwd("/Volumes/zmliu_02/PPiseq_03/DMSO/reference_set_large_Q_range/")
+## First get the thresholds for larger Q-value range (-6, 0) instead of (-4, 0)
 ## Use the same reference sets generated before
 
-Q_values = seq(-3, 0, by = 0.1)
-
+Q_values = seq(-6, 0, by = 0.1)
 Fitness = seq(0, 1.0, by = 0.01)
 
-### generate a matrix of FPR, TPR, or PPV with specific combination of Q-value and fitness
+### Function to generate a matrix of PPV
 ROC_line_matrix = function(matrix_ref, Fitness, Q_values, output){
         number_Pos = length(which(matrix_ref[,1] == "Positive")) 
         number_Neg = length(which(matrix_ref[,1] == "Negative")) 
@@ -50,8 +63,7 @@ ROC_line_matrix = function(matrix_ref, Fitness, Q_values, output){
         
 }
 
-#### Define the combination of Q-value and fitness that give the same FPR, TPR, or PPV
-
+#Find the combinations of Q-value and fitness that give the same FPR, or TPR, or PPV
 Q_fit_PPV_threshold = function(Q_fit_matrix, PPV_threshold){
         Q_fit_matrix_threshold = matrix(NA, ncol(Q_fit_matrix), 3)
         for (i in 1: ncol(Q_fit_matrix)){
@@ -76,11 +88,11 @@ Q_fit_PPV_threshold = function(Q_fit_matrix, PPV_threshold){
 
 rate_calculate_PPV = function(matrix_ref, coeff, fpr){ # fpr =1: calculate FPR for coefficents = TPR lines
         fitness = matrix_ref[,3]
-        Q_value = log10(matrix_ref[,6])
+        Q_value = log10(matrix_ref[,p_loc])
         Q_value[which(Q_value == -Inf)] = -350
-        index_1 = which((fitness >= (coeff[1] + coeff[2] * Q_value + coeff[3] * Q_value^2 + coeff[4] * Q_value^3)) & Q_value >= -1.3)
+        index_1 = which((fitness >= coeff[1]/(1+ exp((coeff[2] - Q_value)/coeff[3]))) & Q_value >= p_threshold)
         minimum_fitness = min(fitness[index_1])
-        index_2 = which(fitness >= minimum_fitness & Q_value < -1.3)
+        index_2 = which(fitness >= minimum_fitness & Q_value < p_threshold)
         index = c(index_1, index_2)
         Pos_PPI = matrix_ref[index,1]
         number_Pos = length(which(matrix_ref[,1] == "Positive")) 
@@ -97,6 +109,7 @@ rate_calculate_PPV = function(matrix_ref, coeff, fpr){ # fpr =1: calculate FPR f
                 return (c(FPR, TPR, PPV, true_pos, false_pos))
         }
 } 
+
 
 
 number_PPI = 6e4
@@ -133,8 +146,8 @@ for (k in 1: length(reference_name)){
 }
 
 
-#### Figure S2 For the same reference set, different PPV thresholds
-setwd("/Volumes/zmliu_02/PPiseq/DMSO/reference_set_large_Q_range/")
+#### Figure SM3 For the same reference set, different PPV thresholds
+setwd("/Volumes/zmliu_02/PPiseq_03/DMSO/reference_set_large_Q_range/")
 PPV_threshold = dataFrameReader_T("Fitness_Q_value_PPV_threshold_1_data.csv")
 PPV_chosen = c("PPV_0.5", "PPV_0.56", "PPV_0.6", "PPV_0.64", "PPV_0.71", "PPV_0.75", "PPV_0.8", "PPV_0.9")
 PPV_threshold_chosen = PPV_threshold[which(PPV_threshold$PPV %in% PPV_chosen),]
@@ -149,10 +162,10 @@ ggplot()+
                            limits=c(0, 0.7),
                            breaks=seq(0,0.7, by =0.1),
                            labels = seq(0, 0.7, by= 0.1)) +
-        scale_x_continuous(name = expression(italic(q)), 
-                           limits=c(-3, 0),
-                           breaks=seq(-3, 0, by =0.5),
-                           labels = seq(-3, 0, by= 0.5))+
+        scale_x_continuous(name = expression(italic(p)), 
+                           limits=c(-6, 0),
+                           breaks=seq(-6, 0, by =1),
+                           labels = seq(-6, 0, by= 1))+
         theme(legend.key=element_blank()) +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
@@ -160,11 +173,11 @@ ggplot()+
               axis.title=element_text(size=14,face="bold"),
               axis.text.y.left = element_text(size = 10, color = "black")) + 
         theme(text = element_text(size=12))
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS2A_Method_Different_dynamic_PPV_threshold.pdf", width = 6, height = 5)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM3A_Method_Different_dynamic_PPV_threshold.pdf", width = 5, height = 4)
 #ggsave("~/Desktop/FigureS2_Method_Different_dynamic_PPV_threshold.pdf", width = 6, height = 5)
 
 
-##################### Figure S2 plot 50 lines for the same PPV = 0.71 from 50 rereference sets
+##################### Figure SM3B plot 50 lines for the same PPV = 0.71 from 50 rereference sets
 
 PPV_threshold_files = rep("Name", 50)
 for (i in 1:50){
@@ -187,13 +200,13 @@ plot_threshold = function(specific_PPV, output){
         # Fit the data with bionomial 
         fitness_threshold = as.numeric(PPV_threshold_all[,3])
         Q_value_threshold = as.numeric(PPV_threshold_all[,2])
-        coef= lm(fitness_threshold~poly(Q_value_threshold,3, raw = TRUE))$coefficients
+        fitmodel = nls(fitness_threshold  ~ SSlogis( Q_value_threshold, Asym, xmid, scal))
+        coeff = coef(fitmodel)
         simulated_Q = unique(Q_value_threshold)
         simulated_fit = rep(0, length(simulated_Q))
         for(i in 1:length(simulated_Q)){
                 m = simulated_Q[i]
-                n = c(1, m, m^2, m^3)
-                simulated_fit[i] = sum(n * coef)
+                simulated_fit[i] = coeff[1]/(1+exp((coeff[2] - m)/coeff[3]))
         }
         
         simulated_data = cbind(rep("Dynamic_combination", length(simulated_Q)), rep("Simulation", length(simulated_Q)), simulated_Q, simulated_fit)
@@ -218,17 +231,17 @@ plot_threshold = function(specific_PPV, output){
           #scale_color_manual('', breaks = c("Discrete_combination", "Dynamic_combination"),
           #values = apple_colors[c(8,7)], 
           #guide = guide_legend(override.aes = list(linetype = c(NA,1),shape = c(16, NA)))) +
-          scale_x_continuous(name= expression(italic(q)),
-                             limits = c(-3, 0),
-                             breaks = seq(-3, 0, by = 0.5),
-                             labels = seq(-3, 0, by = 0.5)) +
+          scale_x_continuous(name= expression(italic(p)),
+                             limits = c(-4, 0),
+                             breaks = seq(-4, 0, by = 0.5),
+                             labels = seq(-4, 0, by = 0.5)) +
           ylab(expression(italic(f)))+
           #scale_y_continuous(name = "Fitness",
           #limits = c(0, 0.6),
           #breaks = seq(0, 0.6, by = 0.1),
           #labels = seq(0, 0.6, by = 0.1)) +
           
-          theme(legend.key=element_blank(), legend.position = c(0.2,0.75)) +
+          theme(legend.key=element_blank(), legend.position = c(0.9,0.2)) +
           theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                 panel.background = element_blank(), axis.line = element_line(colour = "black")) +
           theme(axis.text.x = element_text(size = 10, color = "black"), 
@@ -242,7 +255,7 @@ plot_threshold = function(specific_PPV, output){
         
 }
 # Check the linear regression effect of different FPR
-plot_threshold("0.71", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS2B_Method_Different_references_PPV_0.71_threshold_dot.pdf")
+plot_threshold("0.7", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM3B_Method_Different_references_PPV_0.7_threshold_dot.pdf")
 
 
 

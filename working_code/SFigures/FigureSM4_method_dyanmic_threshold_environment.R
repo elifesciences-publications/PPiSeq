@@ -20,13 +20,13 @@ plot_threshold = function(specific_PPV, output){
         # Fit the data with bionomial 
         fitness_threshold = as.numeric(PPV_threshold_all[,3])
         Q_value_threshold = as.numeric(PPV_threshold_all[,2])
-        coef= lm(fitness_threshold~poly(Q_value_threshold,3, raw = TRUE))$coefficients
+        fitmodel = nls(fitness_threshold  ~ SSlogis( Q_value_threshold, Asym, xmid, scal))
+        coeff = coef(fitmodel)
         simulated_Q = unique(Q_value_threshold)
         simulated_fit = rep(0, length(simulated_Q))
         for(i in 1:length(simulated_Q)){
                 m = simulated_Q[i]
-                n = c(1, m, m^2, m^3)
-                simulated_fit[i] = sum(n * coef)
+                simulated_fit[i] = coeff[1]/(1+exp((coeff[2] - m)/coeff[3]))
         }
         
         simulated_data = cbind(rep("Dynamic_combination", length(simulated_Q)), rep("Simulation", length(simulated_Q)), simulated_Q, simulated_fit)
@@ -51,21 +51,21 @@ plot_threshold = function(specific_PPV, output){
                                    #values = apple_colors[c(8,7)], 
                                    #guide = guide_legend(override.aes = list(linetype = c(NA,1), shape = c(16, NA)))) +
                 #scale_x_continuous(name= expression(paste("Log10(", italic(q), "): ", "Q",sep = "")),
-                scale_x_continuous(name= expression(italic(q)),
-                                   limits = c(-1.4, 0),
-                                   breaks = seq(-1.4, 0, by = 0.2),
-                                   labels = seq(-1.4, 0, by = 0.2)) +
+                scale_x_continuous(name= expression(italic(p)),
+                                   limits = c(-4, 0),
+                                   breaks = seq(-4, 0, by = 0.5),
+                                   labels = seq(-4, 0, by = 0.5)) +
                 ylab(expression(italic(f))) +
                 
-                theme(legend.key=element_blank(), legend.position = c(0.2,0.7)) +
+                theme(legend.key=element_blank(), legend.position = c(0.9,0.2)) +
                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                       panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-                theme(axis.text.x = element_text(size = 10, color = "black"), 
+                theme(axis.text.x = element_text(size = 14, color = "black"), 
                       axis.title=element_text(size=14,face="bold"),
-                      axis.text.y.left = element_text(size = 10, color = "black")) + 
-                theme(text = element_text(size=10))
+                      axis.text.y.left = element_text(size = 14, color = "black")) + 
+                theme(text = element_text(size=14))
         
-        ggsave(output, width = 3, height =3, device = "pdf")
+        ggsave(output, width = 5, height =5, device = "pdf")
         
         
 }
@@ -75,38 +75,43 @@ for (i in 1:50){
         PPV_threshold_files[i] = paste("Fitness_Q_value_PPV_threshold", as.character(i), "data.csv", sep = "_")
 }
 
-setwd("/Volumes/zmliu_02/PPiseq/DMSO/reference_set/")
-plot_threshold("0.71", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS3_Method_threshold_do_each_environment/SD_threshold.pdf")
+setwd("/Volumes/zmliu_02/PPiseq_03/DMSO/reference_set/p_value/")
+plot_threshold("0.7", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM4_Method_threshold_do_each_environment/SD_threshold.pdf")
 
-#setwd("/Volumes/zmliu_02/PPiseq/DMSO_2/reference_set/")
-#plot_threshold("0.72", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS3_Method_threshold_do_each_environment/SD_2_threshold.pdf")
+setwd("/Volumes/zmliu_02/PPiseq_03/DMSO_2/reference_set/p_value/")
+plot_threshold("0.73", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM4_Method_threshold_do_each_environment/SD_2_threshold.pdf")
 
-setwd("/Volumes/zmliu_02/PPiseq/Forskolin/reference_set/one_binary/PPV_threshold/")
-plot_threshold("0.68", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS3_Method_threshold_do_each_environment/Forskolin_threshold.pdf")
+setwd("/Volumes/zmliu_02/PPiseq_03/DMSO_merge/reference_set/p_value/")
+plot_threshold("0.7", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM4_Method_threshold_do_each_environment/SD_merge_threshold.pdf")
 
-setwd("/Volumes/zmliu_02/PPiseq/FK506/reference_set/one_binary/PPV_threshold/")
-plot_threshold("0.7", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS3_Method_threshold_do_each_environment/FK506_threshold.pdf")
+setwd("/Volumes/zmliu_02/PPiseq_03/Forskolin/reference_set/p_value/")
+plot_threshold("0.64", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM4_Method_threshold_do_each_environment/Forskolin_threshold.pdf")
 
-#NaCl Bionomial
-#setwd("/Volumes/zmliu_02/PPiseq/NaCl_0.4M/reference_set/one_binary/PPV_threshold/")
-#plot_threshold("0.7", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS3_Method_threshold_do_each_environment/NaCl_threshold.pdf")
+setwd("/Volumes/zmliu_02/PPiseq_03/FK506/reference_set/p_value/")
+plot_threshold("0.72", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM4_Method_threshold_do_each_environment/FK506_threshold.pdf")
+
+setwd("/Volumes/zmliu_02/PPiseq_03/NaCl_0.4M/reference_set/p_value/")
+plot_threshold("0.73", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM4_Method_threshold_do_each_environment/NaCl_threshold.pdf")
 
 #Raffinose
-setwd("/Volumes/zmliu_02/PPiseq/Raffinose/reference_set/one_binary/PPV_threshold/")
-plot_threshold("0.44", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS3_Method_threshold_do_each_environment/Raffinose_threshold.pdf")
+setwd("/Volumes/zmliu_02/PPiseq_03/Raffinose/reference_set/p_value/")
+plot_threshold("0.48", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM4_Method_threshold_do_each_environment/Raffinose_threshold.pdf")
 
 ## HU
-setwd("/Volumes/zmliu_02/PPiseq/HU/reference_set/one_binary/PPV_threshold/")
-plot_threshold("0.7", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS3_Method_threshold_do_each_environment/HU_threshold.pdf")
+setwd("/Volumes/zmliu_02/PPiseq_03/HU/reference_set/p_value/")
+plot_threshold("0.74", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM4_Method_threshold_do_each_environment/HU_threshold.pdf")
 
 ## H2O2
-setwd("/Volumes/zmliu_02/PPiseq/H2O2/reference_set/one_binary/PPV_threshold/")
-plot_threshold("0.7", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS3_Method_threshold_do_each_environment/H2O2_threshold.pdf")
+setwd("/Volumes/zmliu_02/PPiseq_03/H2O2/reference_set/p_value/")
+plot_threshold("0.73", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM4_Method_threshold_do_each_environment/H2O2_threshold.pdf")
 
 ## Dox
-setwd("/Volumes/zmliu_02/PPiseq/Dox/reference_set/one_binary/PPV_threshold/")
-plot_threshold("0.74", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS3_Method_threshold_do_each_environment/Dox_threshold.pdf")
+setwd("/Volumes/zmliu_02/PPiseq_03/Dox/reference_set/p_value/")
+plot_threshold("0.77", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM4_Method_threshold_do_each_environment/Dox_threshold.pdf")
 
-## 16C Binomial
-#setwd("/Volumes/zmliu_02/PPiseq/16C/reference_set/one_binary/PPV_threshold/")
-#plot_threshold("0.41", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/FigureS3_Method_threshold_do_each_environment/16C_threshold.pdf")
+#16C 
+setwd("/Volumes/zmliu_02/PPiseq_03/16C/reference_set/p_value/")
+plot_threshold("0.41", "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/FigureSM4_Method_threshold_do_each_environment/16C_threshold.pdf")
+
+
+

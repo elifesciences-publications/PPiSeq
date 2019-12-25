@@ -390,16 +390,16 @@ library(ggplot2)
 #"HXT1" = "#7b3294", "HXT3" = "#c2a5cf", "HXT5" = "#d01c8b", "HXT7" = "#a6dba0", "Others" ="#008837"
 ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+ 
         geom_point(aes(col = label), size =3, alpha = 0.8)+
-        geom_errorbarh(aes(xmin = PPiseq_min, xmax = PPiseq_max), col = apple_colors[8], size = 0.2 )+
-        geom_errorbar(aes(ymin = Tecan_min, ymax = Tecan_max), col = apple_colors[8], size = 0.2)+
+        #geom_errorbarh(aes(xmin = PPiseq_min, xmax = PPiseq_max), col = apple_colors[8], size = 0.2 )+
+        #geom_errorbar(aes(ymin = Tecan_min, ymax = Tecan_max), col = apple_colors[8], size = 0.2)+
         geom_vline(xintercept = 0, col = apple_colors[11], linetype = 2,size = 0.2)+
         geom_hline(yintercept = 0, col = apple_colors[11], linetype = 2, size = 0.2)+
-        annotate("text", x = -0.3, y = 0.7, label = expression(paste("Spearman's ", italic(r), " = 0.61")),  
+        annotate("text", x = -0.3, y = 0.6, label = expression(paste("Spearman's ", italic(r), " = 0.61")),  
                  parse = TRUE, col = apple_colors[11]) +
         #scale_shape_manual(name = "", values = c(16, 15, 17)) +
         scale_color_manual(name = "", values = c("#1b9e77","#e7298a", "#d95f02", "#7570b3", "#1f78b4",  "#CECED2"))+
         scale_y_continuous(name = "Fitness change in Raffinose by OD595",
-                           limits=c(-0.5, 0.8),
+                           limits=c(-0.5, 0.7),
                            breaks=seq(-0.5,0.7, by =0.2),
                            labels = seq(-0.5,0.7, by= 0.2)) +
         scale_x_continuous(name = "Fitness change in Rraffinose by PPiSeq", 
