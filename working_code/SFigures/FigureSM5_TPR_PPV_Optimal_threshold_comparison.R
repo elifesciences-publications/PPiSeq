@@ -276,7 +276,7 @@ Create_matrix_plot_dynamic = function(Neg_number_PPI, Neg_ref_number, output_plo
                                    limits=c(0.05, 0.5),
                                    breaks = seq(0.05,0.5, by =0.05),
                                    labels = seq(0.05,0.5, by= 0.05))+
-                theme(legend.position =c(0.7, 0.25), legend.key=element_blank(), legend.text=element_text(size=14)) +
+                theme(legend.position =c(0.7, 0.75), legend.key=element_blank(), legend.text=element_text(size=14)) +
                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                       panel.background = element_blank(), axis.line = element_line(colour = "black")) +
                 theme(axis.text.x = element_blank(), axis.title.x= element_blank(),axis.line.x = element_blank(),
@@ -291,9 +291,9 @@ Create_matrix_plot_dynamic = function(Neg_number_PPI, Neg_ref_number, output_plo
                 scale_color_manual(name = "", breaks = c('Constant combination', "Dynamic combination"),
                                    values  = apple_colors[c(5,7)]) +theme(legend.key=element_blank()) +
                 scale_y_continuous(name = "Positive predictive value", 
-                                   limits=c(0.3, 0.8),
-                                   breaks = seq(0.3,0.8, by =0.1),
-                                   labels = seq(0.3,0.8, by= 0.1))+
+                                   limits=c(0.1, 0.5),
+                                   breaks = seq(0.1,0.5, by =0.1),
+                                   labels = seq(0.1,0.5, by= 0.1))+
                 theme(legend.position =c(0.7, 0.25), legend.key=element_blank(), legend.text=element_text(size=14))+
                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                       panel.background = element_blank(), axis.line = element_line(colour = "black")) +
@@ -349,7 +349,7 @@ output_plot = "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/SFigureS
 Create_matrix_plot_dynamic(Neg_number_PPI, Neg_ref_number, output_plot)
 
 ### NaCl
-setwd("/Volumes/zmliu_02/PPiseq_03/NaCl/reference_set/p_value/")
+setwd("/Volumes/zmliu_02/PPiseq_03/NaCl_0.4M/reference_set/p_value/")
 Neg_number_PPI = 6e4
 Neg_ref_number = 50
 output_plot = "~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/Method/SFigureSM5_TPR_PPV_Best_comparison/NaCl_merge_comparison.pdf"

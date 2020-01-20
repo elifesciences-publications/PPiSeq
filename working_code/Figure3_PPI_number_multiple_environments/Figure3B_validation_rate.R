@@ -46,21 +46,24 @@ d_5_5 = csvReader_T("Diploid_05_05_both_T14.csv")
 d_5_6 = csvReader_T("Diploid_05_06_both_T15.csv")
 d_5_7 = csvReader_T("Diploid_05_07_both_T2.csv")
 
+d_only_1 = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_PPI/SD_only/data/Combine_TECAN/Diploid_SD_only_1_T14.csv")
+d_only_2 = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_PPI/SD_only/data/Combine_TECAN/Diploid_SD_only_2_T7.csv")
+d_only_3 = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_PPI/SD_only/data/Combine_TECAN/Diploid_SD_only_3_T5_second.csv")
 all_Tecan = rbind(d_1_1, d_1_2, d_1_3, d_1_4, d_1_5, d_1_6, d_1_7,
                   d_2_1, d_2_2, d_2_3, d_2_4, d_2_5, d_2_6, d_2_7,
                   d_2_8, d_2_9, d_2_10, d_5_1, d_5_2, d_5_3, d_5_4, 
-                  d_5_5, d_5_6, d_5_7) # 695 all single PPIs
+                  d_5_5, d_5_6, d_5_7, d_only_1, d_only_2, d_only_3) # 785 all single PPIs
 
 reported_PPI = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Useful_datasets/multiple_validated_PPI.csv")
-all_Tecan_rep = match_both_direction(all_Tecan, reported_PPI[,1]) # 185
-all_Tecan_unrep = all_Tecan[which(!all_Tecan[,1] %in% all_Tecan_rep[,1]),] # 510
+all_Tecan_rep = match_both_direction(all_Tecan, reported_PPI[,1]) # 189
+all_Tecan_unrep = all_Tecan[which(!all_Tecan[,1] %in% all_Tecan_rep[,1]),] # 596
 #split validated PPIs into different groups
 #PPI_group = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Useful_datasets/PPI_environment_count_summary.csv")
 
 PPI_group = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv")
 PPI_group = PPI_group[which(PPI_group[,3] == "1"),] # 3921, 4704
-length(which(all_Tecan[,1] %in% PPI_group[,1])) # 398
-a = match_both_direction(all_Tecan, PPI_group[,1])# 412
+length(which(all_Tecan[,1] %in% PPI_group[,1])) # 488
+a = match_both_direction(all_Tecan, PPI_group[,1])# 502
 
 rep_PPI_matrix = matrix(0, 4,9)
 unrep_PPI_matrix = matrix(0, 4, 9)
@@ -116,9 +119,9 @@ merge_nonvalidate = rep_PPI_matrix[2, 2:ncol(rep_PPI_matrix)] + unrep_PPI_matrix
 merge_sum = merge_validate + merge_nonvalidate
 
 merge_ratio = merge_validate/merge_sum
-merge_validate #  9      22      27      20      42      53      53      80      42
-merge_sum      # 14      33      37      29      52      63      59      82      43
-counts_label = c("9/14", "22/33", "27/37", "20/29", "42/52", "53/63",
+merge_validate #  54      22      27      20      42      53      53      80      42
+merge_sum      # 104      33      37      29      52      63      59      82      43
+counts_label = c("54/104", "22/33", "27/37", "20/29", "42/52", "53/63",
                   "53/59", "80/82", "42/43")
 library(RColorBrewer)
 #col_chosen = brewer.pal(3,"Dark2")[1:2]
@@ -133,3 +136,7 @@ text(x= barCenter, y = as.numeric(merge_ratio)*100 + 2, labels = counts_label, c
 text(x = barCenter, y = -8, labels = as.character(1:9), xpd = TRUE)
 text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
 dev.off()
+
+
+
+

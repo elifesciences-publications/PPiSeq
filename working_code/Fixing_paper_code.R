@@ -169,3 +169,15 @@ PPI_count_filter = csvReader_T("Paper_data/Useful_datasets/PPI_environment_count
 count_freq = as.data.frame(table(PPI_count_filter[,2]))
 count_freq[1,] # 7724
 sum(as.numeric(count_freq[2:nrow(count_freq),2])) # 5257
+
+###(6) Check how many proteins the PPiSeq library contains
+PPiseq_all = csvReader_T("~/Dropbox/PPiseq_02/Paper_data/Useful_datasets/All_PPI_environments_normalized_fit_SD_merge.csv")
+PPiseq_HO = PPiseq_all[grep("HO", PPiseq_all[,1]),] # 6140
+PPiseq_pos = PPiseq_all[grep("pos", PPiseq_all[,1]),] 
+PPiseq_neg = PPiseq_all[grep("neg", PPiseq_all[,1]),] 
+PPiseq_PRS = PPiseq_all[grep("Pos", PPiseq_all[,1]),] 
+PPiseq_RRS = PPiseq_all[grep("Neg", PPiseq_all[,1]),] 
+PPiseq_control = rbind(PPiseq_HO, PPiseq_pos, PPiseq_neg, PPiseq_PRS, PPiseq_RRS) 
+PPiseq_PPI = PPiseq_all[which(!PPiseq_all[,1] %in% PPiseq_control[,1]),] # 1660648
+PPiseq_protein = split_string_vector(PPiseq_PPI[,1])
+PPiseq_protein = unique(c(PPiseq_protein[,1], PPiseq_protein[,2])) # 2259

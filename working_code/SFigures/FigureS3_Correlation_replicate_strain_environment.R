@@ -356,7 +356,7 @@ ggplot() +
                      limits=c(0, 0.8),
                      breaks=seq(0, 0.8, by =0.1),
                      labels = seq(0, 0.8, by= 0.1))+
-  theme(legend.position =c(0.9,0.2), legend.key=element_blank(), 
+  theme(legend.position =c(0.95,0.25), legend.key=element_blank(), 
         legend.text=element_text(size=5),legend.title=element_text(size=6),
         legend.key.size = unit(0.3, "cm")) +
   labs(fill = expression('Log'[10]* '(count)'))+

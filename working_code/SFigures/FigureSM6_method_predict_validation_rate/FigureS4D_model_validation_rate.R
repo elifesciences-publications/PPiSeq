@@ -107,9 +107,9 @@ split_data_generation = function(training, environment_loc, bins, all_Tecan){
       fit_bin = c(bins[i-1], bins[i])
     }
     training_fitness = as.numeric(training[,environment_loc])
-    index_chosen = which(training_fitness >= fit_bin[1] & training_fitness <= fit_bin[2])
+    index_chosen = which(training_fitness > fit_bin[1] & training_fitness <= fit_bin[2])
     PPI_chosen = training[index_chosen, 1]
-    PPI_count[i] = length(which(training_fitness >= fit_bin[1] & training_fitness <= fit_bin[2]))
+    PPI_count[i] = length(which(training_fitness > fit_bin[1] & training_fitness <= fit_bin[2]))
     env_count[i] = mean(as.numeric(training[index_chosen, 2]))
     Tecan_select = match_both_direction(all_Tecan, PPI_chosen)
     if (length(Tecan_select) > 11){

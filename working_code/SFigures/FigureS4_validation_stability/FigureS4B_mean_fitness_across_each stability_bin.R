@@ -35,6 +35,7 @@ for(i in 1:length(mean_fitness_pos)){
 min(mean_fitness_pos) # 0.1121392
 fitness_count = data.frame(mean_fitness_pos, count_summary[,2])
 colnames(fitness_count) = c("Mean_fitness", "Env_count")
+library(ggplot2)
 ggplot() +
         
         geom_boxplot(aes(x = Env_count, y = Mean_fitness), fitness_count, outlier.shape=NA) +
@@ -49,6 +50,7 @@ ggplot() +
 #theme(plot.margin = unit(c(1,1,2,1), "cm"))
 ggsave("Working_figure/Sfigures/paper/FigureS4_validation_each_stability_bin/FigureS4A_Mean_fitness_PPI_each_stability_bin.pdf", width=5, height =5)
 
+##### Separate reported and unreported PPIs
 ################# Figure S4B can be directly Figure 3B
 ### Make barplot to show the percentage
 ### put the reported and unreported on to the same figure
@@ -65,10 +67,10 @@ ratio_all = as.numeric(c(ratio_rep[1], ratio_unrep[1], ratio_rep[2], ratio_unrep
 
 
 rep_PPI_matrix[1,] #   0       0       5       7      14      15      23      43      16
-rep_PPI_matrix[3,] #   1       1       6       9      19      18      27      44      16
-unrep_PPI_matrix[1,]# 9      22      22      13      28      38      30      37      26
-unrep_PPI_matrix[3,]#13      32      31      20      33      45      32      38      27
-counts_label = c("0/1", "9/13", "0/1", "22/32", "5/6", "22/31",
+rep_PPI_matrix[3,] #   5       1       6       9      19      18      27      44      16
+unrep_PPI_matrix[1,]# 54      22      22      13      28      38      30      37      26
+unrep_PPI_matrix[3,]#99      32      31      20      33      45      32      38      27
+counts_label = c("0/5", "54/99", "0/1", "22/32", "5/6", "22/31",
                  "7/9", "13/20", "14/19", "28/33", "15/18", "38/45",
                  "23/27", "30/32", "43/44", "37/38", "16/16", "26/27")
 library(RColorBrewer)
@@ -90,6 +92,3 @@ for(i in 1:9){
 text(x = env_num_loc, y = -8, labels = as.character(1:9), xpd = TRUE)
 text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
 dev.off()
-
-
-#### Figure S4C False negative rate in different environmentsxs
