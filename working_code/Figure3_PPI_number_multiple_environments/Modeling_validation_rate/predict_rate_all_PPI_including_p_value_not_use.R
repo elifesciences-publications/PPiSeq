@@ -53,10 +53,13 @@ d_5_5 = csvReader_T("Diploid_05_05_both_T14.csv")
 d_5_6 = csvReader_T("Diploid_05_06_both_T15.csv")
 d_5_7 = csvReader_T("Diploid_05_07_both_T2.csv")
 
+d_only_1 = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_PPI/SD_only/data/Combine_TECAN/Diploid_SD_only_1_T14.csv")
+d_only_2 = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_PPI/SD_only/data/Combine_TECAN/Diploid_SD_only_2_T7.csv")
+d_only_3 = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_PPI/SD_only/data/Combine_TECAN/Diploid_SD_only_3_T5_second.csv")
 all_Tecan = rbind(d_1_1, d_1_2, d_1_3, d_1_4, d_1_5, d_1_6, d_1_7,
                   d_2_1, d_2_2, d_2_3, d_2_4, d_2_5, d_2_6, d_2_7,
                   d_2_8, d_2_9, d_2_10, d_5_1, d_5_2, d_5_3, d_5_4, 
-                  d_5_5, d_5_6, d_5_7) # 695
+                  d_5_5, d_5_6, d_5_7, d_only_1, d_only_2, d_only_3) # 785 all single PPIs
 csvWriter(all_Tecan, "Tecan_DMSO_positive_combine.csv")
 
 
@@ -65,9 +68,22 @@ all_Tecan = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_P
 vScore = csvReader_T("~/Dropbox/PPiseq_02/Paper_data/Useful_datasets/Variation_score_PPI_environment_neg_zero_SD_merge_filter.csv")
 count_summary = csvReader_T("~/Dropbox/PPiseq_02/Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv")
 SD_select = count_summary[which(count_summary[,3] == "1"),]
-vScore_select = vScore[which(vScore[,1] %in% SD_select[,1]),]
-vScore_select_Tecan = match_both_direction(vScore_select, all_Tecan[,1]) # 412 
-#vScore_select_fitness = as.numeric(vScore_select_Tecan[,4]) # 4: DMSO column
+SD_merge = csvReader_T("~/Dropbox/PPiseq_02/Paper_data/PPI_mean_fitness_calling_files/SD_merge_mean_fitness_positive.csv")
+
+vScore_select = vScore[which(vScore[,1] %in% SD_select[,1]),] # Find environments number
+vScore_select_Tecan = match_both_direction(vScore_select, all_Tecan[,1]) # 502 ## Find validation result
+p_value_select = SD_merge[match(vScore_select_Tecan[,1], SD_merge[,1]), 6] # Find p-value for validated PPIs
+Tecan_q = as.numeric(all_Tecan[match(vScore_select_Tecan[,1], all_Tecan[,1]), 11])
+min(as.numeric(p_value_select)) # 6.756128e-13
+max(as.numeric(p_value_select)) # 0.09669563
+### Normalize p-value so that they are in the range of 0-1
+p_value_log = -log10(as.numeric(p_value_select))
+p_value_norm = p_value_log/(max(p_value_log) - min(p_value_log)) ## divided by the range 
+hist(p_value_norm)
+## Create a training data
+training = cbind(vScore_select_Tecan[,1],as.numeric(vScore_select_Tecan[,2]), as.numeric(vScore_select_Tecan[,4]),
+                 p_value_norm, Tecan_q)
+colnames(training) = c("PPI", "Env_number", "Fitness", "p-value", "Tecan_q")
 fitness_bins = c(0.25, seq(0.26, 0.39, by = 0.01), seq(0.42, 0.66, by = 0.04), c(0.8, 1.0))
 
 ### Here I do not need to split the data in to training and test data.
@@ -78,11 +94,13 @@ fitness_bins = c(0.25, seq(0.26, 0.39, by = 0.01), seq(0.42, 0.66, by = 0.04), c
 ### In the end, predict all the PPIs in each environment
 
 ## generate test data 1 by splitting data according to their stability
-SD_fit_count = data.frame(as.numeric(vScore[,4]), as.numeric(vScore[,2]))
-stability_mean = rep(0, 9)
+
+stability_mean_fit = rep(0, 9)
+stability_p = rep(0, 9)
 for(i in 1:9){
-  index = which(as.numeric(SD_fit_count[,2]) == i)
-  stability_mean[i] = mean(SD_fit_count[index,1])
+  index = which(as.numeric(training[,2]) == i)
+  stability_mean_fit[i] = mean(as.numeric(training[index,3]))
+  stability_p[i] = mean(as.numeric(training[index,4]))
 }
 count_normal = 1:9/9
 # Calculate validation rate
@@ -92,13 +110,15 @@ merge_validate = rep_PPI_matrix[1, 2:ncol(rep_PPI_matrix)] + unrep_PPI_matrix[1,
 merge_nonvalidate = rep_PPI_matrix[2, 2:ncol(rep_PPI_matrix)] + unrep_PPI_matrix[2, 2:ncol(rep_PPI_matrix)]
 merge_sum = merge_validate + merge_nonvalidate
 merge_ratio = as.numeric(merge_validate/merge_sum)
-external_test = data.frame(val_rate = merge_ratio, bins = stability_mean, env_count_normal= count_normal)
+external_test = data.frame(val_rate = merge_ratio, bins = stability_mean_fit, env_count_normal= count_normal,
+                           pvalue = stability_p)
 
-#### Function to prepare the training data
-split_data_generation = function(training, environment_loc, bins, all_Tecan){
+#### Function to calculate the validation rate for each fitness bins
+split_data_generation = function(training, bins){
   val_rate = rep(0, length(bins))
   env_count = rep(0, length(bins))
-  PPI_count = rep(0, length(bins))
+  pvalue = rep(0, length(bins))
+  fit = rep(0, length(bins))
   for(i in 1:length(bins)){
     if(i == 1){
       fit_bin = c(0, bins[i])
@@ -106,18 +126,15 @@ split_data_generation = function(training, environment_loc, bins, all_Tecan){
     else{
       fit_bin = c(bins[i-1], bins[i])
     }
-    training_fitness = as.numeric(training[,environment_loc])
+    training_fitness = as.numeric(training[,3])
     index_chosen = which(training_fitness > fit_bin[1] & training_fitness <= fit_bin[2])
-    PPI_chosen = training[index_chosen, 1]
-    PPI_count[i] = length(which(training_fitness > fit_bin[1] & training_fitness <= fit_bin[2]))
-    env_count[i] = mean(as.numeric(training[index_chosen, 2]))
-    Tecan_select = match_both_direction(all_Tecan, PPI_chosen)
-    if (length(Tecan_select) > 11){
-      validate_PPI_count = length(which(as.numeric(Tecan_select[,11]) <= 0.05))
-      val_rate[i] = validate_PPI_count/nrow(Tecan_select)
-    }else if(length(Tecan_select) == 11){
-      validate_PPI_count = as.numeric(Tecan_select[11]) <= 0.05
-      val_rate[i] = validate_PPI_count/1
+    pvalue[i] = mean(as.numeric(training[index_chosen,4])) ## calculate the mean p-value within each bin
+    fit[i] = mean(as.numeric(training[index_chosen,3])) ## take the center value of each bin as the averaged fitness
+    env_count[i] = mean(as.numeric(training[index_chosen, 2])) ## take the averaged environment counts
+    Tecan_select = training[index_chosen,5]
+    if (length(Tecan_select) >= 1){
+      validate_PPI_count = length(which(as.numeric(Tecan_select) <= 0.05))
+      val_rate[i] = validate_PPI_count/length(Tecan_select)
     }else{
       val_rate[i] = NA
     }
@@ -125,21 +142,22 @@ split_data_generation = function(training, environment_loc, bins, all_Tecan){
   }
   env_count = as.numeric(env_count)
   env_count_normal = env_count/9
-  var_matrix = na.omit(data.frame(val_rate, bins, env_count_normal))
+  var_matrix = na.omit(data.frame(val_rate = val_rate, bins = fit, 
+                                  env_count_normal = env_count_normal,
+                                  pvalue = pvalue))
   return(var_matrix)
 }
-training_data = split_data_generation(vScore_select_Tecan, 4, fitness_bins, all_Tecan)
-fitmodel = lm(val_rate ~ bins + env_count_normal, training_data)
+training_data = split_data_generation(training, fitness_bins)
+
+fitmodel = lm(val_rate ~ bins + env_count_normal + pvalue, training_data)
 coeffs = coef(fitmodel)
-#(Intercept)             bins env_count_normal 
-#0.56568422      -0.09742696       0.49596063 
-#predict(fitmodel, data.frame(bins = c(0.2, 0.4), env_count_normal = c(1/9, 5/9)))
-#coeffs[1] + coeffs[2]*0.2 + coeffs[3]* 1/9
+#(Intercept)             bins env_count_normal           pvalue 
+#0.5871706        0.1738082        0.3464422       -0.1486680 
 predict_external_test = predict(fitmodel, external_test, type = "response")
 
 cor(external_test$val_rate, predict_external_test, method = "spearman") # 0.9833333
 
-pdf("~/Desktop/Predicting_validation_rate.pdf", width =5, height =5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure3_accessory_PPIs/validation_rate_modeling/Predicting_validation_rate_including_pvalue.pdf", width =5, height =5)
 plot(external_test$val_rate, predict_external_test, pch = 16, col = "blue",
      type = "p", xlim = c(0.5, 1), ylim = c(0.5,1), xlab = "Observed validation rate",
      ylab = "Predicted validation rate")
@@ -147,6 +165,8 @@ plot(external_test$val_rate, predict_external_test, pch = 16, col = "blue",
 lines(seq(0.5, 1, by = 0.1), seq(0.5, 1, by = 0.1), col = "black")
 text(0.6, 0.95, labels = expression(paste("Spearman's ", italic(r), " = 0.98")))
 dev.off()
+
+### Including the p-value make the prediction worse. Therefore give up this method.
 
 ############################################################################
 ## Use this model to predict the validation rate for each PPI in each environment

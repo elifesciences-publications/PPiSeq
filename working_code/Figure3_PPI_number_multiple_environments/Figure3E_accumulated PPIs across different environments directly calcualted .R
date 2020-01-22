@@ -19,7 +19,7 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 setwd("~/Dropbox/PPiSeq_02/")
 count_summary = csvReader_T("Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv") # 12981
 ### Followsing this order DMSO, H2O2, HU, Dox, Forskolin, Raffinose, NaCl, 16C, FK506
-vali_rate = c(0, 9/14, 22/33, 27/37, 20/29, 42/52, 53/63, 53/59, 80/82, 42/43)
+vali_rate = c(0, 54/104, 22/33, 27/37, 20/29, 42/52, 53/63, 53/59, 80/82, 42/43)
 vali_rate_matrix = cbind(as.character(0:9), vali_rate)
 row_num = c(factorial(9), factorial(8), factorial(7), factorial(6), factorial(5), factorial(4), factorial(3), factorial(2),factorial(1))
 
