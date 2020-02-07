@@ -709,7 +709,7 @@ columnv = rep(GO_BP, 59)
 GO_GO_name_order = paste(rowv, columnv, sep= "_")
 
 #### extract density from each random network and put them as a column into a matrix
-all_count= as.matrix(read.table("Working_data_2/PPI_pair_GO/BP_primary/Network_all_count_PPI_BP_new.txt",sep = "\t", header = T))
+all_count= as.matrix(read.table("Working_data_2/PPI_pair_GO/Network_all_count_PPI_BP_new.txt",sep = "\t", header = T))
 all_count_name = paste(all_count[,1], all_count[,2], sep = "_")
 all_count_name = gsub("-", " ", all_count_name)
 all_count_name = gsub(",", " ", all_count_name)

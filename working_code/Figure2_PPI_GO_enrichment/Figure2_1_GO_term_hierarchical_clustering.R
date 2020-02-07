@@ -144,11 +144,11 @@ ggplot() +
               legend.position = "bottom",
               plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"))
 
-ggsave("Working_figure/Figure2_PPI_enrichment_GO/Dendrogram_BP_GO_pair_cluster_truncated.pdf", width = 4, height =12)
+ggsave("Working_figure/Figure2_PPI_enrichment_GO/Dendrogram_BP_GO_pair_cluster_primary.pdf", width = 4, height =12)
 
 label_GO = label(dendr)
 GO_order = label_GO[order(label_GO$x),]
-csvWriter(GO_order$label, "Working_data_2/PPI_pair_GO/environment/GO_BP_order_truncated.txt")
+csvWriter(GO_order$label, "Working_data_2/PPI_pair_GO/environment/GO_BP_order_primary.txt")
 
 
 #### Biological process (Chosen)

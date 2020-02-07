@@ -20,7 +20,7 @@ apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964
 #### Take the mean CV for each GO term across all GO terms
 setwd("~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/environment/")
 CC_variation = csvReader_T("Variation_CC_all_environments.csv")
-BP_variation = csvReader_T("Variation_BP_all_environments.csv")
+BP_variation = csvReader_T("Variation_BP_all_environments_chosen.csv")
 GO_BP_order = as.matrix(read.table("~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/environment/GO_BP_order_chosen.txt",
                                    header = T, sep = "\t")) 
 GO_CC_order = as.matrix(read.table("~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/environment/GO_CC_order.txt",
@@ -55,7 +55,7 @@ matrix_BP_order = csvReader_T("Variation_single_BP_order_color.csv")
 ## CC the same color  
 # BP: 1:others, 2: Transcription, 3: RNA: processing, 4:Translation, 5: Ribosome regulation 
 col_chosen = c(apple_colors[1], "#f03b20", "#fd8d3c", "#810f7c", "#8856a7")
-pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/Figure2C_CC_dynamics_ordered.pdf", width= 3, height=1.8)
+pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/Figure2C_CC_dynamics_ordered.pdf", width= 3, height=1.8)
 par(mar = c(1,2,0.5,0.5))
 
 barCenter = barplot(as.numeric(matrix_CC_order[,3]), horiz=F, beside=F, ylim=c(0,1.5), 
@@ -67,7 +67,7 @@ text(x= barCenter, y = -0.08, labels = matrix_CC_order[,2], cex = 0.5, xpd = TRU
        #border = FALSE, xpd = TRUE, cex = 0.6)
 dev.off()
 
-pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/Figure2D_BP_dynamics_ordered.pdf", width= 4.8, height=1.8)
+pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/Figure2D_BP_dynamics_ordered.pdf", width= 4.8, height=1.8)
 par(mar = c(1,2,0.5,0))
 
 barCenter = barplot(as.numeric(matrix_BP_order[,3]), horiz=F, beside=F, ylim=c(0,3), 
@@ -86,7 +86,7 @@ dev.off()
 
 
 ### Split the data into two parts
-pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/Figure2D_BP_dynamics_ordered_1.pdf", width= 4.5, height=2)
+pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/Figure2D_BP_dynamics_ordered_1.pdf", width= 4.5, height=2)
 par(mar = c(1,2,0.5,0.5))
 
 barCenter = barplot(as.numeric(matrix_BP_order[1:30,3]), horiz=F, beside=F, ylim=c(0,3), 
@@ -100,7 +100,7 @@ legend(25,3.0, legend= c("Transcription", "Ribosome regulation", "RNA processing
 #text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
 dev.off()
 
-pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/Figure2D_BP_dynamics_ordered_2.pdf", width= 3, height=2)
+pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/Figure2D_BP_dynamics_ordered_2.pdf", width= 3, height=2)
 par(mar = c(1,2,0.5,0.5))
 
 barCenter = barplot(as.numeric(matrix_BP_order[31:59,3]), horiz=F, beside=F, ylim=c(0,3), 

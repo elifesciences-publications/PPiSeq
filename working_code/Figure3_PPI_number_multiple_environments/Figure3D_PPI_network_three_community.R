@@ -21,30 +21,45 @@ setwd("~/Dropbox/PPiSeq_02/Working_data_2/PPI_network/")
 #fastgreedy = csvReader_T("community_fast_greedy.csv")
 #walktrap = csvReader_T("community_walktrap.csv")
 infomap = csvReader_T("community_infomap.csv")
-fastgreedy = infomap
-fastgreedy_stable = fastgreedy[which(as.numeric(fastgreedy[,2]) == 1),]
-fastgreedy_median = fastgreedy[which(as.numeric(fastgreedy[,2]) == 3),]
-fastgreedy_unstable = fastgreedy[which(as.numeric(fastgreedy[,2]) == 2),]
-fastgreedy_label = rbind(fastgreedy_stable, fastgreedy_median, fastgreedy_unstable) # 948
-fastgreedy_others = fastgreedy[which(!fastgreedy[,1] %in% fastgreedy_label[,1]),] # 1134
 
-fastgreedy_stable[,2] = "Core"
-fastgreedy_median[,2] = "Median"
-fastgreedy_unstable[,2] = "Accessory"
-community_three = rbind(fastgreedy_stable, fastgreedy_median, fastgreedy_unstable)
+infomap_stable = infomap[which(as.numeric(infomap[,2]) == 1),]
+infomap_median = infomap[which(as.numeric(infomap[,2]) == 3),]
+infomap_unstable = infomap[which(as.numeric(infomap[,2]) == 2),]
+infomap_label = rbind(infomap_stable, infomap_median, infomap_unstable) # 948
+infomap_others = infomap[which(!infomap[,1] %in% infomap_label[,1]),] # 1134
+
+## Calculate the mean stability score for each community
+mean_stable = mean(as.numeric(infomap_stable[,3])) # 2.559515
+mean_median = mean(as.numeric(infomap_median[,3])) # 1.904971
+mean_unstable = mean(as.numeric(infomap_unstable[,3])) # 0.9238445
+
+infomap_stable[,2] = "Core"
+infomap_median[,2] = "Accessory (intermediate stability)"
+infomap_unstable[,2] = "Accessory (low stability)"
+community_three = rbind(infomap_stable, infomap_median, infomap_unstable)
+colnames(community_three) = c("Protein", "Community", "vScore", "Degree")
 csvWriter(community_three, 'Community_label_three.csv')
 
 community_label = dataFrameReader_T("Community_label_three.csv")
-community_label$degree = log10(community_label$degree)
+community_label$Degree = log10(community_label$Degree)
+
+community_label$Community<- factor(community_label$Community, 
+                                   levels = c("Core", "Accessory (intermediate stability)",
+                                              "Accessory (low stability)"))
 
 library(ggplot2)
-ggplot(community_label, aes(x = vScore, y = degree, fill = community, color = community))+
+col_chosen = c("red", "purple", "blue")
+ggplot(community_label, aes(x = vScore, y = Degree, fill = Community, color = Community))+
         geom_point(pch = 16, alpha = 0.5) +
-        scale_color_manual(values = c(apple_colors[c(5,7,3)], apple_colors[9])) +
-        scale_fill_manual(values = c(apple_colors[c(5,7,3)], apple_colors[9])) +
+        geom_vline(xintercept = mean_stable, col = "red", linetype = "dashed") +
+        geom_vline(xintercept = mean_median, col = "purple", linetype = "dashed") +
+        geom_vline(xintercept = mean_unstable, col = "blue", linetype = "dashed") +
+        scale_color_manual(values = c(col_chosen)) +
+        scale_fill_manual(values = c(col_chosen)) +
         xlab("Stability score") +
         ylab(expression('Log'[10]* '(Degree)')) +
         theme(legend.key=element_blank()) +
+        #guides(fill=guide_legend(nrow=1,byrow=TRUE))+
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
@@ -52,4 +67,4 @@ ggplot(community_label, aes(x = vScore, y = degree, fill = community, color = co
               axis.title.y=element_text(size=10)) + 
         theme(text = element_text(size=10))
 
-ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure3_accessory_PPIs/accessory_PPI/Three_communities.pdf", width =4, height =3)
+ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure3_accessory_PPIs/Figure3E_three_communities.pdf", width =6, height =3)

@@ -70,8 +70,8 @@ col_chosen = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fd
 library(ggplot2)
 ggplot(stability_bin_degree, aes(x = degree, fill = label, col = label))+
         geom_density(alpha = 0.05)+
-        scale_color_manual(name = "PPI positive environment number", values = col_chosen)+
-        scale_fill_manual(name = "PPI positive environment number", values = col_chosen)+
+        scale_color_manual(name = "Number of positive environments", values = col_chosen)+
+        scale_fill_manual(name = "Number of positive environments", values = col_chosen)+
         scale_x_continuous(name = "Degree", 
                            limits=c(0, 120),
                            breaks = seq(0,120, by =20),
@@ -88,7 +88,9 @@ ggplot(stability_bin_degree, aes(x = degree, fill = label, col = label))+
               axis.title.y=element_text(size=10)) + 
         theme(text = element_text(size=10))
 
-ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/degree_environment_bin.pdf", width =4, height =4)
+#ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/degree_environment_bin.pdf", width =4, height =4)
+
+ggsave("Working_figure/SFigures/paper/FigureS5_neighbor_stability/Degree_environment_bin.pdf", width =4, height =4)
 
 
 

@@ -239,7 +239,7 @@ ggplot() +
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
         theme(axis.text.x = element_blank(), plot.margin = unit(c(1.5,0.2,0.2,2.2), "cm"),
               axis.text.y.right = element_text(size = 8, color = "black"), axis.title = element_blank())
-ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_CC_PPI_network_variation.pdf", width = 8, height =4.5)
+ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/heatmap_density_CC_PPI_network_variation.pdf", width = 8, height =4.5)
 
 # Only plot the heatmap so that I can cut diagonally
 ggplot() + 
@@ -255,7 +255,7 @@ ggplot() +
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
         theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
               axis.text.y.left = element_blank(), axis.title = element_blank())
-ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_CC_PPI_network_variation_no_lable.pdf", 
+ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/heatmap_density_CC_PPI_network_variation_no_lable.pdf", 
        width = 4, height = 4)
 
 # Biological process
@@ -299,7 +299,7 @@ GO_order = read.table("~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/environmen
 
 dataf = data.frame(rowv,columnv,
                    Network_density = as.numeric(network_density_vector))
-csvWriter(dataf, "Variation_BP_all_environments.csv")
+csvWriter(dataf, "Variation_BP_all_environments_chosen.csv")
 library(ggplot2)
 ggplot() + 
         geom_point(aes(x = rowv, y = columnv, size =Network_density, color = Network_density), dataf)  + 
@@ -317,7 +317,7 @@ ggplot() +
               panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
         theme(axis.text.x = element_blank(), plot.margin = unit(c(1.5,0.2,0.2,2.2), "cm"),
               axis.text.y.left = element_text(size = 8, color = "black"), axis.title = element_blank())
-ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_BP_PPI_network_variation.pdf", width = 12, height =7.5)
+ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/heatmap_density_BP_PPI_network_variation.pdf", width = 12, height =7.5)
 
 ## No label so that I can cut the figure
 ggplot() + 
@@ -335,7 +335,47 @@ ggplot() +
         theme(axis.text.x = element_blank(), plot.margin = unit(c(0.2,0.2,0.2,0.2), "cm"),
               axis.text.y.left = element_blank(), axis.title = element_blank())
 #ggsave("~/Desktop/heatmap_density_CC_PPI_network.pdf", width = 6, height = 5)
-ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/heatmap_density_BP_PPI_network_variation_no_label.pdf", 
+ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/heatmap_density_BP_PPI_network_variation_no_label.pdf", 
        width = 7.5, height = 7.5)
 
+
+##### Get the heatmap of variation for all biological processes
+
+colnames(BP_list_CV) = gsub("\\.", " ", colnames(BP_list_CV))
+
+network_density = BP_list_CV
+network_density_vector = as.vector(network_density) # by column
+GO_BP = colnames(network_density)
+rowv = rep(GO_BP, each = 99)
+columnv = rep(GO_BP, 99)
+GO_GO_name_order = paste(rowv, columnv, sep= "_")
+
+max(as.numeric(network_density_vector), na.rm = T) # 3
+min(as.numeric(network_density_vector), na.rm = T) # 0
+
+GO_order = read.table("~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/environment/GO_BP_order_primary.txt",
+                      header = T, sep = "\t")
+
+dataf = data.frame(rowv,columnv,
+                   CV = as.numeric(network_density_vector))
+csvWriter(dataf, "Variation_BP_all_environments_all.csv")
+library(ggplot2)
+ggplot() + 
+  geom_point(aes(x = rowv, y = columnv, size =CV, color = CV), dataf)  + 
+  scale_color_gradient(low = apple_colors[10], high = apple_colors[5], 
+                       breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3))+  
+  scale_size(range = c(0,3), breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3)) +
+  guides(color = guide_legend(), size = guide_legend())+
+  scale_x_discrete(limits = rev(GO_order$x)) + 
+  scale_y_discrete(limits = rev(GO_order$x)) +## color of the corresponding aes
+  theme(legend.justification = "left",
+        legend.position= "right", legend.box = 'vertical',legend.box.just = "left",
+        legend.key = element_blank(),
+        legend.text = element_text(size = 9, color = apple_colors[11])) +
+  theme(panel.background = element_blank(), axis.ticks=element_blank(),
+        panel.border = element_rect(colour = apple_colors[10], fill = NA, size = 1))+
+  theme(axis.text.x = element_blank(), plot.margin = unit(c(1.5,0.2,0.2,2.2), "cm"),
+        axis.text.y.left = element_text(size = 8, color = "black"), axis.title = element_blank())
+ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/heatmap_density_BP_PPI_network_variation_all.pdf", 
+       width = 16, height =12)
 
