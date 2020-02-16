@@ -290,7 +290,7 @@ pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/Changi
 par(mar = c(2,2,0.5,0.5))
 
 barCenter = barplot(as.numeric(matrix_CC[,3]), horiz=T, beside=F, 
-                    xlab="Median dynamic PPI ratio",axisnames=F, border=NA, cex.lab = 0.5,
+                    xlab="Mean dynamic PPI ratio",axisnames=F, border=NA, cex.lab = 0.5,
                     col = apple_colors[5], cex.axis = 0.5, ylab = "Cellular compartment")
 #text(x= barCenter, y = as.numeric(merge_ratio)*100, labels = counts_label, cex=0.8, xpd = TRUE)
 text(y= barCenter, x = -0.01, labels = matrix_CC[,2], cex = 0.5, xpd = TRUE)
@@ -303,7 +303,7 @@ pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/Changi
 par(mar = c(3,2,0.5,0))
 
 barCenter = barplot(as.numeric(matrix_BP[,3]), horiz=F, beside=F,
-                    ylab="Coefficient variration",axisnames=F, border=NA, cex.lab = 0.5,
+                    ylab="Mean dynamic PPI ratio",axisnames=F, border=NA, cex.lab = 0.5,
                     col = apple_colors[5], cex.axis = 0.5)
 #text(x= barCenter, y = as.numeric(merge_ratio)*100, labels = counts_label, cex=0.8, xpd = TRUE)
 text(x= barCenter, y = -0.1, labels = matrix_BP[,2], srt = 60, cex = 0.4, xpd = TRUE)

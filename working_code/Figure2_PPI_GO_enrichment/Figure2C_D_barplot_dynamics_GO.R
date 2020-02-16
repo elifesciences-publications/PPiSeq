@@ -42,41 +42,44 @@ matrix_CC = cbind(GO_CC_matrix, CC_CV)
 matrix_BP = cbind(GO_BP_matrix, BP_CV)
 colnames(matrix_CC) = c("CC","index","CV")
 colnames(matrix_BP) = c("BP","index","CV")
-matrix_CC_order = matrix_CC[order(as.numeric(matrix_CC[,3]), decreasing = T),]
-matrix_BP_order = matrix_BP[order(as.numeric(matrix_BP[,3]), decreasing = T),]
-csvWriter(matrix_CC_order, "Variation_single_CC_order.csv")
-csvWriter(matrix_BP_order, "Variation_single_BP_order.csv")
+#matrix_CC_order = matrix_CC[order(as.numeric(matrix_CC[,3]), decreasing = T),]
+#matrix_BP_order = matrix_BP[order(as.numeric(matrix_BP[,3]), decreasing = T),]
+#csvWriter(matrix_CC_order, "Variation_single_CC_order.csv")
+#csvWriter(matrix_BP_order, "Variation_single_BP_order.csv")
+csvWriter(matrix_CC, "Variation_single_CC_primary.csv")
+csvWriter(matrix_BP, "Variation_single_BP_primary.csv")
 
 
 ### plot the dynamics orderly
 setwd("~/Dropbox/PPiseq_02/Working_data_2/PPI_pair_GO/environment/")
-matrix_CC_order = csvReader_T("Variation_single_CC_order_color.csv")
-matrix_BP_order = csvReader_T("Variation_single_BP_order_color.csv")
+matrix_CC_order = csvReader_T("Variation_single_CC_primary.csv")
+matrix_BP_order = csvReader_T("Variation_single_BP_primary.csv")
 ## CC the same color  
 # BP: 1:others, 2: Transcription, 3: RNA: processing, 4:Translation, 5: Ribosome regulation 
 col_chosen = c(apple_colors[1], "#f03b20", "#fd8d3c", "#810f7c", "#8856a7")
-pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/Figure2C_CC_dynamics_ordered.pdf", width= 3, height=1.8)
-par(mar = c(1,2,0.5,0.5))
+pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/Figure2C_CC_dynamics_primary.pdf", width= 2, height= 4.5)
+par(mar = c(2,2,0.5,0.5))
 
-barCenter = barplot(as.numeric(matrix_CC_order[,3]), horiz=F, beside=F, ylim=c(0,1.5), 
-                    ylab="Coefficient variration",axisnames=F, border=NA, cex.lab = 0.5,
-                    col = apple_colors[1], cex.axis = 0.5, xlab = "Cellular compartment")
+barCenter = barplot(as.numeric(matrix_CC[,3]), horiz=T, beside=F, 
+                    xlab="Mean CV",axisnames=F, border=NA, cex.lab = 0.5,
+                    col = apple_colors[5], cex.axis = 0.5, ylab = "Cellular compartment")
 #text(x= barCenter, y = as.numeric(merge_ratio)*100, labels = counts_label, cex=0.8, xpd = TRUE)
-text(x= barCenter, y = -0.08, labels = matrix_CC_order[,2], cex = 0.5, xpd = TRUE)
+text(y= barCenter, x = -0.1, labels = matrix_CC[,2], cex = 0.5, xpd = TRUE)
+
 #legend(19,1.2, legend= c("Chromosome", "Nucleolus"), fill = col_chosen[c(2,3)], bty = "n", 
-       #border = FALSE, xpd = TRUE, cex = 0.6)
+#border = FALSE, xpd = TRUE, cex = 0.6)
 dev.off()
 
-pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/Figure2D_BP_dynamics_ordered.pdf", width= 4.8, height=1.8)
-par(mar = c(1,2,0.5,0))
+pdf("~/Dropbox/PPiseq_02/Working_figure/Figure2_PPI_enrichment_GO/all_PPI/Figure2D_BP_dynamics_primary.pdf", width= 4.8, height=1.8)
+par(mar = c(3,2,0.5,0))
 
-barCenter = barplot(as.numeric(matrix_BP_order[,3]), horiz=F, beside=F, ylim=c(0,3), 
-                    ylab="Coefficient variration",axisnames=F, border=NA, cex.lab = 0.5,
-                    col = col_chosen[as.numeric(matrix_BP_order[,4])], cex.axis = 0.5)
+barCenter = barplot(as.numeric(matrix_BP[,3]), horiz=F, beside=F,
+                    ylab="Mean CV",axisnames=F, border=NA, cex.lab = 0.5,
+                    col = apple_colors[5], cex.axis = 0.5)
 #text(x= barCenter, y = as.numeric(merge_ratio)*100, labels = counts_label, cex=0.8, xpd = TRUE)
-text(x= barCenter, y = -0.15, labels = matrix_BP_order[,2], srt = 60, cex = 0.4, xpd = TRUE)
-legend(19,2.8, legend= c("Transcription", "RNA processing", "Translation","Ribosome regulation"), 
-       fill = col_chosen[2:5], bty = "n", border = FALSE, xpd = TRUE, cex = 0.6)
+text(x= barCenter, y = -0.15, labels = matrix_BP[,2], srt = 60, cex = 0.4, xpd = TRUE)
+#legend(19,2.8, legend= c("Transcription", "RNA processing", "Translation","Ribosome regulation"), 
+#fill = col_chosen[2:5], bty = "n", border = FALSE, xpd = TRUE, cex = 0.6)
 #text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
 dev.off()
 
