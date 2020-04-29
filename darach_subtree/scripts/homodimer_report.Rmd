@@ -1,0 +1,1540 @@
+---
+title: "Reporting results of abundance-PPIs analyses"
+author: Darach
+date: "`r Sys.Date()`"
+output:
+    html_document:
+        toc: true
+        theme: cosmo
+---
+
+<!--<style>
+.main-container {width:100%}
+</style>
+-->
+
+
+```{r libraries,echo=F,message=F}
+library(magrittr)
+library(ggpointdensity)
+library(DBI)
+library(cowplot)
+library(digest)
+library(tidyverse)
+library(mcr)
+library(viridis)
+library(ggsignif)
+library(hexbin)
+library(ggrepel)
+
+# loading a palette for colors
+# from color brewer of course!
+cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+cbrew <- c(
+    '#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00',
+    '#ffff33','#a65628','#f781bf','#999999'
+    )
+#plot(1:length(cbrew),1:length(cbrew),col=cbrew,pch=15,cex=10)
+
+apple_colors <- c(
+    "#5AC8FA", "#FFCC00", "#FF9500", 
+    "#FF2D55", 
+    "#007AFF", 
+    "#4CD964", "#FF3B30", "#8E8E93", 
+    "#EFEFF4", "#CECED2", 
+    "#000000",
+    "#007AFF"
+    )
+plot(1:length(apple_colors),1:length(apple_colors),col=apple_colors,pch=15,cex=10)
+
+col_chosen <- c("#4575B4","#74ADD1","#ABD9E9","#E0F3F8","#FFFFBF","#FEE090", "#FDAE61","#F46D43","#D73027")
+plot(1:length(col_chosen),1:length(col_chosen),col=col_chosen,pch=15,cex=10)
+
+ggsave_both <- function(filestub,plot_obj,width=5,height=5) {
+    message(paste0("Saving ",filestub,".png"))
+    ggsave(paste0(filestub,".png"),plot_obj,width=width,height=height)
+    message(paste0("Saving ",filestub,".pdf"))
+    ggsave(paste0(filestub,".pdf"),plot_obj,device=cairo_pdf,width=width,height=height)
+}
+
+# setting some knitr options 
+knitr::opts_knit$set(base.dir=knitr::opts_knit$get("root.dir"))
+knitr::opts_knit$set(cache.path=paste0(knitr::opts_knit$get("root.dir"),"/rmd_cache"))
+```
+
+```{r data_data,cache=T,echo=F,eval=!interactive(),warning=F,message=F}
+# slurping in datasets
+db_bd <- dbConnect(RSQLite::SQLite(),"scratch.sqlite")
+dbExecute(db_bd,"ATTACH DATABASE 'fitness.sqlite' AS fitness")
+dbExecute(db_bd,"ATTACH DATABASE 'features.sqlite' AS features")
+dbExecute(db_bd,"
+    ATTACH DATABASE 'homodimer_ppi_features.sqlite' 
+    AS homodimer_ppi_features")
+dbExecute(db_bd,"ATTACH DATABASE 'sgd_go.sqlite' AS sgd_go")
+dbExecute(db_bd,"ATTACH DATABASE 'orf_features.sqlite' AS orf_features")
+
+full_set <- read_csv("explained_ppis_modeling.csv") %>%
+    nest(
+        data=c(Positive,Experiment,Normalized_Fitness,
+            homodimer_score_1,homodimer_score_2,
+            min_homodimer_score,max_homodimer_score
+        )   )
+
+strict_calls <- read_csv("PPI_environment_count_summary_SD_merge_filter_strict_threshold.csv") %>%
+    rename(PPI=X) %>% rename(`16C`=X16C) 
+```
+
+```{r summarize_csv,cache=T,eval=!interactive(),warning=F,message=F,echo=F}
+# and this is a summary csv of the homodimer modeling, 
+# to share with zhimin etc. for talk figures making
+z <- read_csv("homodimer_all_models.csv") %>%
+    filter(name=="sqrtmult") %>%
+    group_by(ORF1,ORF2,name) %>%
+    do(mutate(.,pearson=cor(Normalized_Fitness,
+                sqrt(homodimer_score_1*homodimer_score_2),method="pearson"))) %>%
+    select(
+        -Positive,-Experiment,-Normalized_Fitness,
+        -homodimer_score_1,-homodimer_score_2,
+        -min_homodimer_score,-max_homodimer_score
+        ) %>%
+    distinct() %>%
+    group_by(ORF1,ORF2,term) %>%
+    nest(coefz=c(estimate,stderr,tvalue,pvalue,qvalz)) %>%
+    select(ORF1,ORF2,pearson,r_squared,term,coefz) %>%
+    ungroup() %>%
+    mutate(term=ifelse(grepl("Intercept",term),"intercept","slope")) %>%
+    pivot_wider(names_from="term",values_from="coefz") %>%
+    unnest(intercept,names_sep="_") %>%
+    unnest(slope,names_sep="_") %>%
+    mutate(ConsideredExplained=slope_qvalz<0.05 & intercept_pvalue>0.05)
+write_csv(z,"summarized_homodimer_modeling_stats.csv")
+```
+
+# What underlies changing PPIs?
+
+We suspected that changes in unstable PPIs may be more likely to be driven by 
+post-translational regulation than protein abundance changes. 
+To determine if the relationship between protein abundance and PPI
+abundance changes with PPI stability, we first compared, for each PPI, our
+estimated PPI abundance in standard rich media (fitness in SD) to a
+meta-analysis estimate of mean protein abundance of the binary pair.
+
+```{r abundance_prep,echo=F,cache=T,warning=F,message=F}
+all_abundance <- dbGetQuery(db_bd,"
+        SELECT * FROM
+            ( SELECT DISTINCT PPI,ORF1,ORF2,npos FROM n_positive )
+            LEFT OUTER JOIN
+                ( SELECT PPI,Normalized_Fitness,Experiment,Positive FROM fitness ) 
+            USING (PPI)
+            LEFT OUTER JOIN
+                ( SELECT YORF AS ORF1,MeanMol AS MeanMol1 FROM ho2018 )
+            USING (ORF1)
+            LEFT OUTER JOIN
+                ( SELECT YORF AS ORF2,MeanMol AS MeanMol2 FROM ho2018 )
+            USING (ORF2)
+        ") 
+#all_abundance %>% head
+```
+
+```{r abundance_of_all,echo=F,cache=T,warning=F,message=F}
+in_sd_and_others <- dbGetQuery(db_bd,"
+        SELECT * FROM
+            ( SELECT PPI,Normalized_Fitness,Experiment,Positive 
+                FROM fitness 
+                WHERE Experiment=='SD_merge' AND Positive == '1'
+                    AND PPI LIKE 'Y%' AND PPI LIKE '%_Y%'
+                ) 
+            LEFT OUTER JOIN
+                ( SELECT DISTINCT PPI,ORF1,ORF2,npos FROM n_positive )
+            USING (PPI)
+            LEFT OUTER JOIN
+                ( SELECT YORF AS ORF1,MeanMol AS MeanMol1 FROM ho2018 )
+            USING (ORF1)
+            LEFT OUTER JOIN
+                ( SELECT YORF AS ORF2,MeanMol AS MeanMol2 FROM ho2018 )
+            USING (ORF2)
+        ") %>% as_tibble()
+in_sd_and_others 
+
+corz_all <- in_sd_and_others %>% 
+    filter(Experiment=="SD_merge") %>% 
+    {cor.test(.$Normalized_Fitness,log10((.$MeanMol1*.$MeanMol2)^0.5))} 
+
+lmz_all <- in_sd_and_others %>% 
+    filter(Experiment=="SD_merge") %>% 
+    {summary(lm(data=.,formula=I(Normalized_Fitness)~I(log10((MeanMol1*MeanMol2)^0.5))))}
+
+g_abundance_signal_all <- in_sd_and_others %>%
+    filter(Experiment=="SD_merge") %>% 
+    ggplot()+theme_classic()+
+    aes(x=((MeanMol1*MeanMol2)^0.5),y=Normalized_Fitness)+
+    scale_x_log10(
+        labels=function(x){unlist(map(x,
+                    function(x){bquote(10^.(log10(x)))
+                    }))}
+        ) +
+    annotate(geom="text",
+        x=4e3,y=1.07,
+        label=paste0("Pearson's r = ",signif(corz_all$estimate,3))
+        )+
+    geom_hex(aes(fill=..count..),col="white",size=0.08,binwidth=c(0.10,0.025))+
+    xlab("Mean abundance of protein pair")+
+    ylab("Fitness in SD environment")+
+    coord_cartesian(xlim=c(5e2,1.1e5),ylim=c(0.245,1.11))+
+    viridis::scale_fill_viridis("Count")
+
+g_abundance_signal_all
+
+ggsave_both(paste0(Sys.Date(),"_panel_signal_by_abundance_all"),
+    g_abundance_signal_all,
+    width=5,height=5
+    )
+
+```
+
+
+```{r abundance_of_broken_up_by_npos,echo=F,cache=T,warning=F,message=F,fig.height=3}
+pos_datar <- in_sd_and_others %>%
+    mutate(npos_bin=c(
+            "1-3 environments",
+            "1-3 environments",
+            "1-3 environments",
+            "4-6 environments",
+            "4-6 environments",
+            "4-6 environments",
+            "7-9 environments",
+            "7-9 environments",
+            "7-9 environments"
+            )[npos]
+        ) 
+# Commented out a lot of work using Deming regression. That model doesn't assume
+# x-axis is perfect, so is more appropriate for the kind of analysis here, but 
+# is complicated to explain and doesn't change any interpretations, 
+# so we stuck with OLS - mostly.
+#    with( pos_datar %>% group_by(npos_bin) %>%
+#            filter(!is.na(MeanMol1),!is.na(MeanMol2)) %>%
+#            do(data.frame(which=c("intercept","slope"),
+#                value=mcreg(log10((.$MeanMol1*.$MeanMol2)^0.5),.$Normalized_Fitness,
+#                    method.reg="Deming",
+#                    error.ratio=var(log10((.$MeanMol1*.$MeanMol2)^0.5),na.rm=T)/
+#                        var(.$Normalized_Fitness)
+#                    )@glob.coef ) 
+#                ) %>%
+#            pivot_wider(names_from="which",values_from="value")
+g_abundance_signal_all_certain_subsets <- pos_datar %>% 
+    {
+    ggplot(.)+theme_classic()+
+    aes(x=(MeanMol1*MeanMol2)^0.5,y=Normalized_Fitness)+
+    facet_wrap(~npos_bin,nrow=1) +
+    scale_x_log10(
+        labels=function(x){unlist(map(x,
+                    function(x){bquote(10^.(log10(x)))
+                    }))}
+        ) +
+    coord_cartesian(xlim=c(5e2,1e5),ylim=c(0.26,1.02))+
+    geom_hex(aes(fill=..count..),binwidth=c(0.04,0.02))+
+    geom_text(
+        x=3,y=0.9,size=3,
+        data=group_by(.,npos_bin) %>%
+            summarize(
+                corz=cor(Normalized_Fitness,log10((MeanMol1*MeanMol2)^0.5),
+                        use="complete.obs",method="pearson"
+                        )
+                ),
+        aes(label=paste0("r = ",signif(corz,3)))
+        )+
+#    geom_abline(intercept=coef(lmz_all)[1,1],slope=coef(lmz_all)[2,1],
+#        linetype="dashed",size=1.5)+
+#    stat_smooth(method="lm",col="red",se=F,linetype="solid",size=1.0)+
+    xlab("Mean abundance of protein pair")+
+    ylab("Fitness in SD environment")+
+    viridis::scale_fill_viridis("Count")
+    }
+g_abundance_signal_all_certain_subsets
+
+ggsave_both(paste0(Sys.Date(),"_abundance_signal_correlation_by_environment_number_3bin"),
+    g_abundance_signal_all_certain_subsets,
+    width=8.5,height=2.5
+    )
+
+corr_pos_bin <- pos_datar %>% group_by(npos_bin) %>%
+    do(tibble(x=list(cor.test(.$Normalized_Fitness,log10((.$MeanMol1*.$MeanMol2)^0.5))))) %>%
+    rowwise() %>%
+    mutate(estimate=x$estimate,pval=x$p.value)
+
+# Hey, these have different ranges, what happens if we normalize that?
+g_abundance_signal_all_certain_subsets_normed <- pos_datar %>% 
+    mutate(mean_mol=(MeanMol1*MeanMol2)^0.5) %>%
+    group_by(npos_bin) %>%
+    mutate(Normalized_Fitness=scale(Normalized_Fitness,center=T,scale=T)) %>%
+    ungroup() %>% 
+    {
+    ggplot(.)+theme_classic()+
+    aes(x=mean_mol,y=Normalized_Fitness)+
+    facet_grid(.~npos_bin) +
+    scale_x_log10(
+        labels=function(x){unlist(map(x,
+                    function(x){bquote(10^.(log10(x)))
+                    }))}
+        ) +
+    coord_cartesian(xlim=c(5e2,1e5),ylim=c(-1.0,6))+
+    geom_hex(aes(fill=..count..),binwidth=c(0.04,0.2))+
+    geom_text(
+        x=3.2,y=5.0,size=3,
+        data=group_by(.,npos_bin) %>%
+            summarize(
+                corz=cor(Normalized_Fitness,log10((MeanMol1*MeanMol2)^0.5),
+                        use="complete.obs",method="pearson"
+                        )
+                ),
+        aes(label=paste0("r = ",signif(corz,3)))
+        )+
+    xlab("Mean abundance of protein pair")+
+    ylab("Normalized fitness in SD environment")+
+    viridis::scale_fill_viridis("Count")
+    }
+g_abundance_signal_all_certain_subsets_normed
+# Right pearson is already effectively normalized, right.
+
+g_signal_dists <- pos_datar %>% 
+    {
+    ggplot(.)+theme_classic()+
+    aes(x=npos_bin,y=Normalized_Fitness)+
+#    coord_cartesian(xlim=c(5e2,1e5),ylim=c(-1.0,6))+
+    geom_violin(draw_quantiles=seq(0,1,0.25))+
+    scale_y_log10()+
+    xlab("Number environment bin")+
+    ylab("Normalized fitness in SD environment")
+    }
+g_signal_dists
+
+ggsave_both(paste0(Sys.Date(),"_npos_bin_signal"),
+    g_signal_dists,
+    width=5,height=2.5)
+
+g_abundance_dists <- pos_datar %>% 
+    mutate(mean_mol=(MeanMol1*MeanMol2)^0.5) %>%
+    {
+    ggplot(.)+theme_classic()+
+    aes(x=npos_bin,y=mean_mol)+
+#    coord_cartesian(xlim=c(5e2,1e5),ylim=c(-1.0,6))+
+    geom_violin(draw_quantiles=seq(0,1,0.25))+
+    scale_y_log10()+
+    xlab("Number environment bin")+
+    ylab("Normalized fitness in SD environment")
+    }
+g_abundance_dists
+
+ggsave_both(paste0(Sys.Date(),"_npos_bin_abundance"),
+    g_abundance_dists,
+    width=5,height=2.5)
+
+
+```
+
+
+```{r abundance_of_broken_up_by_npos_all,echo=F,cache=T,warning=F,message=F}
+# plotting abundance and signal, but tiled by npos
+g_subset <- in_sd_and_others %>%
+    mutate(facet_label=factor(npos)) %>%
+    mutate(facet_label=paste0(facet_label," environments")) %>%
+    {
+    ggplot(.)+theme_classic()+
+    aes(x=(MeanMol1*MeanMol2)^0.5,y=Normalized_Fitness)+
+    facet_wrap(~facet_label) +
+    scale_x_log10(
+        labels=function(x){unlist(map(x,
+                    function(x){bquote(10^.(log10(x)))
+                    }))}
+        ) +
+#    scale_y_continuous(limits=c(NA,1.15))+
+    coord_cartesian(xlim=c(5e2,1e5),ylim=c(0.25,1.05))+
+#    geom_pointdensity()+
+    geom_hex(aes(fill=..count..),binwidth=c(0.03,0.03))+
+    geom_label(
+        x=3,y=0.8,
+        data=group_by(.,facet_label) %>%
+            summarize(
+                corz=cor(Normalized_Fitness,log10((MeanMol1*MeanMol2)^0.5),
+                        use="complete.obs"
+                        )
+                ),
+        aes(label=signif(corz,3))
+        )+
+#    geom_abline(intercept=coef(lmz_all)[1,1],slope=coef(lmz_all)[2,1],
+#        linetype="dashed",size=1.5)+
+    stat_smooth(method="lm",col="red",se=F)+
+    xlab("Mean abundance of protein pair")+
+    ylab("Fitness in SD environment")+
+    viridis::scale_fill_viridis("Count")#+ guides(col=guide_colorbar(label=F))
+    }
+g_subset
+
+ggsave_both(paste0(Sys.Date(),"_cor_by_npos"),
+    g_subset,
+    width=10,height=6
+    )
+
+# Huh. Maybe summarize that better ....
+
+g_cor_by_stability <- pos_datar %>% 
+    group_by(npos) %>%
+    summarize(corz=cor(
+            Normalized_Fitness,log10((MeanMol1*MeanMol2)^0.5),
+            use="complete.obs",method="pearson"
+            )
+        ) %>%
+    {
+    ggplot(.)+theme_classic()+
+    aes(x=factor(npos),y=corz,col=factor(npos))+
+    geom_point(size=3.5,col="black")+
+    geom_point(size=3)+
+    scale_y_continuous(limits=c(0,NA))+
+    scale_color_manual(values=col_chosen)+
+#    scale_color_gradient2("",
+#        midpoint=5,
+#        low=apple_colors[5],
+#        mid=apple_colors[9],
+#        high=apple_colors[7]
+#    )+
+    guides(col=F)+
+    xlab("Number of environments PPI observed in")+
+    ylab("Pearson correlation of PPI-seq fitness\nand mean protein abundance")
+    }
+g_cor_by_stability
+
+# Wow!
+
+ggsave_both(paste0(Sys.Date(),"_panel_pearson_of_abundance_and_signal_by_environment_number_point"),
+    g_cor_by_stability,
+    width=4,height=4
+    )
+
+# And stricter calls?
+
+g_cor_by_stability_strict <- 
+    pos_datar %T>% {nrow(.)} %>%
+    left_join(strict_calls %>% select(PPI,environment_number),by="PPI") %>%
+    mutate(strict_npos=environment_number) %>%
+    filter(!is.na(strict_npos)) %>%
+    group_by(strict_npos) %>%
+    summarize(corz=cor(
+            Normalized_Fitness,log10((MeanMol1*MeanMol2)^0.5),
+            use="complete.obs",method="pearson"
+            )
+        ) %>%
+    {
+    ggplot(.)+theme_classic()+
+    aes(x=factor(strict_npos),y=corz,col=factor(strict_npos))+
+    geom_point(size=3.5,col="black")+
+    geom_point(size=3)+
+    scale_y_continuous(limits=c(0,NA))+
+    scale_color_manual(values=col_chosen)+
+#    scale_color_gradient2("",
+#        midpoint=5,
+#        low=apple_colors[5],
+#        mid=apple_colors[9],
+#        high=apple_colors[7]
+#    )+
+    guides(col=F)+
+    xlab("Number of environments PPI observed in, strict calls")+
+    ylab("Pearson correlation of PPI-seq fitness\nand mean protein abundance")
+    }
+g_cor_by_stability_strict
+
+# Wow!
+
+ggsave_both(paste0(Sys.Date(),"_panel_pearson_of_abundance_and_signal_by_environment_number_point_strict"),
+    g_cor_by_stability_strict,
+    width=4,height=4
+    )
+
+
+```
+
+
+Did `r in_sd_and_others %>% 
+    filter(!is.na(MeanMol1),!is.na(MeanMol2),!is.na(Normalized_Fitness)) %>% 
+    nrow()` PPIs with this.
+
+These two measures correlate weakly 
+(Pearson's r=`r signif(corz_all$estimate,3)`, Figure S8A). However, when
+binned by PPI stability, we find that the stable PPIs are more strongly
+correlated (r = 
+`r signif(corr_pos_bin%>%filter(npos_bin=="7-9 environments")%>%
+        pull(estimate),3)`
+) than less stable PPIs (r=
+`r signif(corr_pos_bin%>%filter(npos_bin=="4-6 environments")%>%
+        pull(estimate),3)`
+and r=
+`r signif(corr_pos_bin%>%filter(npos_bin=="1-3 environments")%>%
+        pull(estimate),3)`
+for
+intermediate and low stability, respectively) 
+
+Looking at just correlation by mutability/immutability, there's a clear
+trend in there.
+
+
+As expected there is extensive divergence from this relationship, 
+divergence that reflects the role of post-translational modification and 
+localization in controlling the realized cellular affinity of each PPI.
+
+Protein expression is a crucial prerequisite for a PPI, and quantitative 
+variation in abundance can change how much of a PPI complex is formed.
+However, many factors affect the realized cellular affinity of two proteins,
+such as post-translational modifications, protein re-localization, 
+or competitive binding.
+We sought to estimate the role of abundance changes in PPI signal in order to
+understand how each of these types of factors contribute.
+\[S^{AB} \sim [AB] = k_r^{AB} [A][B]\]
+We define this constant \(k_r\) as reflecting the realized cellular affinity 
+constant, a number that broadly encompasses post-translational modifications 
+and localization.
+If we use the homodimer signal as a proxy for abundance, then 
+we can estimate the signal of the PPI as being
+a function of the homodimer protein abundance and a combination of the
+constants of realized affinity.
+\[ S^{AA} \sim k_r^{AA}[A]^2 \quad,\quad S^{AB} \sim k_r^{AB}[A][B] \quad,\quad S^{AB} = \frac{k_r^{AB}}{\sqrt{k_r^{AA} k_r^{BB}}} \sqrt{ S^{AA} S^{BB}} \]
+For a heterodimer composed of proteins that are each detected in a homodimer,
+the signal (\(S^{AB}\)) should depend linearly on the square-root of 
+the product of the homodimer PPI signals (\(S^{AA}\) or \(S^{BB}\)),
+assuming that no post-translational regulation occurs or that the contribution
+of multiple changes is balanced or acting in concert with the abundance changes.
+Deviation from this model is expected as a clear indication of any mechanism 
+in addition to protein expression control.
+We used linear regression to determine this, using the model specified above,
+and applied this across all heterodimer PPIs amongst the 
+homodimer-participating proteins identified above.
+Again, we required the PPI be positive in at least one environment and 
+quantified in at least four environments.
+
+## homodimer as proxy, so across environments
+
+Second, we asked if quantitative changes in PPI abundance (fitness) 
+across our conditions are better predicted by changes in protein abundance 
+for stable PPIs than for unstable PPIs. 
+Using homodimer PPI abundance (fitness) as a proxy for protein
+abundance in a mass-action kinetics model, we tested if changes in the
+abundance of a set of heterodimer PPIs (
+`r nrow(full_set)`
+) are explained by our proxy
+measure of the constituent proteins (
+`r length(unique(c(full_set$ORF1,full_set$ORF2)))` 
+homodimers). 
+
+
+```{r show_specific_ones,cache=T,echo=F,warning=F}
+# Picked for examples, just to show some
+cherry_pick_ppi <- c(
+    "YDR264C_YMR010W",
+    "YDL212W_YML012W"
+    )
+plottr <- function(x){
+    ggplot(x)+theme_classic()+
+    aes(x=sqrt(homodimer_score_1*homodimer_score_2),y=Normalized_Fitness)+
+    geom_point(aes(col=Experiment,shape=factor(Positive,levels=c("1","0"))))+
+    scale_color_manual(
+        "Experiment ",
+        values=cbrew,
+        labels=function(x){
+            sub("_"," ",x)%>%
+                { sub(" merge","",.) } %>%
+                { sub("Cold ","",.) } %>%
+                { sub("16C","16°C",.) } %>%
+                { sub("H2O2","H₂O₂",.) } 
+        }
+    )+
+    scale_shape_manual("Heterodimer PPI is    ",
+        labels=c("Positive","Negative"),
+        values=c("circle","cross")
+    )+
+#    theme(strip.text=element_text(face="italic"))+ 
+        # I mean, I said do gene names capitalized and with italics...
+    guides(col=guide_legend(override.aes=list(label="",alpha=1.0)))+
+    ylab(expression("Heterodimer signal,"~S[AB]))+
+    xlab(expression("Heterodimer signal expected from "~sqrt(S[AA]~S[BB])))
+    }
+g_fit_examples <- full_set %>% 
+    unite("PPI",ORF1,ORF2,remove=F) %>%
+    filter(PPI %in% cherry_pick_ppi) %>%
+    left_join(dbGetQuery(db_bd,"SELECT Systematic,Common FROM sgd_go_map") %>%
+            rename(ORF1=Systematic,Common1=Common)%>%distinct()
+        ,by="ORF1") %>%
+    left_join(dbGetQuery(db_bd,"SELECT Systematic,Common FROM sgd_go_map") %>%
+            rename(ORF2=Systematic,Common2=Common)%>%distinct()
+        ,by="ORF2") %>%
+    arrange(desc(PPI)) %>%
+    rowwise() %>%
+    mutate(
+        Common1=tools::toTitleCase(tolower(Common1)),
+        Common2=tools::toTitleCase(tolower(Common2))
+    ) %>%
+    mutate(Name=paste0(sort(c(Common1,Common2)),collapse=" x ")) %>%
+    unnest(data) %>%
+    mutate(Positive=relevel(factor(as.character(Positive)),ref="1")) %>%
+    mutate(facet_label=factor(Name,levels=rev(unique(Name)))) %>%
+    {
+    plottr(.) + 
+    stat_smooth(method="lm",se=F,color="black",size=0.1,alpha=0.1,
+        formula="y~x+1",fullrange=F)+
+    facet_wrap(~facet_label,ncol=2,strip.position="right",scales="free_x")+
+#    coord_cartesian(ylim=c(NA,NA))+
+#    theme(legend.position="right",strip.text=element_text(face="italic"))+
+# should be all caps with italics
+    scale_x_continuous(limits=c(NA,NA))+
+    geom_text(
+        data=group_by(.,facet_label) %>% 
+            mutate(simple_pearson=signif(pearson,3)) %>%
+            mutate(label=paste0("r == ",simple_pearson)) %>%
+            group_by(facet_label,label) %>%
+            summarize(
+                mean_x=mean(sqrt(homodimer_score_1*homodimer_score_2)),
+                mean_y=mean(Normalized_Fitness)
+            ) %>% distinct() ,
+        alpha=1,size=3,
+        aes(label=label,x=mean_x*0.75,y=mean_y*0.2+0.35),parse=T
+        )
+    }
+g_fit_examples
+
+ggsave_both(paste0(Sys.Date(),"_panel_homodimer_model_two_examples"),
+    g_fit_examples,
+    width=8,height=4)
+
+```
+
+We find that some
+heterodimers fit this model well (Figure 4E), while others fit poorly (Figure
+4F). 
+
+```{r showing_fits_just_explained,cache=T,echo=F,warning=F}
+g_homodimer_fits_explained_or_not <- full_set %>% 
+    unite("PPI",ORF1,ORF2) %>%
+    unnest(data) %>%
+    {
+    ggplot(.)+
+    theme_classic()+
+    aes(x=sqrt(homodimer_score_1*homodimer_score_2),y=Normalized_Fitness
+        )+
+#    guides(col=guide_legend(override.aes=list(size=2)))+
+#    geom_point(size=0.5,alpha=0.2)+
+    geom_text(data=group_by(.,Explained)%>%
+            summarize(label=paste0("n = ",length(unique(PPI)))),
+        x=0.2,y=0.8,aes(label=label)
+    )+
+    stat_smooth(method="lm",se=F,size=0.2,alpha=0.5,
+#        color="black",
+        aes(col=pearson^2,group=PPI),
+        formula="y~x+1")+
+    facet_wrap(~ifelse(Explained,"Explained","Not explained"))+
+    coord_cartesian(ylim=c(-.1,0.9))+
+    scale_color_gradient(name=expression(R^2),
+        low="#dddd00",high="#0000ff"
+    )+ 
+    ylab(expression("Heterodimer signal,"~S[AB]))+
+    xlab(expression("Heterodimer signal expected from "~sqrt(S[AA]~S[BB])))
+    }
+g_homodimer_fits_explained_or_not
+
+ggsave_both(paste0(Sys.Date(),"_panel_heterodimer_fits_explained_and_not_explained"),
+    g_homodimer_fits_explained_or_not,
+    width=8,height=4)
+
+g <- full_set %>% 
+    filter(Explained) %>%
+    unite("PPI",ORF1,ORF2) %>%
+    unnest(data) %>%
+    ggplot()+
+    theme_classic()+
+    aes(x=sqrt(homodimer_score_1*homodimer_score_2),y=Normalized_Fitness,
+        group=PPI
+        )+
+    guides(col=guide_legend(override.aes=list(size=2)))+
+    geom_point(size=0.5,alpha=0.2)+
+    stat_smooth(method="lm",se=F,color="black",size=0.1,alpha=0.5,
+        formula="y~x+1")+
+    coord_cartesian(xlim=NULL,ylim=c(-0.2,1.1))+
+    scale_color_manual("",
+        labels=function(x){c(`FALSE`="No heterodimer PPI",`TRUE`="Detected heterodimer PPI")[as.numeric(x)+1]},
+        values=cbrew
+        )+
+    ylab(expression("Heterodimer signal,"~S[AB]))+
+    xlab(expression("Heterodimer signal expected from "~sqrt(S[AA]~S[BB])))
+g
+
+ggsave_both(paste0(Sys.Date(),"_explained_homodimer_fits"),
+    g,width=4,height=4)
+
+```
+
+
+Across all of these heterodimers, 
+`r signif(sum(full_set$Explained,na.rm=T)/length(na.omit(full_set$Explained)),2)*100`%
+were explained by this simple model
+(Figure ExplainedFitsLines, Methods). 
+
+```{r distribution_of_rsquares,cache=T,echo=F,message=F,warning=F}
+
+g_qv_dist <- full_set %>%
+    ggplot()+theme_classic()+
+    aes(x=qvalz)+
+    geom_vline(xintercept=0)+
+    geom_histogram(binwidth=0.025,col="black")+
+    xlab("Q-value (FDR) of fit to slope of simple abundance model")+
+    ylab("Count")
+g_qv_dist
+
+g_rq_dist <- full_set %>%
+    ggplot()+theme_classic()+
+    aes(x=pearson)+
+    facet_wrap(~ifelse(Explained,"Explained","Not explained"))+
+    geom_histogram(binwidth=0.025,col="black")+
+    xlab("Pearson correlation of fit to simple abundance model")+
+    ylab("Count of heterodimer PPIs")
+g_rq_dist
+
+ggsave_both(paste0(Sys.Date(),"_panel_pearson_dist_heterodimer_models"),
+    g_rq_dist
+    ,width=6,height=4)
+
+g_r2q_dist <- full_set %>%
+    ggplot()+theme_classic()+
+    aes(x=pearson^2)+
+    facet_wrap(~ifelse(Explained,"Explained","Not explained"))+
+    geom_histogram(binwidth=0.025,col="black")+
+    xlab(expression(paste(R^2," of fit to simple abundance model")))+
+    ylab("Count of heterodimer PPIs")
+g_r2q_dist
+
+ggsave_both(paste0(Sys.Date(),"_panel_r2_dist_heterodimer_models"),
+    g_r2q_dist
+    ,width=6,height=4)
+```
+
+```{r looking_abundance_fit_stable_unstable,cache=T,echo=F,message=F,warning=F}
+# So checking if the relationship of abundance and fitness is different for
+# the mutable and immutable PPIs
+pdatar <- full_set %>%
+    left_join( 
+        all_abundance %>% select(ORF1,ORF2,starts_with("MeanMol")) %>% distinct(),
+        by=c("ORF1","ORF2")
+        ) %>%
+    group_by(PPI) %>% 
+    mutate(npoz=unlist(map(data,function(x){length(unique(filter(x,Positive==1)$Experiment))}))) 
+
+pdatar %>%
+    rowwise() %>%
+    mutate(ab=mean(log10(c(MeanMol1,MeanMol2)),na.rm=F)) %>%
+    ungroup() %>%
+    select(pearson,ab,npoz) %T>%
+    {lm(data=.,I(pearson^2)~ab*npoz) %>% summary() } %>%
+    ggplot()+theme_classic()+
+    aes(y=pearson^2,x=ab,col=factor(npoz>3))+
+    geom_point()+
+    stat_smooth(method="lm",se=F)
+
+pdatar %>%
+    rowwise() %>%
+    mutate(ab=mean(log10(c(MeanMol1,MeanMol2)),na.rm=F)) %>%
+    ungroup() %>%
+    mutate(npoz_category=npoz>2) %>%
+    filter(!is.na(ab)) %>%
+    filter(!is.infinite(ab)) %>%
+    mutate(abundance_rank_bin=cut(rank(ab),breaks=4)) %>%
+    select(pearson,abundance_rank_bin,npoz_category) %>%
+    {aov(data=.,I(pearson^2)~abundance_rank_bin*npoz_category)} %>% summary()
+
+pdatar %>%
+    rowwise() %>%
+    mutate(ab=mean(log10(c(MeanMol1,MeanMol2)),na.rm=F)) %>%
+    ungroup() %>%
+    mutate(npoz_category=npoz>=4) %>%
+    filter(!is.na(ab)) %>%
+    filter(!is.infinite(ab)) %>%
+    mutate(abundance_rank_bin=cut(rank(ab),breaks=4)) %>%
+    select(pearson,abundance_rank_bin,npoz_category) %>%
+    group_by(abundance_rank_bin) %>%
+    summarize(wilcox_pval=wilcox.test(
+            pearson[npoz_category==unique(npoz_category)[1]]^2,
+            pearson[npoz_category==unique(npoz_category)[2]]^2
+            )$p.val
+        )
+
+g_r2q_dist_stable <- pdatar %>%
+    ungroup() %>%
+    #mutate(npoz_category=cut(rank(npoz,ties.method="average"),2))%>% #npoz>5) %>%
+    mutate(npoz_category=npoz>=4) %>%
+    rowwise() %>%
+    mutate(ab=mean(log10(c(MeanMol1,MeanMol2)),na.rm=F)) %>%
+    ungroup() %>%
+    filter(!is.na(ab)) %>%
+    filter(!is.infinite(ab)) %>%
+    ungroup() %>%
+    mutate(abundance_rank_bin=cut(rank(ab,ties.method="average"),breaks=4,labels=F)) %>%
+    mutate(abundance_rank_bin=
+        c("0-25%","26-50%","51-75%","76-100%")[abundance_rank_bin]) %>%
+    {
+    ggplot(.)+theme_classic()+
+    aes(y=pearson^2,x=abundance_rank_bin,fill=npoz_category,
+        group=factor(abundance_rank_bin):factor(npoz_category))+
+    geom_boxplot(notch=T,alpha=0.2,outlier.alpha=0,width=0.7)+
+    geom_dotplot(binaxis="y",stackdir="center",binwidth=0.010,position="dodge")+
+    scale_fill_discrete("Seen in",
+        labels=function(x){c(`FALSE`="1-3 environments",
+                `TRUE`="4-9 environments")[as.character(x)]}
+    )+
+    geom_signif(
+        y_position=c(1,1,1,1), xmin=0:3+0.8, xmax=0:3+1.2,
+        annotation=c("**","*","**","*")
+        )+
+#    theme(axis.text.x=element_blank())+
+    coord_cartesian(ylim=c(0,1.05))+
+    guides(fill=guide_legend(override.aes=list(col="white")))+
+    xlab("Increasing quartile of ranked abundance in standard media")+
+    ylab(expression(R^2 * " of fit to simple abundance model"))
+    } 
+g_r2q_dist_stable
+
+ggsave_both(paste0(Sys.Date(),"_panel_r2_dist_by_stable"),
+    g_r2q_dist_stable
+    ,width=7,height=4)
+
+lmz <- pdatar %>%
+    rowwise() %>%
+    mutate(mean_abundance=mean(log10(c(MeanMol1,MeanMol2)),na.rm=F),
+        r_squared=pearson^2,
+        number_conditions=npoz) %>%
+    ungroup() %>%
+    select(r_squared,mean_abundance,number_conditions) %>%
+    {summary(lm(data=.,r_squared~mean_abundance*number_conditions))}
+lmz
+
+g_r2q_dist_stable_lm <- pdatar %>%
+    ungroup() %>%
+    mutate(npoz_category=npoz>5) %>%
+    rowwise() %>%
+    mutate(ab=mean(log10(c(MeanMol1,MeanMol2)),na.rm=F)) %>%
+    ungroup() %>%
+    filter(!is.na(ab)) %>%
+    filter(!is.infinite(ab)) %>%
+    ggplot()+theme_classic()+
+    aes(y=pearson^2,x=ab,col=npoz_category,
+        group=factor(npoz_category))+
+    geom_point()+
+    stat_smooth(method="lm",se=F)+
+    scale_color_discrete("Seen in more \n than 3 experiments?")+
+    xlab("Average log abundance in standard media")+
+    ylab(expression(R^2 * " of fit to simple abundance model"))
+g_r2q_dist_stable_lm
+
+ggsave_both(paste0(Sys.Date(),"_r2_dist_by_stable_lm"),
+    g_r2q_dist_stable_lm
+    ,width=6,height=3)
+
+
+g_r2q_by_npos_ab <- pdatar %>%
+    rowwise() %>%
+    mutate(ab=mean(log10(c(MeanMol1,MeanMol2)),na.rm=F)) %>%
+    ungroup() %>%
+    filter(!is.na(ab)) %>%
+    filter(!is.infinite(ab)) %>%
+    mutate(ab_cut=cut(rank(ab),2)) %>% 
+    ggplot()+theme_classic()+
+    aes(x=factor(npoz),fill=ab_cut,y=pearson^2)+
+    geom_boxplot(outlier.alpha=0)+
+    geom_dotplot(binaxis="y",stackdir="center",binwidth=0.010,position="dodge")+
+    scale_color_discrete("Two cuts of mean\n log10 abundance")+
+    ylab(expression(R^2,"of fit to simple abundance model"))+
+    xlab("npos")
+g_r2q_by_npos_ab
+
+# So it looks like there is a relationship, and that differs, but don't think
+# we really need to plot these.
+
+```
+
+
+
+
+
+```{r modeling_logistic,cache=T,echo=F,results="hide",warning=F}
+bigdf <- dbGetQuery(db_bd,'
+        SELECT * FROM homodimer_features
+    ') %>%
+    as_tibble() %>% 
+    left_join(pdatar%>%select(PPI,npoz),by="PPI")
+
+head(bigdf)
+
+# NAs?
+apply(bigdf,2,function(x){sum(is.na(x))}) %>% sort(decreasing=T) %>% head(40)
+
+# features were dropped out based on how many missing there were
+# we drew the line here because <10% drop out seemed like a reasonable number
+the_features_to_use <- c(
+    "Broad.conservation", 
+    "Yeast.conservation", 
+    "CAI", 
+    "Coexpression.degree", 
+    "Copy.number",
+    "dN.dS", 
+    "Nc", 
+    "Gasch.expression.variance..environ.", 
+    "Brem.expression.variance..genetic.",
+    "Skelly.expression.variance..genetic.",
+    "Has.WGD.duplicate", "Has.SSD.duplicate",
+    "Number.of.complexes", 
+    "Number.of.domains",
+    "Protein.disorder",
+    "Protein.length", 
+    "Single.mutant.fitness.defect", 
+    "Essential", 
+    "Phosphorylation", "Sumoylation", "Ubiquitination",
+    "Log10MeanMol", 
+    "homolog", "ohnolog", 
+    "npoz",
+    "Colocalization"
+    )
+features_rename <- c(
+    `Broad.conservation`="Broad_conservation", 
+    `Yeast.conservation`="Yeast_conservation", 
+    `CAI`="CAI", 
+    `Coexpression.degree`="Coexpression_degree", 
+    `Copy.number`= "Copy_number",
+    `dN.dS`= "dN_dS", 
+    `Nc`= "Nc", 
+    `Gasch.expression.variance..environ.`= "Gasch_environment_expression_variance", 
+    `Brem.expression.variance..genetic.`= "Brem_genetic_expression_variance",
+    `Skelly.expression.variance..genetic.`= "Skelly_genetic_expression_variance",
+    `Has.WGD.duplicate`= "Has_WGD_duplicate", 
+    `Has.SSD.duplicate`= "Has_SSD_duplicate",
+    `Number.of.complexes`= "Number_of_complexes", 
+    `Number.of.domains`= "Number_of_domains",
+    `Protein.disorder`= "Protein_disorder",
+    `Protein.length`= "Protein_length", 
+    `Single.mutant.fitness.defect`= "Single_mutant_fitness_defect", 
+    `Essential`= "Essential", 
+    `Phosphorylation`= "Phosphorylation", 
+    `Sumoylation`= "Sumoylation", 
+    `Ubiquitination`= "Ubiquitination",
+    `Log10MeanMol`= "Log10MeanMolecules", 
+    `Essential`= "Essential", 
+    `homolog`= "Between_homologs", 
+    `ohnolog`= "Between_ohnologs", 
+    `npoz`="Number_environments_PPI_detected_in",
+    `Colocalization`="Colocalization_in_Chong2015"
+    )
+formula_to_test <- as.formula(
+    paste0("metric~",paste(features_rename[the_features_to_use],collapse="+"))
+    )
+normalize <- function(x){
+    x <- as.numeric(x)
+    x <- (x-mean(x,na.rm=T))/sd(x,na.rm=T)
+    return(x)
+    }
+moddf <- bigdf %>% 
+    select_at(
+        c("PPI","pearson","Explained","estimate",
+            names(.)[
+                unlist(sapply(names(.),function(x){
+                        any(grepl(features_rename[x],formula_to_test[[3]]),na.rm=T)
+                        }
+                    )   )   
+                ] ,
+            "MeanMol"
+            )
+        ) %>%
+    distinct() %>% 
+    mutate(Log10MeanMolecules=log10(MeanMol)) %>%
+    {setNames(.,
+        ifelse(names(.)%in%names(features_rename),
+        features_rename[names(.)],names(.))
+        )} %>%
+    mutate_at(vars(-PPI,-pearson,-Explained,-estimate),normalize) 
+# What terms have the most drop-out?
+apply(moddf,2,function(x){sum(is.na(x))}) %>% sort(decreasing=T)
+# out of
+nrow(moddf)
+
+log_maud <- moddf %>% 
+    mutate(metric=Explained) %>%
+    glm(data=.,formula=formula_to_test,family=binomial(link="logit"))
+g_log_mod <- summary(log_maud)$coef %>%
+    {tibble(features=rownames(.),estimate=.[,"Estimate"],
+        error=.[,"Std. Error"],pvalue=.[,"Pr(>|z|)"])
+        } %>%
+    mutate(adj_pvalue=p.adjust(pvalue,method="fdr")) %>%
+    filter(features!="(Intercept)") %>%
+    arrange(estimate) %>%
+    mutate(features=factor(features,levels=features)) %T>%
+    {print(data.frame(select(.,-pvalue)))} %>%
+    ggplot()+theme_classic()+
+    aes(x=features,y=estimate,
+        ymin=estimate-error,ymax=estimate+error,
+        fill=adj_pvalue<0.05,alpha=adj_pvalue<0.05
+        )+
+    geom_bar(stat="identity")+geom_errorbar(width=0.3)+
+    theme(axis.text.x=element_text(angle=90))+
+    scale_fill_discrete("FDR-adjusted\np-value < 0.05")+
+    scale_alpha_discrete("FDR-adjusted\np-value < 0.05",range=c(0.3,1))+
+    scale_y_continuous(limit=c(-1,1))+
+    ylab(("Contribution to being explained\nby the mass-action kinetics model"))+
+    xlab("Feature")
+
+g_log_mod
+
+summary(log_maud)$coef %>%
+    {tibble(features=rownames(.),estimate=.[,"Estimate"],
+        error=.[,"Std. Error"],pvalue=.[,"Pr(>|z|)"])
+        } %>%
+    mutate(adj_pvalue=p.adjust(pvalue,method="fdr")) %>%
+    filter(features!="(Intercept)",adj_pvalue<0.05)
+
+ggsave_both(paste0(Sys.Date(),"_panel_log_model_heterodimer_fit"),
+    g_log_mod,
+    width=8,height=7)
+
+```
+
+
+To determine what features may underlie a
+good or poor fit to this simple model, we used logistic regression of features
+predicting fit.
+
+```{r explained_rate_by_stability,cache=T,echo=F,message=F}
+g <- full_set %>%
+    group_by(PPI) %>% 
+    mutate(npoz=unlist(map(data,function(x){
+                length(unique(filter(x,Positive==1)$Experiment))}
+            )
+        )
+    ) %>% 
+    mutate(npoz_bin=c(
+            "1 environments",
+            "2 environments",
+            "3 environments",
+            "4 environments",
+            "5 environments",
+            "6 environments",
+            "7 environments",
+            "8 environments",
+            "9 environments"
+            )[npoz]
+        ) %>%
+    group_by(npoz) %>%
+    summarize(
+        z=list(
+            tibble(
+                names_explained=names(table(Explained)),
+                explained_counts=(table(Explained)),
+                total_counts=(length(Explained)),
+                prop_explained_counts=prop.table(table(Explained))
+            )
+        )
+    ) %>% unnest(z) %>%
+    filter(names_explained==TRUE) %>%
+    {
+        ggplot(.)+theme_classic()+
+        aes(x=factor(npoz),y=prop_explained_counts,col=factor(npoz))+
+#        geom_bar(stat="identity")+
+        geom_point(size=3.5,col="black")+
+        geom_point(size=3)+
+        geom_text(nudge_y=-.03,nudge_x=0,#.55,
+            color="black",size=2.0,
+            aes(label=paste(explained_counts,"out\nof",total_counts)))+
+        coord_cartesian(xlim=c(1,9.5))+
+        scale_color_manual(values=col_chosen)+
+#        scale_color_gradient2("",
+#            midpoint=5,
+#            low=apple_colors[5],
+#            mid=apple_colors[9],
+#            high=apple_colors[7]
+#        )+
+        guides(col=F)+
+        xlab("Number of environments PPI detected in")+
+        ylab("Percent of PPIs explained\nby protein abundance model")+
+        scale_y_continuous(limits=c(0,NA),labels=function(x){return(paste0(x*100,"%"))})
+    }
+g
+
+ggsave_both(paste0(Sys.Date(),"_panel_hdppis_explained_by_environment_number"),
+    g,width=4,height=4)
+
+```
+
+```{r pearson_and_abundance,cache=T,echo=F,message=F,results='hide'}
+test_set <- full_set %>%
+    left_join( all_abundance %>% filter(Experiment=="SD_merge") %>%
+            select(PPI,MeanMol1,MeanMol2)
+        ,by="PPI") %>%
+    filter(!is.na(MeanMol1),!is.na(MeanMol2))
+nrow(test_set)
+
+corz_r <- test_set %>%
+    {cor.test(.$pearson,log10((.$MeanMol1*.$MeanMol2)^0.5),method="pearson")} 
+
+lmz_r <- test_set %>%
+    {summary(lm(formula=I(pearson)~I(log10((MeanMol1*MeanMol2)^0.5)),data=.))}
+
+dem_r <- test_set %>%
+    filter(!is.na(pearson)) %>%
+    {with(.,
+        mcreg(log10((MeanMol1*MeanMol2)^0.5),pearson,method.reg="Deming",
+            error.ratio=var(log10((MeanMol1*MeanMol2)^0.5))/var(pearson)
+            )
+        )
+    }
+
+full_set %>%
+    left_join( all_abundance %>% select(PPI,MeanMol1,MeanMol2) %>% distinct()
+        ,by="PPI") %>%
+    filter(!is.na(MeanMol1),!is.na(MeanMol2)) %>%
+    select(-data) %>%
+    rowwise() %>% 
+    mutate(gma=log10(sqrt(MeanMol1*MeanMol2))) %>% 
+    mutate(
+        predict_lm=lmz_r$coefficients[1,1]+lmz_r$coefficients[2,1]*gma,
+        predict_dem=dem_r@glob.coef[1]+dem_r@glob.coef[2]*gma
+#, predict_sat=1-fit@coef["a"]*exp(fit@coef["b"]*gma)
+        ) %>%
+    ungroup() %>% 
+    summarize(
+        sse_lm=sum((predict_lm-pearson)^2),
+        sse_dem=sum((predict_dem-pearson)^2)#, sse_sat=sum((predict_sat-pearson)^2)
+        )
+g_abundance_pearson_new_model <- full_set %>%
+    left_join( all_abundance %>% select(PPI,MeanMol1,MeanMol2) %>% distinct()
+        ,by="PPI") %>%
+    ggplot()+theme_classic()+
+    aes(x=(MeanMol1*MeanMol2)^0.5,y=pearson)+
+    scale_x_log10(
+        breaks=10^c(3,3.5,4,4.5,5),
+        labels=function(x){unlist(map(x,
+                    function(x){bquote(10^.(log10(x)))
+                    }))},
+        limits=c(10^3.15,10^4.7)
+        ) +
+    geom_hex(binwidth=c(0.04,0.08),aes(fill=..count..),col="white",size=0.15)+
+    geom_abline(
+        data=data.frame(
+            intercept=c(dem_r@glob.coef[1]),#,coef(lmz_r)[1,1]),
+            slope=c(dem_r@glob.coef[2]),#,coef(lmz_r)[2,1]),
+            Regression=c("Deming")#,"OLS")
+        ),aes(intercept=intercept,slope=slope),#,linetype=Regression),
+        size=1,col="red"
+    )+
+    annotate(geom="label",x=3.5e4,y=.6,
+        label=paste0("r = ",signif(corz_r$estimate,3))
+        )+
+    xlab("Mean abundance of protein pair")+
+    ylab("Pearson correlation of observed data\nto mass-action kinetics model")+
+    guides(col=guide_colorbar(label=F))+
+#    scale_linetype_discrete("Regression")+
+    viridis::scale_fill_viridis("Count")
+g_abundance_pearson_new_model
+
+ggsave_both(paste0(Sys.Date(),"_panel_abundance_and_model_rsquared_with_line"),
+    g_abundance_pearson_new_model,
+    width=8,height=6)
+
+# And this one is using OLS, and just breaking up each bin of mutability 
+# (inverse of number of environments seen in)
+
+g_abundance_rsquared_new_model_npos <- full_set %>%
+    left_join( all_abundance %>% select(PPI,MeanMol1,MeanMol2) %>% distinct()
+        ,by="PPI") %>%
+    mutate(npoz=unlist(map(data,function(x){length(unique(filter(x,Positive==1)$Experiment))}))) %>%
+    {
+    ggplot(.)+theme_classic()+
+    aes(x=(MeanMol1*MeanMol2)^0.5,y=pearson)+
+    facet_wrap(~npoz)+
+    scale_x_log10(
+        breaks=10^c(3.5,4,4.5),
+        labels=function(x){unlist(map(x,
+                    function(x){bquote(10^.(log10(x)))
+                    }))},
+        limits=c(10^3.15,10^4.7)
+        ) +
+    geom_abline(
+        data=data.frame(
+            intercept=c(coef(lmz_r)[1,1]),
+            slope=c(coef(lmz_r)[2,1]),
+            Regression=c("OLS across\nall")
+        ),aes(intercept=intercept,slope=slope,col=Regression),
+        size=1
+    )+
+    geom_label(x=3.5,y=.2,size=3,
+        data=group_by(.,npoz)%>%
+            summarize(corz=cor(pearson,log10((MeanMol1*MeanMol2)^0.5),use="complete.obs")),
+        aes(label=paste0("Within bin\nr = ",signif(corz,3)))
+        )+
+    stat_smooth(data=mutate(.,Regression="Within bin"),method="lm",
+        aes(col=Regression))+
+    geom_hex(binwidth=c(0.04,0.04),aes(fill=..count..),alpha=0.5)+
+    xlab("Geometric mean abundance of protein pair, from Ho et. al. 2018")+
+    ylab("Pearson correlation to hetero/homo-dimer model fit")+
+    coord_cartesian(ylim=c(0,1))+
+    viridis::scale_fill_viridis("Count")
+    }
+g_abundance_rsquared_new_model_npos
+
+ggsave_both(paste0(Sys.Date(),"_abundance_and_model_rsquared_with_lines_by_npos"),
+    g_abundance_rsquared_new_model_npos,
+    width=10,height=6)
+
+```
+
+```{r different_way_of_comparing_fit_and_abundance,cache=T,echo=F,message=F,error=F}
+
+g <- pdatar %>%
+    ggplot()+theme_bw()+
+    aes(x=npoz,group=npoz,y=sqrt(MeanMol1*MeanMol2))+
+    geom_boxplot(outlier.alpha=0)+
+    geom_dotplot(binwidth=0.03,binaxis="y",stackdir="center",alpha=0.5)+
+    ylab("Mean abundance in SD")+
+    scale_y_log10()
+g
+
+pdatar %>% group_by(Explained) %>%
+    mutate(meanmol=sqrt(MeanMol1*MeanMol2)) %>%
+    select(Explained,meanmol) %>%
+    nest(data=c(meanmol)) %>%
+    {wilcox.test(unlist(.$data[1]),unlist(.$data[2]))}
+
+g_abundance_explained_boxplot <- pdatar %>%
+    mutate(Explained=factor(Explained,c(F,T))) %>%
+    ggplot()+theme_classic()+
+    aes(x=Explained,y=sqrt(MeanMol1*MeanMol2))+
+    geom_boxplot(notch=T,outlier.alpha=0)+
+    geom_dotplot(binwidth=0.02,binaxis="y",stackdir="center",alpha=0.5)+
+    ylab("Mean abundance of protein pair")+
+#    scale_x_discrete(labels=c("Not significant fit to the model","PPI explained by abundance model"))+
+    scale_x_discrete(labels=c(`FALSE`="Not significant fit to the model",`TRUE`="PPI explained by abundance model"))+
+    xlab("")+
+    geom_signif(
+        y_position=3.15,
+        tip_length=-0.01,
+        vjust=-0.5,
+        map_signif_level=T,
+        comparisons=list(c("TRUE","FALSE")),test="wilcox.test"
+    )+
+#    theme(axis.text.x=element_text(angle=10,vjust=0.2))+
+#    scale_y_log10(breaks=c(1.5e3,3e3,6e3,1e4,1.5e4,3e4,6e4),limits=c(1500,6.5e4))+
+    scale_y_log10(
+        breaks=10^c(3.5,4,4.5),
+        labels=function(x){unlist(map(x,
+                    function(x){bquote(10^.(log10(x)))
+                    }))},
+        limits=c(10^3.15,10^4.7)
+        ) + coord_flip()
+g_abundance_explained_boxplot
+
+ggsave_both(paste0(Sys.Date(),"_panel_mean_abundance_and_explained",collapse=""),
+    g_abundance_explained_boxplot,width=5,height=5)
+
+```
+
+
+We found that more qualitatively
+stable PPIs (seen in more environments) were more strongly explained by this
+simple model (Figure SXbarplots_npos_aka_4G), while higher protein abundance in
+standard rich media is associated with a poor fit to the simple abundance
+variation model (Figure SX_abundance_and_rsquared). 
+
+This suggests that,
+compared to stable PPIs, unstable PPIs are more subject to more diverse
+post-translational regulation, but also that highly abundant PPIs are more
+constrained (perhaps by saturation of binding sites) in the use of this
+mechanism. While this analysis is limited to a subset of PPIs amongst
+homodimer-participiating proteins, it highlights the complex relationship of
+abundance and PPI stability and the importance of studying this relationship
+across diverse core and accessory PPIs and in multiple environments.  Protein
+abundance correlates with both PPI stability and PPI abundance.
+
+Previous work, which focused largely on stable PPIs identified by mDHFR-PCA
+(Figure 3A), found that 21-47% of PPI abundance variation could be explained by
+changes in mRNA abundance alone. What does this mean in that context?
+
+
+# Conclusion
+
+We found that the role of protein expression in regulating PPI abundance is
+complex. Broadly across the proteome in one environment, there is a strong
+relationship between abundance and PPI abundance in the most stable PPIs but
+not in the more variable and environmentally specific PPIs. 
+Using homodimers as a proxy, we find that less than a quarter of heterodimer
+PPIs are explainable by the signal from the component homodimers.
+Indeed, this estimate is below the contribution estimated by other groups
+(Celaj and Schlecht et. al. 2017, Rochette et. al. 2014), and reflects that
+each analysis is relying on assumptions and integration of data collected from
+multiple modalities.
+Importantly, we find that abundance of the underlying components saturates
+the "regulatability" of a PPI by abundance changes, highlighting the importance
+of comparing measurements of the same PPI across multiple environments to
+understand how PPIs are regulated.
+
+Post-translational regulation of PPIs are neither the rare 
+exception or the universal rule, and definitively dissecting the 
+quantitative contributions underlying this will require integration of 
+abundance, localization, and proximity measurements of proteomes
+in similar measurement modalities in similar growth conditions.
+
+# Making a supplmental figure, set of panels
+
+```{r fig,cache=T,echo=F,warning=F,message=F,results='hide',fig.width=10,fig.height=8}
+
+g_tmp <- g_homodimer_fits_explained_or_not
+g_tmp[[2]] <- NULL
+g_supp_fig <- 
+    plot_grid(ncol=3,
+    NULL,NULL,NULL,
+    NULL,
+    plot_grid(nrow=3,
+        plot_grid(ncol=2,
+            g_abundance_signal_all,
+            #g_tmp+
+            g_homodimer_fits_explained_or_not+
+                xlab("Heterodimer fitness expected from mass-action kinetics model")+
+                ylab("Heterodimer fitness observed"),
+            rel_widths=c(1,2),
+            hjust=-0.02,vjust=0,
+            labels=c("A)","B)")
+        ),
+        NULL,
+        plot_grid(ncol=2,
+            g_log_mod,
+            plot_grid(ncol=1,
+                g_abundance_pearson_new_model,
+                g_abundance_explained_boxplot+
+                    scale_x_discrete(labels=c("Not explained","Explained"))
+                    ,
+                align="v",axis="lr",
+                rel_heights=c(1,1),
+                hjust=1.5,vjust=0.05,
+                labels=c("D)","E)")
+            ),
+            rel_widths=c(1.0,1),
+            hjust=1.0,vjust=0.05,
+            labels=c("C)")
+        ),
+        rel_heights=c(1,0.05,1.5),
+        labels=c("")
+    ),
+    NULL,
+    NULL,NULL,NULL,
+    rel_heights=c(0.02,1,0.02),
+    rel_widths=c(0.02,1,0.02)
+)
+#g_supp_fig
+ggsave_both(paste0(Sys.Date(),"_supp_fig",collapse=""),
+    g_supp_fig,width=11,height=10
+    )
+
+
+
+```
+
+# Other
+
+
+How are different tag configurations correlated, breaking apart by different 
+other factors of the fit... don't see any pattern.
+
+```{r figuring_tag_correlations,cache=T,eval=F,echo=F}
+## How are different tag configurations correlated?
+
+full_set %>%
+    select(PPI,ORF1,ORF2) %>%
+    {dbWriteTable(db_bd,"full_set_ppis",.)}
+
+datar <- dbGetQuery(db_bd,"
+    SELECT * FROM
+        ( SELECT PPI AS ID_PPI, ORF2 || '_' || ORF1 AS ID_IPP
+            FROM full_set_ppis )
+    LEFT JOIN
+        fitness
+    ON
+        PPI==ID_PPI OR PPI==ID_IPP
+    ") %>% as_tibble()
+datar
+
+corrd_up <- datar %>% 
+    select(-ID_PPI,-ID_IPP) %>%
+    filter(!Experiment%in%c("SD","SD2")) %>% 
+    rowwise() %>%
+    mutate(ID_PPI=paste0(sort(c(ORF1,ORF2)),collapse="_")) %>%
+    distinct %>%
+    group_by(ID_PPI) %>% 
+    filter(length(unique(PPI))==2) %>%
+    nest(subdatar=c(index,PPI,Mean_fitness,Normalized_Fitness,sd,Positive,
+            ORF1,ORF2,Experiment)
+    ) %>%
+    mutate(cor_tags=(
+            map(subdatar,
+                function(x){
+                    try(
+                        select(x,ORF1,Normalized_Fitness,Experiment) %>%
+                            pivot_wider(names_from="ORF1",
+                                values_from="Normalized_Fitness",
+                                values_fn=list(Normalized_Fitness=list)
+                            ) %>% unnest(starts_with("Y")) %>%
+                            {cor(.[,2],.[,3])}
+                    )
+                }
+            )
+        )
+    ) %>%
+    ungroup() %>%
+    filter(unlist(map(map(cor_tags,is),function(x){x[1]=="matrix"}))) %>%
+    mutate(corr_tags=unlist(cor_tags))
+corrd_up
+
+g <- corrd_up %>% select(-subdatar,-cor_tags) %>%
+    left_join(
+        full_set %>% rowwise() %>% select(-data) %>%
+            mutate(ID_PPI=paste0(sort(c(ORF1,ORF2)),collapse="_"))
+        ,by="ID_PPI"
+    ) %>%
+    select(ID_PPI,corr_tags,estimate,qvalz,r_squared) %>%
+    pivot_longer(names_to="variable",values_to="value",c(-ID_PPI,-corr_tags)) %>%
+    ggplot()+theme_classic()+
+    aes(x=value,y=corr_tags)+
+    facet_wrap(~variable,scales="free")+
+    geom_point()
+g
+
+g <- corrd_up %>% select(-subdatar,-cor_tags) %>%
+    left_join(
+        full_set %>% rowwise() %>% select(-data) %>%
+            mutate(ID_PPI=paste0(sort(c(ORF1,ORF2)),collapse="_"))
+        ,by="ID_PPI"
+    ) %>%
+    select(ID_PPI,corr_tags,Explained,nobs,npos) %>%
+    pivot_longer(names_to="variable",values_to="value",c(-ID_PPI,-corr_tags)) %>%
+    ggplot()+theme_classic()+
+    aes(x=value,y=corr_tags,group=value)+
+    facet_wrap(~variable,scales="free")+
+    geom_boxplot()
+g
+
+```
+
+How much variation can be explained by changes in abundance relative to
+changes in affinity?
+
+This is more of a toydata theoretical question...
+
+For the PPIs considered here, how much are they bound according to their 
+abundances in SD assuming a certain $k_d$ (and that PPIs behave that way)?
+
+```{r fiddling_around_abundance_changes_explained_not_explained,cache=T,echo=F,message=F,warning=F}
+
+g <- pdatar %>%
+    ungroup() %>%
+    select(Explained,MeanMol1,MeanMol2) %>%
+    mutate(
+        mean_mol=sqrt(MeanMol1*MeanMol2),
+        conc_1=MeanMol1/6.023e23/82e-15,
+        conc_2=MeanMol2/6.023e23/82e-15
+    ) %>%
+    mutate(constants=list(c(1e-8,1e-7,1e-6))) %>%
+    unnest(constants) %>%
+    mutate(
+        conc_bound=pmap(list(c1=conc_1,c2=conc_2,kd=constants),
+                function(c1,c2,kd) {
+                    return(
+                        ( (c1+c2+kd)-sqrt( (c1+c2+kd)^2 - 4*(c1*c2) )) / 2
+                    )
+                }
+            )
+    ) %>%
+    unnest(conc_bound) %>% 
+    rowwise() %>%
+    mutate(frac_bound=conc_bound/min(conc_1,conc_2)) %>%
+    ggplot()+theme_bw()+
+    aes(x=mean_mol,y=frac_bound,col=Explained)+
+    facet_wrap(~constants)+
+#    scale_color_discrete(expression("k"[d]),breaks=10^c(-8,-7,-6),labels=c("10nM","100nM","1uM"))+
+    geom_density2d()+
+    geom_point(size=0.5)+
+    xlab("Mean abundance of protein pair")+
+    scale_x_log10()+
+#    geom_boxplot(outlier.alpha=0)+
+#    geom_dotplot(binwidth=0.03,binaxis="y",stackdir="center",alpha=0.5)+
+    ylab("Frac bound")
+#    scale_x_discrete(labels=c("Not significant fit to the model","PPI explained by abundance model"))+
+#    geom_signif( y_position=4.8,xmin=1,xmax=2,annotation=c("***") )+
+g
+
+```
+
+Not sure what to make of it.
+
+
+For the logistic model, surely many of those features are correlated. What does
+a PCA of those features look like?
+
+```{r modeling_logistic_with_pca,cache=T,echo=F,results="hide",warning=F}
+
+per_orf_features <- dbGetQuery(db_bd,'
+        SELECT DISTINCT * FROM
+            ( SELECT Systematic FROM homodimer_features )
+        LEFT JOIN
+            per_orf
+        USING (Systematic) 
+        ') %>%
+    as_tibble() %>%
+    select_at(
+        c("YORF",
+            names(.)[
+                unlist(sapply(names(.),function(x){
+                        any(grepl(features_rename[x],formula_to_test[[3]]),na.rm=T)
+                        }
+                    )   )   
+                ] ,
+            "MeanMol"
+            )
+        ) %>%
+    distinct() %>% 
+    mutate(Log10MeanMolecules=log10(MeanMol)) %>%
+    select(-c(MeanMol)) %>%
+    {setNames(.,
+        ifelse(names(.)%in%names(features_rename),
+        features_rename[names(.)],names(.))
+        )} %>%
+    mutate_at(vars(-YORF),normalize) 
+per_orf_features
+    
+
+pca_of_vars <- per_orf_features %>% 
+    (   function(x) { 
+            z <- as.matrix(x[complete.cases(x),-1])
+            rownames(z) <- x$YORF[complete.cases(x)]
+            return(z)
+        } 
+    ) %>%
+    prcomp 
+pc_vars <- pca_of_vars %>%
+    {  mutate(as_tibble(.$rotation),variable=rownames(.$rotation)) }
+pc_vars
+
+plot(pca_of_vars$sdev/sum(pca_of_vars$sdev))
+# Not much variation explained by first couple PCs
+
+g <- pc_vars %>%
+    ggplot()+theme_bw()+
+    aes(col=variable,label=variable)+
+    geom_point()+geom_label_repel()+
+    guides(col=F)
+g+aes(x=PC1,y=PC2)
+g+aes(x=PC3,y=PC4)
+
+```
+
+Sure so similarities between mean molecules, CAI, and Ubiquitination could be
+explained by this, so it's likely just abundance I think.
+
+I don't have a similar analysis for mutability, because that requires using
+PPIs, which have multiple of these properties. I don't know how to structure
+that query...

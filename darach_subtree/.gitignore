@@ -1,0 +1,11 @@
+.nextflow
+.nextflow.log*
+data.zip
+data/
+reports/
+scripts/nextflow
+singularity_containers/
+tmp/
+work/
+*.swp
+bkwork/
