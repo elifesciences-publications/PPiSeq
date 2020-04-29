@@ -17,16 +17,28 @@ nextflow: scripts/nextflow \
 		-resume -ansi-log false \
 		-with-dag reports/dag.html
 
-archive: data.zip
+archive: data.zip-piece-00
 data.zip: data
 	zip -9 -r $@ $<
+data.zip-piece-00: data.zip
+	split --bytes=200M -d $< data.zip-piece-
 	
-unfold_archive: 
-	@echo "ARE YOU SURE ABOUT THIS? THIS RE-WRITES THE data FOLDER FROM data.zip"
+data-archive.zip: data.zip-piece-00
+	@echo "I'm assuming that if you have the first piece, you have the last"
+	@echo "piece. Also, I'm going to rename it as 'data-archive.zip' to not"
+	@echo "over write it. So 'data.zip' is what I made, then I split it,"
+	@echo "then you're putting those back together into 'data-archive.zip',"
+	@echo "and then you unfold it in the below step."
+	cat data.zip-piece-* > data-archive.zip
+
+unfold_archive: data-archive.zip
+	@echo "ARE YOU SURE ABOUT THIS? THIS unzips `data-archive.zip` to re-write "
+	@echo "the `data` folder."
 	read something
-	@echo "REALLY? YOU better have data.zip here..."
+	@echo "REALLY? YOU better have data-archive.zip here..."
 	read something
-	unzip data.zip 
+	unzip data-archive.zip -d data
+
 
 all: 
 	@echo "none"

@@ -1,8 +1,9 @@
 # What is this and how do I use it
 
 This sub-tree is written by Darach Miller, it takes a zipped up data archive
-(`data.zip`, [in this OSF repo](https://osf.io/7yt59/)). Then you can unzip
-that using 
+(in pieces, [in this OSF repo](https://osf.io/7yt59/)). Download that.
+Then you can stick
+those back together and unzip it to make the `data` directory by running
 
     make unfold_archive
 
