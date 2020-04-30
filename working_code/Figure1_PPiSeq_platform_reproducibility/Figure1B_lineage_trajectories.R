@@ -76,6 +76,7 @@ Lineage_plot = function(PPI_pos_DHFR_transform, output){
     scale_x_continuous(name = "Generation",
                        breaks = seq(0,12, by =3),
                        labels = seq(0,12, by= 3)) +
+  
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(), axis.line = element_line(colour = "black")) +
     theme(axis.text.x = element_text(size = 8, color = "black"), 

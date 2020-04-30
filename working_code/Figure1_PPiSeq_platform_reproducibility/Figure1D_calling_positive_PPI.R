@@ -133,9 +133,10 @@ bar_plot_data_real$PPI = factor(bar_plot_data_real$PPI,
 library(ggplot2)
 
 ggplot()+
-  geom_dotplot(aes(x = PPI, y = fitness, group = PPI, fill = color, col = color), bar_plot_data_real, 
+  geom_dotplot(aes(x = PPI, y = fitness, group = PPI, fill = color, col = NA), bar_plot_data_real, 
                binaxis="y", stackdir="center",  binwidth = 0.02, alpha =0.5,show.legend = FALSE, dotsize = 3)+
-  geom_jitter(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_neg, width = 0.1, alpha = 0.5, size = 1.5) +
+  geom_jitter(aes(x = PPI, y = fitness, group = PPI, stroke = 0, col = color), bar_plot_data_neg, 
+              width = 0.1, alpha = 0.5, size = 1.5) +
   geom_violin(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_control, 
               draw_quantiles = c(0.25, 0.5, 0.75), show.legend = FALSE)+
   #geom_boxplot(aes(x = PPI, y = fitness, group = PPI, col = color), bar_plot_data_control, 
@@ -156,7 +157,8 @@ ggplot()+
                      breaks = seq(-0.4,1.2, by =0.2),
                      labels = seq(-0.4,1.2, by= 0.2))+
   guides(color = guide_legend(override.aes = list(size = 2, alpha = 0.5)))+
-  theme(legend.key = element_blank(), legend.position = c(0.22,0.8))+
+  #theme(legend.key = element_blank(), legend.position = c(0.22,0.8))+
+  theme(legend.position = "none")+ # remove the legend
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   theme(axis.text.x = element_text(size = 6, color = "black", angle = 60, hjust =1),

@@ -60,6 +60,12 @@ all_Tecan = rbind(d_1_1, d_1_2, d_1_3, d_1_4, d_1_5, d_1_6, d_1_7,
                   d_2_1, d_2_2, d_2_3, d_2_4, d_2_5, d_2_6, d_2_7,
                   d_2_8, d_2_9, d_2_10, d_5_1, d_5_2, d_5_3, d_5_4, 
                   d_5_5, d_5_6, d_5_7, d_only_1, d_only_2, d_only_3) # 785 all single PPIs
+PPI_group = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv")
+PPI_group = PPI_group[which(PPI_group[,3] == "1"),] # 3921, 4704
+all_Tecan = match_both_direction(all_Tecan, PPI_group[,1]) # 502
+index_pvalue = ncol(all_Tecan)
+all_Tecan[, index_pvalue] = p.adjust(as.numeric(all_Tecan[, index_pvalue - 1]), method = "BH")
+
 csvWriter(all_Tecan, "Tecan_DMSO_positive_combine.csv")
 
 all_Tecan = csvReader_T("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_PPI/Combine_TECAN/Tecan_DMSO_positive_combine.csv")
@@ -68,7 +74,7 @@ vScore = csvReader_T("~/Dropbox/PPiseq_02/Paper_data/Useful_datasets/Variation_s
 count_summary = csvReader_T("~/Dropbox/PPiseq_02/Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv")
 SD_select = count_summary[which(count_summary[,3] == "1"),]
 vScore_select = vScore[which(vScore[,1] %in% SD_select[,1]),]
-vScore_select_Tecan = match_both_direction(vScore_select, all_Tecan[,1]) # 412 
+vScore_select_Tecan = match_both_direction(vScore_select, all_Tecan[,1]) # 502 
 #vScore_select_fitness = as.numeric(vScore_select_Tecan[,4]) # 4: DMSO column
 fitness_bins = c(0.25, seq(0.26, 0.39, by = 0.01), seq(0.42, 0.66, by = 0.04), c(0.8, 1.0))
 
@@ -136,18 +142,18 @@ training_data = split_data_generation(vScore_select_Tecan, 4, fitness_bins, all_
 fitmodel = lm(val_rate ~ bins + env_count_normal, training_data)
 coeffs = coef(fitmodel)
 #(Intercept)             bins env_count_normal 
-#0.5396787     -0.1400504      0.5456982 
+# 0.5460176     -0.1302505      0.5130320
 #predict(fitmodel, data.frame(bins = c(0.2, 0.4), env_count_normal = c(1/9, 5/9)))
 #coeffs[1] + coeffs[2]*0.2 + coeffs[3]* 1/9
 predict_external_test = predict(fitmodel, external_test, type = "response")
 
 cor(external_test$val_rate, predict_external_test, method = "spearman") # 0.9833333
-cor(external_test$val_rate, predict_external_test, method = "pearson") # 0.9684343
+cor(external_test$val_rate, predict_external_test, method = "pearson") # 0.9768506
 
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure3_accessory_PPIs/validation_rate_modeling/Predicting_validation_rate.pdf", width =5, height =5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/FigureS5_validation_each_stability_bin/FigureS5D_Predicting_validation_rate.pdf", width =5, height =5)
 plot(external_test$val_rate, predict_external_test, pch = 16, col = "blue",
      type = "p", xlim = c(0.5, 1), ylim = c(0.5,1), xlab = "Observed validation rate",
-     ylab = "Predicted validation rate")
+     ylab = "Predicted validation rate", bty = "n")
 #points(external_test$val_rate, predict_external_test_2, pch =16, col = "red")
 lines(seq(0.5, 1, by = 0.1), seq(0.5, 1, by = 0.1), col = "black")
 text(0.6, 0.95, labels = expression(paste("Spearman's ", italic(r), " = 0.98")))
@@ -156,7 +162,7 @@ dev.off()
 ############################################################################
 ## Use this model to predict the validation rate for each PPI in each environment
 setwd("~/Dropbox/PPiseq_02/")
-coeffs = c(0.5396787, -0.1400504, 0.5456982)
+coeffs = c(0.5460176, -0.1302505, 0.5130320)
 PPI_vscore = csvReader_T("Paper_data/Useful_datasets/Variation_score_PPI_environment_neg_zero_SD_merge_filter.csv")
 PPI_count = csvReader_T("Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv")
 matrix_vali = matrix(NA, nrow(PPI_count), ncol(PPI_count))
@@ -198,9 +204,9 @@ hist(as.numeric(matrix_vali_add[,10])) # NaCl
 
 env_count_ori = as.data.frame(table(matrix_vali_add[,2]))$Freq
 env_count_ori # 7724         1266        730      579       579       553        497     579       474
-env_count_bar # 4235.2519  769.9468  490.5848  424.2832  458.8906  470.2373  450.4910  553.1660  471.2351
+env_count_bar # 4284.2773  773.4567  489.7942  421.5497  454.0906  463.7560  443.0204  542.8383  466.8507
 ### Only plot the corrected counts of PPIs
-pdf("~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/FigureS4_validation_each_stability_bin/FigureS4E_Corrected_Validation_bar_plot.pdf", width= 5.5, height=5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/FigureS5_validation_each_stability_bin/FigureS5E_Corrected_Validation_bar_plot_one.pdf", width= 5.5, height=5)
 barCenter = barplot(env_count_bar, horiz=F, beside=F, ylim=c(0,5000), ylab="Corrected number of PPIs",
                     space= c(0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4), axisnames=F, 
                     col= apple_colors[1], border=NA,  cex.axis=0.8)
@@ -219,12 +225,12 @@ env_count_final = c(a[1], b[1], a[2], b[2], a[3], b[3], a[4], b[4], a[5], b[5],
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 col_chosen = apple_colors[c(1,4)]
-pdf("~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/FigureS4_validation_each_stability_bin/FigureS4E_Corrected_Validation_bar_plot_comparison.pdf.pdf", width= 5.5, height=5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/SFigures/paper/FigureS5_validation_each_stability_bin/FigureS5E_Corrected_Validation_bar_plot_comparison.pdf.pdf", width= 5.5, height=5)
 barCenter = barplot(env_count_final, horiz=F, beside=F, ylim=c(0,10000), ylab="Number of PPIs",
                     space= c(0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15,
                              0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15), axisnames=F, 
                     col= col_chosen, border=NA,  cex.axis=0.8)
-legend("topright", legend=c("Original", "Corrected"), fill=col_chosen, cex=0.8, bty="n", border=FALSE, xpd = TRUE)
+legend("topright", legend=c("Primary", "Validated"), fill=col_chosen, cex=0.8, bty="n", border=FALSE, xpd = TRUE)
 #text(x= barCenter, y = as.numeric(merge_ratio)*100 + 2, labels = counts_label, cex=0.8, xpd = TRUE)
 env_num_loc = rep(0, 9)
 for(i in 1:9){

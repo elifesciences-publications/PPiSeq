@@ -90,7 +90,7 @@ ggplot(stability_bin_degree, aes(x = degree, fill = label, col = label))+
 
 #ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/degree_environment_bin.pdf", width =4, height =4)
 
-ggsave("Working_figure/SFigures/paper/FigureS5_neighbor_stability/Degree_environment_bin.pdf", width =4, height =4)
+ggsave("Working_figure/SFigures/paper/FigureS6_neighbor_stability/Degree_environment_bin.pdf", width =4, height =4)
 
 
 

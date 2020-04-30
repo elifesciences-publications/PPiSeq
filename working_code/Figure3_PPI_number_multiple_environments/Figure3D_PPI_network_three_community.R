@@ -29,13 +29,13 @@ infomap_label = rbind(infomap_stable, infomap_median, infomap_unstable) # 948
 infomap_others = infomap[which(!infomap[,1] %in% infomap_label[,1]),] # 1134
 
 ## Calculate the mean stability score for each community
-mean_stable = mean(as.numeric(infomap_stable[,3])) # 2.559515
-mean_median = mean(as.numeric(infomap_median[,3])) # 1.904971
-mean_unstable = mean(as.numeric(infomap_unstable[,3])) # 0.9238445
+mean_stable = median(as.numeric(infomap_stable[,3])) # 0.6197287
+mean_median = median(as.numeric(infomap_median[,3])) # 0.8063364
+mean_unstable = median(as.numeric(infomap_unstable[,3])) # 1.371961
 
-infomap_stable[,2] = "Core"
-infomap_median[,2] = "Accessory (intermediate stability)"
-infomap_unstable[,2] = "Accessory (low stability)"
+infomap_stable[,2] = "Core (low variability)"
+infomap_median[,2] = "Core (intermediate variability)"
+infomap_unstable[,2] = "Accessory (high variability)"
 community_three = rbind(infomap_stable, infomap_median, infomap_unstable)
 colnames(community_three) = c("Protein", "Community", "vScore", "Degree")
 csvWriter(community_three, 'Community_label_three.csv')
@@ -44,27 +44,34 @@ community_label = dataFrameReader_T("Community_label_three.csv")
 community_label$Degree = log10(community_label$Degree)
 
 community_label$Community<- factor(community_label$Community, 
-                                   levels = c("Core", "Accessory (intermediate stability)",
-                                              "Accessory (low stability)"))
-
+                                   levels = c("Core (low variability)", "Core (intermediate variability)",
+                                              "Accessory (high variability)"))
+#community_label$vScore = 1/community_label$vScore
 library(ggplot2)
-col_chosen = c("red", "purple", "blue")
-ggplot(community_label, aes(x = vScore, y = Degree, fill = Community, color = Community))+
-        geom_point(pch = 16, alpha = 0.5) +
+col_chosen = c("red", "springgreen4", "blue")
+ggplot(community_label, aes(x = vScore, y = Degree, fill = Community, 
+                            color = Community, shape = Community))+
+        geom_point(alpha = 0.5) +
         geom_vline(xintercept = mean_stable, col = "red", linetype = "dashed") +
-        geom_vline(xintercept = mean_median, col = "purple", linetype = "dashed") +
+        geom_vline(xintercept = mean_median, col = "springgreen4", linetype = "dashed") +
         geom_vline(xintercept = mean_unstable, col = "blue", linetype = "dashed") +
         scale_color_manual(values = c(col_chosen)) +
         scale_fill_manual(values = c(col_chosen)) +
-        xlab("Stability score") +
-        ylab(expression('Log'[10]* '(Degree)')) +
-        theme(legend.key=element_blank()) +
+        scale_shape_manual(values = c(16,17,16))+
+        #xlab("Stability score") +
+        #ylab(expression('Log'[10]* '(Degree)')) +
+        theme(legend.position = "none",
+              axis.title.x = element_blank(),
+              axis.title.y = element_blank(),
+              axis.text.x = element_blank(),
+              axis.text.y = element_blank()) +
+        #theme(legend.key=element_blank()) +
         #guides(fill=guide_legend(nrow=1,byrow=TRUE))+
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-              panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-        theme(axis.text.x = element_text(size = 10, color = "black"),
-              axis.text.y.left = element_text(size = 10, color = "black"),
-              axis.title.y=element_text(size=10)) + 
-        theme(text = element_text(size=10))
+              panel.background = element_blank(), axis.line = element_line(colour = "black")) 
+        #theme(axis.text.x = element_text(size = 10, color = "black"),
+              #axis.text.y.left = element_text(size = 10, color = "black"),
+              #axis.title.y=element_text(size=10)) + 
+        #theme(text = element_text(size=10))
 
-ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure3_accessory_PPIs/Figure3E_three_communities.pdf", width =6, height =3)
+ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure3_accessory_PPIs/Figure3E_three_communities.pdf", width =3, height =2.8)

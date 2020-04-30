@@ -28,7 +28,7 @@ vScore_protein = cbind(protein_unique, rep(0, length(protein_unique)))
 for(i in 1:length(protein_unique)){
         index_protein = unique(c(which(PPI_pair[,1] == protein_unique[i]),
                                  which(PPI_pair[,2] == protein_unique[i])))
-        vScore_protein[i,2] = mean(1/(as.numeric(vScore_PPI[index_protein,3])))
+        vScore_protein[i,2] = mean(as.numeric(vScore_PPI[index_protein,3]))
 }
 
 #### Calculate the degree for each protein
@@ -43,7 +43,7 @@ degree_protein = protein_degree_count(vScore_PPI[,1])
 
 ## Input a network and find its neighbours for a specific node
 PPI_network = data.frame(protein_A = PPI_pair[,1], protein_B = PPI_pair[,2], 
-                         Env = as.numeric(vScore_PPI[,3]), vScore = as.numeric(vScore_PPI[,4]))
+                         Env = as.numeric(vScore_PPI[,2]), vScore = as.numeric(vScore_PPI[,3]))
 library(igraph)
 g = graph_from_data_frame(PPI_network, directed = FALSE)
 
@@ -60,6 +60,13 @@ vScore_community_data = data.frame(protein = fast_greedy_community[,1],
                                    vScore = vSocre_community,
                                    degree = degree_community)
 csvWriter(vScore_community_data, "Working_data_2/PPI_network/community_fast_greedy.csv")
+
+### Change the stability score into variability score
+vScore_community_data = dataFrameReader_T("Working_data_2/PPI_network/community_fast_greedy.csv")
+vScore_community_data$vScore = as.numeric(vScore_protein[match(as.character(vScore_community_data$protein), 
+                                                               vScore_protein[,1]),2])
+csvWriter(vScore_community_data, "Working_data_2/PPI_network/community_fast_greedy.csv")
+######
 
 summary_community = aggregate(vScore~community, data=vScore_community_data, 
                               FUN=function(x) c(mean=mean(x), count=length(x)))
@@ -79,11 +86,11 @@ vScore_community_data_select$community = factor(vScore_community_data_select$com
 library(ggplot2)
 ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
         geom_boxplot(outlier.shape=NA)+
-        geom_dotplot(binaxis="y",stackdir="center",binwidth=0.018, alpha=0.5,dotsize = 1,  
+        geom_dotplot(binaxis="y",stackdir="center",binwidth=0.015, alpha=0.5,dotsize = 1,  
                      fill = apple_colors[5], col = apple_colors[5]) +
         scale_x_discrete(name = "Community",limits = as.character(summary_order_select$community))+
         #scale_y_continuous(name = expression('Log'[2]* '(Degree)'))+
-        scale_y_continuous(name = "Stability score") +
+        scale_y_continuous(name = "Average variability score of PPIs") +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
@@ -91,7 +98,7 @@ ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
               axis.title.y=element_text(size=10)) + 
         theme(text = element_text(size=10))
 
-ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/fast_greedy_community_stability_score.pdf", width =4, height =4)
+ggsave("Working_figure/SFigures/paper/FigureS7_three_community_algorithm/fast_greedy_community_variability_score.pdf", width =4, height =4)
 
 ### Random walk trap
 walktrap = walktrap.community(g)
@@ -104,6 +111,13 @@ vScore_community_data = data.frame(protein = walktrap_community[,1],
                                    vScore = vSocre_community,
                                    degree = degree_community)
 csvWriter(vScore_community_data, "Working_data_2/PPI_network/community_walktrap.csv")
+
+### Change the stability score into variability score
+vScore_community_data = dataFrameReader_T("Working_data_2/PPI_network/community_walktrap.csv")
+vScore_community_data$vScore = as.numeric(vScore_protein[match(as.character(vScore_community_data$protein), 
+                                                               vScore_protein[,1]),2])
+csvWriter(vScore_community_data, "Working_data_2/PPI_network/community_walktrap.csv")
+######
 
 summary_community = aggregate(vScore~community, data=vScore_community_data, 
                               FUN=function(x) c(mean=mean(x), count=length(x)))
@@ -128,7 +142,7 @@ ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
                      fill = apple_colors[5], col = apple_colors[5])+
         scale_x_discrete(name = "Community", limits = as.character(summary_order_select$community))+
         #scale_y_continuous(name = expression('Log'[2]* '(Degree)'))+
-        scale_y_continuous(name = "Scalability score") +
+        scale_y_continuous(name = "Average variability score of PPIs") +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
@@ -136,7 +150,7 @@ ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
               axis.title.y=element_text(size=10)) + 
         theme(text = element_text(size=10))
 
-ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/walktrap_community_stability_score.pdf", width =4, height =4)
+ggsave("Working_figure/SFigures/paper/FigureS7_three_community_algorithm/walktrap_community_variability_score.pdf", width =4, height =4)
 
 ### informap
 infomap = infomap.community(g)
@@ -152,6 +166,13 @@ vScore_community_data = data.frame(protein = infomap_community[,1],
                                    vScore = vSocre_community,
                                    degree = degree_community)
 csvWriter(vScore_community_data, "Working_data_2/PPI_network/community_infomap.csv")
+
+### Change the stability score into variability score
+vScore_community_data = dataFrameReader_T("Working_data_2/PPI_network/community_infomap.csv")
+vScore_community_data$vScore = as.numeric(vScore_protein[match(as.character(vScore_community_data$protein), 
+                                                               vScore_protein[,1]),2])
+csvWriter(vScore_community_data, "Working_data_2/PPI_network/community_infomap.csv")
+######
 
 summary_community = aggregate(vScore~community, data=vScore_community_data, 
                               FUN=function(x) c(mean=mean(x), count=length(x)))
@@ -171,11 +192,11 @@ vScore_community_data_select$community = factor(vScore_community_data_select$com
 library(ggplot2)
 ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
         geom_boxplot(outlier.shape=NA)+
-        geom_dotplot(binaxis="y",stackdir="center",binwidth=0.02, alpha=0.5,dotsize = 1,  
+        geom_dotplot(binaxis="y",stackdir="center",binwidth=0.016, alpha=0.5,dotsize = 1,  
                      fill = apple_colors[5], col = apple_colors[5])+
         scale_x_discrete(name = "Community",limits = as.character(summary_order_select$community))+
         #scale_y_continuous(name = expression('Log'[2]* '(Degree)'))+
-        scale_y_continuous(name = "Stability score") +
+        scale_y_continuous(name = "Average variability score of PPIs") +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
@@ -183,10 +204,10 @@ ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
               axis.title.y=element_text(size=10)) + 
         theme(text = element_text(size=10))
 
-ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/Infomap_community_stability_score.pdf", width =5, height =4)
+ggsave("Working_figure/SFigures/paper/FigureS7_three_community_algorithm/Infomap_community_variability_score.pdf", width =5, height =4)
 
 
-#### Fastgreedy providing the maximum modularity and therefore I use this algorithm
+##### Check the GO enrichment for three communities identified by Infomap algorithm
 setwd("~/Dropbox/PPiSeq_02/Working_data_2/PPI_network/")
 #fastgreedy = csvReader_T("community_fast_greedy.csv")
 #walktrap = csvReader_T("community_walktrap.csv")
@@ -284,6 +305,8 @@ ggplot(community_label, aes(x = vScore, y = degree, fill = community, color = co
         theme(text = element_text(size=10))
 
 ggsave("~/Dropbox/PPiseq_02/Working_figure/Figure3_accessory_PPIs/accessory_PPI/Three_communities.pdf", width =4, height =3)
+#### This plot was not used in the main manuscript
+
 
 stable_protein = fastgreedy_stable[,1]
 median_protein = fastgreedy_median[,1]

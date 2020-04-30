@@ -32,7 +32,7 @@ protein_neighbor_stability = function(vScore_PPI, PPI_pair, target_protein, neig
   for (i in 1:length(neighbor_proteins)){
     index_protein = unique(c(which(PPI_pair_select[,1] == neighbor_proteins[i]),
                              which(PPI_pair_select[,2] == neighbor_proteins[i])))
-    stability_score[i]= mean(1/(as.numeric(vScore_select[index_protein,3])))
+    stability_score[i]= mean(as.numeric(vScore_select[index_protein,3]))
   }
   return(stability_score)
 }
@@ -86,10 +86,10 @@ ggplot(stability_bin_degree, aes(x = sCore, fill = label, col = label))+
         geom_density(alpha = 0.03)+
         scale_color_manual(name = "Number of positive environments", values = col_chosen)+
         scale_fill_manual(name = "Number of positive environments", values = col_chosen)+
-        scale_x_continuous(name = "Neighbors' stability score", 
-                           limits=c(0, 5),
-                           breaks = seq(0,5, by =1),
-                           labels = seq(0,5, by= 1)) +
+        scale_x_continuous(name = "Neighbor's variability score", 
+                           limits=c(0, 3),
+                           breaks = seq(0,3, by =0.5),
+                           labels = seq(0,3, by= 0.5)) +
         ylab("Density") +
         guides(fill=guide_legend(ncol=3), col = guide_legend(ncol= 3))+
         theme(legend.key = element_blank(), legend.position = c(0.65,0.92),
@@ -102,7 +102,7 @@ ggplot(stability_bin_degree, aes(x = sCore, fill = label, col = label))+
               axis.title.y=element_text(size=10)) + 
         theme(text = element_text(size=10))
 
-ggsave("Working_figure/SFigures/paper/FigureS5_neighbor_stability/Neighbor_stability_score_environment_bin.pdf", width =4, height =4)
+ggsave("Working_figure/SFigures/paper/FigureS6_neighbor_stability/Neighbor_variability_score_environment_bin.pdf", width =4, height =4)
 
 
 ############################################## not use

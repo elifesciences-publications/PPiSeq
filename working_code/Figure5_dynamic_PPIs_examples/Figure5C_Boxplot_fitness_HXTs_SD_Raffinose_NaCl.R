@@ -98,13 +98,14 @@ ggplot()+
         geom_boxplot(aes(x = Group, y = Fitness, col = Environment), HXT_bar) +
         scale_color_manual(name = "Environment", breaks = c("SD", 'Raffinose', "NaCl"),
                            values  = apple_colors[c(1,2,4)]) +
-        theme(legend.key = element_blank(), legend.position =c(0.9,0.8))+
+        #theme(legend.key = element_blank(), legend.position =c(0.9,0.8))+
+        theme(legend.key = element_blank())+
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
               axis.title.x = element_blank(),axis.text.y.left = element_text(size = 10, color = "black")) + 
         theme(text = element_text(size=10))
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure5_environment_dynamics/Figure5C_barplot_HXTs_three.pdf", width= 4, height = 4)
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure5_environment_dynamics/Figure5C_barplot_HXTs_three.pdf", width= 4, height = 3.5)
 
 
 ggplot()+

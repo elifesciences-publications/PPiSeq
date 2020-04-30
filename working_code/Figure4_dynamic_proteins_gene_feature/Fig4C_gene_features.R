@@ -85,13 +85,13 @@ for(i in 1:nrow(b.sd)){
 i = ncol(b.mean)
 o = order(b.mean[,i], decreasing = F)
 
-pdf(file = "Working_figure/SFigures/paper/Related_Figure4C_all_feature_correlation.pdf")
+pdf(file = "Working_figure/SFigures/paper//FigureS8_all_other_features/Correlation_variability_other_features.pdf")
 par(mar= c(5,5,1,1))
-barCenter = barplot(b.mean[o, i], horiz=T, beside=F, xlim=c(-0.3, 0.5), 
-                    xlab="Spearman correlation with PPI stability",
+barCenter = barplot(b.mean[o, i], horiz=T, beside=F, xlim=c(-0.5, 0.3), 
+                    xlab="Spearman correlation with the average variability score of PPIs",
                     axisnames=F, border=NA, cex.axis=1, col = paper.colors[2])
 arrows( b.mean[o, i] - b.sd[o,i], barCenter,  b.mean[o, i] + b.sd[o,i], barCenter, angle = 90, lwd = 1.5, code = 3, length = 0.05)
-text(-0.3, barCenter, labels= rownames(f_cor)[o], cex = 0.8, xpd = TRUE)
+text(-0.5, barCenter, labels= rownames(f_cor)[o], cex = 0.8, xpd = TRUE)
 dev.off()
 
 #Comparison by degree of some major features
@@ -101,16 +101,28 @@ fc_ci_lower = b.mean[fs, 3:1]- b.sd[fs, 3:1]
 fc_ci_upper = b.mean[fs, 3:1]+ b.sd[fs, 3:1] 
 pdf(file = "Working_figure/Figure4_date_party_hubs/Figure4C_gene_features_PPI_stability.pdf")
 par(mar= c(5,5,1,2))
-barCenter = barplot(t(fc), horiz=T, beside=T, xlim=c(-0.6, 0.6), 
-                    xlab="Correlation with PPI stability score",
+barCenter = barplot(t(fc), horiz=T, beside=T, xlim=c(-0.6, 0.4), 
+                    xlab="Correlation with the average variability score of PPIs",
                     axisnames=F, border=NA, cex.axis=1.2, col = paper.colors[c(2,6,8)])
 arrows( t(fc_ci_lower), barCenter, t(fc_ci_upper), barCenter, angle = 90, lwd = 1.5, code = 3, length = 0.05)
-text(-0.5, barCenter[2,], labels= rownames(fc), cex = 1.2, xpd = TRUE)
-legend(.2, 28, c("0-4", "5-14", "15+"), bty = "n", title = "PPI degree", 
+text(-0.55, barCenter[2,], labels= rownames(fc), cex = 1.2, xpd = TRUE)
+legend(.1, 8, c("0-4", "5-14", "15+"), bty = "n", title = "PPI degree", 
        fill = paper.colors[c(8,6,2)], cex = 1.2)
 dev.off()
 
-### plot a vertical barplot
+pdf(file = "Working_figure/Figure4_date_party_hubs/Figure4C_gene_features_PPI_stability_no_label.pdf",
+    width = 3, height = 4)
+par(mar= c(1,1,1,1))
+barCenter = barplot(t(fc), horiz=T, beside=T, xlim=c(-0.5, 0.4), 
+                    xlab="Correlation with the average variability score of PPIs",
+                    axisnames=F, border=NA, cex.axis=1.2, col = paper.colors[c(2,6,8)])
+arrows( t(fc_ci_lower), barCenter, t(fc_ci_upper), barCenter, angle = 90, lwd = 1, code = 3, length = 0.05)
+#text(-0.55, barCenter[2,], labels= rownames(fc), cex = 1.2, xpd = TRUE)
+#legend(.1, 8, c("0-4", "5-14", "15+"), bty = "n", title = "PPI degree", 
+       #fill = paper.colors[c(8,6,2)], cex = 1.2)
+dev.off()
+
+### plot a vertical barplot (not use)
 pdf(file = "Working_figure/Figure4_date_party_hubs/Figure4C_gene_features_PPI_stability_vertical.pdf")
 par(mar= c(5,5,1,2))
 barCenter = barplot(t(fc), horiz=F, beside=T, ylim=c(-0.6, 0.6), 

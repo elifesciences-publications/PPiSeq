@@ -48,10 +48,10 @@ ggplot() +
         theme(axis.text.x = element_text(size = 10, color = "black"),
               axis.text.y.left = element_text(size = 10, color = "black")) 
 #theme(plot.margin = unit(c(1,1,2,1), "cm"))
-ggsave("Working_figure/Sfigures/paper/FigureS4_validation_each_stability_bin/FigureS4A_Mean_fitness_PPI_each_stability_bin.pdf", width=5, height =5)
+ggsave("Working_figure/Sfigures/paper/FigureS5_validation_each_stability_bin/FigureS5A_Mean_fitness_PPI_each_stability_bin.pdf", width=5, height =5)
 
 ##### Separate reported and unreported PPIs
-################# Figure S4B can be directly Figure 3B
+################# Figure S5B can be directly Figure 3B
 ### Make barplot to show the percentage
 ### put the reported and unreported on to the same figure
 setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_PPI/Combine_TECAN/")
@@ -66,17 +66,17 @@ ratio_all = as.numeric(c(ratio_rep[1], ratio_unrep[1], ratio_rep[2], ratio_unrep
                          ratio_rep[9], ratio_unrep[9]))
 
 
-rep_PPI_matrix[1,] #   0       0       5       7      14      15      23      43      16
+rep_PPI_matrix[1,] #   0       0       5       7      14      15      22      41      16
 rep_PPI_matrix[3,] #   5       1       6       9      19      18      27      44      16
-unrep_PPI_matrix[1,]# 54      22      22      13      28      38      30      37      26
+unrep_PPI_matrix[1,]# 55      22      21      13      28      37      30      37      26
 unrep_PPI_matrix[3,]#99      32      31      20      33      45      32      38      27
-counts_label = c("0/5", "54/99", "0/1", "22/32", "5/6", "22/31",
-                 "7/9", "13/20", "14/19", "28/33", "15/18", "38/45",
-                 "23/27", "30/32", "43/44", "37/38", "16/16", "26/27")
+counts_label = c("0/5", "55/99", "0/1", "22/32", "5/6", "21/31",
+                 "7/9", "13/20", "14/19", "28/33", "15/18", "37/45",
+                 "22/27", "30/32", "41/44", "37/38", "16/16", "26/27")
 library(RColorBrewer)
 #col_chosen = brewer.pal(3,"Dark2")[1:2]
 col_chosen = apple_colors[c(1,4)]
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Sfigures/paper/FigureS4_validation_each_stability_bin/FigureS4B_Validation_bar_plot_merge_reported_unreported.pdf", 
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Sfigures/paper/FigureS5_validation_each_stability_bin/FigureS5B_Validation_bar_plot_merge_reported_unreported.pdf", 
     width= 6, height=5)
 barCenter = barplot(ratio_all*100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
                     space= c(0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15,

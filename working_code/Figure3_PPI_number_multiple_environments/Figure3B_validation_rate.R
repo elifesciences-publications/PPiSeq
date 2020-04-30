@@ -54,16 +54,16 @@ all_Tecan = rbind(d_1_1, d_1_2, d_1_3, d_1_4, d_1_5, d_1_6, d_1_7,
                   d_2_8, d_2_9, d_2_10, d_5_1, d_5_2, d_5_3, d_5_4, 
                   d_5_5, d_5_6, d_5_7, d_only_1, d_only_2, d_only_3) # 785 all single PPIs
 
-reported_PPI = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Useful_datasets/multiple_validated_PPI.csv")
-all_Tecan_rep = match_both_direction(all_Tecan, reported_PPI[,1]) # 189
-all_Tecan_unrep = all_Tecan[which(!all_Tecan[,1] %in% all_Tecan_rep[,1]),] # 596
-#split validated PPIs into different groups
-#PPI_group = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Useful_datasets/PPI_environment_count_summary.csv")
-
 PPI_group = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Useful_datasets/PPI_environment_count_summary_SD_merge_filter.csv")
 PPI_group = PPI_group[which(PPI_group[,3] == "1"),] # 3921, 4704
-length(which(all_Tecan[,1] %in% PPI_group[,1])) # 488
-a = match_both_direction(all_Tecan, PPI_group[,1])# 502
+all_Tecan = match_both_direction(all_Tecan, PPI_group[,1]) # 502
+index_pvalue = ncol(all_Tecan)
+all_Tecan[, index_pvalue] = p.adjust(as.numeric(all_Tecan[, index_pvalue - 1]), method = "BH")
+        
+reported_PPI = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Useful_datasets/multiple_validated_PPI.csv")
+all_Tecan_rep = match_both_direction(all_Tecan, reported_PPI[,1]) # 145
+all_Tecan_unrep = all_Tecan[which(!all_Tecan[,1] %in% all_Tecan_rep[,1]),] # 357
+#split validated PPIs into different groups
 
 rep_PPI_matrix = matrix(0, 4,9)
 unrep_PPI_matrix = matrix(0, 4, 9)
@@ -119,24 +119,119 @@ merge_nonvalidate = rep_PPI_matrix[2, 2:ncol(rep_PPI_matrix)] + unrep_PPI_matrix
 merge_sum = merge_validate + merge_nonvalidate
 
 merge_ratio = merge_validate/merge_sum
-merge_validate #  54      22      27      20      42      53      53      80      42
+merge_validate #  55      22      26      20      42      52      52      78      42
 merge_sum      # 104      33      37      29      52      63      59      82      43
-counts_label = c("54/104", "22/33", "27/37", "20/29", "42/52", "53/63",
-                  "53/59", "80/82", "42/43")
+counts_label = c("55/104", "22/33", "26/37", "20/29", "42/52", "52/63",
+                  "52/59", "78/82", "42/43")
 library(RColorBrewer)
 #col_chosen = brewer.pal(3,"Dark2")[1:2]
 col_chosen = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure3_accessory_PPIs/Figure3B_Validation_bar_plot_merge_calling_all.pdf", width= 5.5, height=5)
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure3_accessory_PPIs/Figure3B_Validation_bar_plot_merge_calling_all.pdf", 
+    width= 2.2, height=3)
+par(mar = c(1,1,1,1)) # make the left margin small in order to remove ylim
 barCenter = barplot(as.numeric(merge_ratio) *100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
                     space= c(0.15, 0.15,  0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15),axisnames=F, border=NA, 
                     col = col_chosen, cex.axis=0.8)
 #legend(-0.5,120, legend=c("Previously reported", "Previously unreported"),fill=col_chosen, cex=0.8, bty="n",
        #border=FALSE, xpd = TRUE)
+#text(x= barCenter, y = as.numeric(merge_ratio)*100 + 2, labels = counts_label, cex=0.8, xpd = TRUE)
+#text(x = barCenter, y = -8, labels = as.character(1:9), xpd = TRUE)
+#text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
+dev.off()
+
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure3_accessory_PPIs/Figure3B_Validation_bar_plot_merge_calling_all_BH.pdf", 
+    width= 5, height=5)
+par(mar = c(5,4,1,1)) # make the left margin small in order to remove ylim
+barCenter = barplot(as.numeric(merge_ratio) *100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
+                    space= c(0.15, 0.15,  0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15),axisnames=F, border=NA, 
+                    col = col_chosen, cex.axis=0.8)
+legend(-0.5,120, legend=c("Previously reported", "Previously unreported"),fill=col_chosen, cex=0.8, bty="n",
+border=FALSE, xpd = TRUE)
 text(x= barCenter, y = as.numeric(merge_ratio)*100 + 2, labels = counts_label, cex=0.8, xpd = TRUE)
 text(x = barCenter, y = -8, labels = as.character(1:9), xpd = TRUE)
 text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
 dev.off()
 
+####################################################### bonferroni correction (not use)
+
+all_Tecan[, index_pvalue] = p.adjust(as.numeric(all_Tecan[, index_pvalue - 1]), method = "bonferroni")
+
+#reported_PPI = csvReader_T("~/Dropbox/PPiSeq_02/Paper_data/Useful_datasets/multiple_validated_PPI.csv")
+all_Tecan_rep = match_both_direction(all_Tecan, reported_PPI[,1]) # 145
+all_Tecan_unrep = all_Tecan[which(!all_Tecan[,1] %in% all_Tecan_rep[,1]),] # 357
+#split validated PPIs into different groups
+
+rep_PPI_matrix = matrix(0, 4,9)
+unrep_PPI_matrix = matrix(0, 4, 9)
+
+for(i in 1:9){
+        PPI_select = PPI_group[which(as.numeric(PPI_group[,2]) == i),1]
+        reported_PPI_select = match_both_direction(all_Tecan_rep, PPI_select)
+        if(length(reported_PPI_select) > 11){
+                validate_PPI = length(which(as.numeric(reported_PPI_select[,11]) <= 0.05))
+                non_val_PPI = length(which(as.numeric(reported_PPI_select[,11]) > 0.05))
+                rep_PPI_matrix[1,i] = validate_PPI
+                rep_PPI_matrix[2,i] = non_val_PPI
+                rep_PPI_matrix[3,i] = validate_PPI + non_val_PPI
+                rep_PPI_matrix[4,i] = rep_PPI_matrix[1,i]/rep_PPI_matrix[3,i]
+        }else{
+                validate_PPI = length(which(as.numeric(reported_PPI_select[11]) <= 0.05))
+                non_val_PPI = length(which(as.numeric(reported_PPI_select[11]) > 0.05))
+                rep_PPI_matrix[1,i] = validate_PPI
+                rep_PPI_matrix[2,i] = non_val_PPI
+                rep_PPI_matrix[3,i] = validate_PPI + non_val_PPI
+                rep_PPI_matrix[4,i] = rep_PPI_matrix[1,i]/rep_PPI_matrix[3,i]
+        }
+        
+        
+        unrep_PPI_select = match_both_direction(all_Tecan_unrep, PPI_select)
+        #unrep_PPI_select = all_Tecan_unrep[which(all_Tecan_unrep[,1] %in% PPI_select),]
+        validate_PPI_unrep = length(which(as.numeric(unrep_PPI_select[,11]) <= 0.05))
+        non_val_PPI_unrep = length(which(as.numeric(unrep_PPI_select[,11]) > 0.05))
+        unrep_PPI_matrix[1,i] = validate_PPI_unrep
+        unrep_PPI_matrix[2,i] = non_val_PPI_unrep
+        unrep_PPI_matrix[3,i] = validate_PPI_unrep + non_val_PPI_unrep
+        unrep_PPI_matrix[4,i] = unrep_PPI_matrix[1,i]/unrep_PPI_matrix[3,i]
+}
+colnames(rep_PPI_matrix) = c("Envir_1", "Envir_2", "Envir_3", "Envir_4", "Envir_5",
+                             "Envir_6", "Envir_7", "Envir_8", "Envir_9")
+rownames(rep_PPI_matrix) = c("Validate", "Nonvalidate", "Total", "Val_ratio")
+csvWriter_rownames(rep_PPI_matrix, "Reported_validation_matrix_SD_merge_bonferroni.csv")
+
+colnames(unrep_PPI_matrix) = c("Envir_1", "Envir_2", "Envir_3", "Envir_4", "Envir_5",
+                               "Envir_6", "Envir_7", "Envir_8", "Envir_9")
+rownames(unrep_PPI_matrix) = c("Validate", "Nonvalidate", "Total", "Val_ratio")
+csvWriter_rownames(unrep_PPI_matrix, "Unreported_validation_matrix_SD_merge_bonferroni.csv")
 
 
+#############################################
+# Merge the reported and unreported PPI and receck the number
+setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/pos_PPI/Combine_TECAN/")
+rep_PPI_matrix = dataFrameReader_T("Reported_validation_matrix_SD_merge_bonferroni.csv")
+unrep_PPI_matrix = dataFrameReader_T("Unreported_validation_matrix_SD_merge_bonferroni.csv")
+
+merge_validate = rep_PPI_matrix[1, 2:ncol(rep_PPI_matrix)] + unrep_PPI_matrix[1, 2:ncol(rep_PPI_matrix)]
+merge_nonvalidate = rep_PPI_matrix[2, 2:ncol(rep_PPI_matrix)] + unrep_PPI_matrix[2, 2:ncol(rep_PPI_matrix)]
+merge_sum = merge_validate + merge_nonvalidate
+
+merge_ratio = merge_validate/merge_sum
+merge_validate #  14      8       7       8       17      25      21      34      23
+merge_sum      # 104      33      37      29      52      63      59      82      43
+counts_label = c("14/104", "8/33", "7/37", "8/29", "17/52", "25/63",
+                 "21/59", "34/82", "23/43")
+library(RColorBrewer)
+#col_chosen = brewer.pal(3,"Dark2")[1:2]
+col_chosen = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure3_accessory_PPIs/Figure3B_Validation_bar_plot_merge_calling_all_bonferroni.pdf", 
+    width= 5, height=5)
+par(mar = c(5,4,1,1)) # make the left margin small in order to remove ylim
+barCenter = barplot(as.numeric(merge_ratio) *100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
+                    space= c(0.15, 0.15,  0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15),axisnames=F, border=NA, 
+                    col = col_chosen, cex.axis=0.8)
+legend(-0.5,120, legend=c("Previously reported", "Previously unreported"),fill=col_chosen, cex=0.8, bty="n",
+border=FALSE, xpd = TRUE)
+text(x= barCenter, y = as.numeric(merge_ratio)*100 + 2, labels = counts_label, cex=0.8, xpd = TRUE)
+text(x = barCenter, y = -8, labels = as.character(1:9), xpd = TRUE)
+text(median(barCenter), y = -16, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
+dev.off()
 

@@ -22,6 +22,6 @@ vScore_protein = cbind(protein_unique, rep(0, length(protein_unique)))
 for(i in 1:length(protein_unique)){
   index_protein = unique(c(which(PP_pair[,1] == protein_unique[i]),
                            which(PP_pair[,2] == protein_unique[i])))
-  vScore_protein[i,2] = mean(1/as.numeric(variation_score[index_protein,3]))
+  vScore_protein[i,2] = mean(as.numeric(variation_score[index_protein,3]))
 }
 save(vScore_protein, file = "Working_data_2/vScore_protein.Rfile") #for quick retrieval

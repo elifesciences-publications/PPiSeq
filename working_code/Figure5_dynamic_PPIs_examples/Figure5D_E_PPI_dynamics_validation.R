@@ -394,8 +394,8 @@ ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+
         #geom_errorbar(aes(ymin = Tecan_min, ymax = Tecan_max), col = apple_colors[8], size = 0.2)+
         geom_vline(xintercept = 0, col = apple_colors[11], linetype = 2,size = 0.2)+
         geom_hline(yintercept = 0, col = apple_colors[11], linetype = 2, size = 0.2)+
-        annotate("text", x = -0.3, y = 0.6, label = expression(paste("Spearman's ", italic(r), " = 0.61")),  
-                 parse = TRUE, col = apple_colors[11]) +
+        #annotate("text", x = -0.3, y = 0.6, label = expression(paste("Spearman's ", italic(r), " = 0.61")),  
+                 #parse = TRUE, col = apple_colors[11]) +
         #scale_shape_manual(name = "", values = c(16, 15, 17)) +
         scale_color_manual(name = "", values = c("#1b9e77","#e7298a", "#d95f02", "#7570b3", "#1f78b4",  "#CECED2"))+
         scale_y_continuous(name = "Fitness change in Raffinose by OD595",
@@ -412,7 +412,7 @@ ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
               axis.text.y.left = element_text(size = 10, color = "black"))
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure5_environment_dynamics/Figure5D_Raffinose_SD_Tecan_PPiSeq_comparison.pdf", width =5, height =4 )       
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure5_environment_dynamics/Figure5D_Raffinose_SD_Tecan_PPiSeq_comparison.pdf", width =4, height =3 )       
 
 ################ NaCl Environment
 setwd("~/Dropbox/PPiSeq_02/Working_data/TECAN_validation/carbohydrate_transport/data/20190819/")
@@ -465,8 +465,8 @@ ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+
         #geom_errorbar(aes(ymin = Tecan_min, ymax = Tecan_max), col = apple_colors[8], size = 0.2)+
         geom_vline(xintercept = 0, col = apple_colors[11], linetype = 2,size = 0.2)+
         geom_hline(yintercept = 0, col = apple_colors[11], linetype = 2, size = 0.2)+
-        annotate("text", x = -0.25, y = 0.2, label = expression(paste("Spearman's ", italic(r), " = 0.21")),  
-                 parse = TRUE, col = apple_colors[11]) +
+        #annotate("text", x = -0.25, y = 0.2, label = expression(paste("Spearman's ", italic(r), " = 0.21")),  
+                 #parse = TRUE, col = apple_colors[11]) +
         #scale_shape_manual(name = "", values = c(16, 15, 17)) +
         scale_color_manual(name = "", values = c("#1b9e77","#e7298a", "#d95f02", "#7570b3", "#1f78b4", "#CECED2"))+
         scale_y_continuous(name = "Fitness change in NaCl by OD595",
@@ -483,7 +483,7 @@ ggplot(data = SD_Raff_final, aes(x = Mean_diff, y = Mean_dynamics))+
               panel.background = element_blank(), axis.line = element_line(colour = "black")) +
         theme(axis.text.x = element_text(size = 10, color = "black"),
               axis.text.y.left = element_text(size = 10, color = "black"))
-ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure5_environment_dynamics/Figure5E_NaCl_SD_Tecan_PPiSeq_comparison.pdf", width =5, height =4 )       
+ggsave("~/Dropbox/PPiSeq_02/Working_figure/Figure5_environment_dynamics/Figure5E_NaCl_SD_Tecan_PPiSeq_comparison.pdf", width =4, height =3 )       
 
 
 

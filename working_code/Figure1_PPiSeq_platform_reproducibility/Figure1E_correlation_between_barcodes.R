@@ -83,8 +83,8 @@ ggplot() +
   scale_fill_gradient(low= "white", high = apple_colors[7])+
  
   geom_smooth(aes(x = seq(-0.2, 1.2, by = 0.2), y = seq(-0.2, 1.2, by = 0.2)), linetype =2,method='lm', se= FALSE, col= apple_colors[11], cex = 0.3)+
-  annotate("text", x = 0.1, y = 1.1, label = expression(paste("Spearman's ", italic(r), " = 0.74")),  
-           parse = TRUE, col = apple_colors[11], size = 2) +
+  #annotate("text", x = 0.1, y = 1.1, label = expression(paste("Spearman's ", italic(r), " = 0.74")),  
+           #parse = TRUE, col = apple_colors[11], size = 2) +
   
   scale_y_continuous(name = "Fitness of replicate strain 2",
                      limits=c(-0.2, 1.2),
@@ -95,7 +95,10 @@ ggplot() +
                      breaks=seq(-0.2,1.2, by =0.2),
                      labels = seq(-0.2,1.2, by= 0.2))+
   labs(fill = expression('Log'[10]* '(count)')) +     
-  theme(legend.position =c(0.85,0.3), legend.key=element_blank(), 
+  #theme(legend.position =c(0.85,0.3), legend.key=element_blank(), 
+        #legend.text=element_text(size=5),legend.title=element_text(size=6),
+        #legend.key.size = unit(0.3, "cm")) +
+  theme(legend.key=element_blank(), 
         legend.text=element_text(size=5),legend.title=element_text(size=6),
         legend.key.size = unit(0.3, "cm")) +
   #guides(fill=guide_legend(title="Log10(Count)")) + 
@@ -105,4 +108,4 @@ ggplot() +
         axis.text.y.left = element_text(size = 6, color = "black"),
         axis.title=element_text(size= 6))
 
-ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1/Figure1E_correlation_two_replicates_hexagonlot_SD.pdf", height =2.2, width =2.2)
+ggsave("~/Dropbox/PPiSeq_02/working_figure/Figure1/Figure1E_correlation_two_replicates_hexagonlot_SD.pdf", height =2.2, width =3)

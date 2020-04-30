@@ -50,22 +50,23 @@ ratio_PCA_low_overlapped = c("3.6%", "11.8%", "20.8%", "25.2%", "32.0%", "35.4%"
 
 #col_purple = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
 library(RColorBrewer)
-col_chosen = apple_colors[c(1,3,4)]
-pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure3_accessory_PPIs/Figure3A_Number_environments_PPI_reproted.pdf", height = 5, width = 5)
-par(mar = c(3,4,2,1))
-barCenter = barplot(matrix_PPI_env_rep, horiz=F, beside=F, ylim=c(0,10000), ylab="Number of PPIs",
+col_chosen = apple_colors[c(5,3,7)]
+pdf("~/Dropbox/PPiSeq_02/Working_figure/Figure3_accessory_PPIs/Figure3A_Number_environments_PPI_reproted.pdf", 
+    height = 3, width = 2.2)
+par(mar = c(1,1,1,1)) # make the left margin small in order to remove ylim
+barCenter = barplot(matrix_PPI_env_rep, horiz=F, beside=F, ylim=c(0,8000), #ylab="Number of PPIs",
                     space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6),
                     col= col_chosen, axisnames=F, border=NA)
-legend("topright", legend=c("BioGRID + mDHFR-PCA(PPV > 98.2%)", "mDHFR-PCA (PPV > 80%)", "Previously unreported"), 
-       fill=col_chosen[c(3,2,1)], cex = 0.8, bty="n", border=FALSE)
-text(x= barCenter, y = all_PPI_count + 150, labels = ratio_PCA_low_overlapped, 
-     cex=0.7, xpd = TRUE, col= col_chosen[2]) 
-text(x= barCenter, y = all_PPI_count + 400, labels = ratio_BioGrid_reported, 
-     cex=0.7, xpd = TRUE, col= col_chosen[3]) 
-text(x= barCenter, y = -300, labels = as.character(1:9), xpd = TRUE)
-text(median(barCenter), y = -800, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
+#legend("topright", legend=c("BioGRID + mDHFR-PCA(PPV > 98.2%)", "mDHFR-PCA (PPV > 80%)", "Previously unreported"), 
+       #fill=col_chosen[c(3,2,1)], cex = 0.8, bty="n", border=FALSE)
+#text(x= barCenter, y = all_PPI_count + 150, labels = ratio_PCA_low_overlapped, 
+     #cex=0.8, xpd = TRUE, col= col_chosen[2]) 
+#text(x= barCenter, y = all_PPI_count + 400, labels = ratio_BioGrid_reported, 
+     #cex=0.8, xpd = TRUE, col= col_chosen[3]) 
+#text(x= barCenter, y = -300, labels = as.character(1:9), xpd = TRUE)
+#text(median(barCenter), y = -800, labels = "Number of environments in which a PPI is identified", xpd = TRUE)
 dev.off()
-
+###### Add xlabels, legend in keynote
 
 
 

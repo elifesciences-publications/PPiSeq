@@ -85,7 +85,7 @@ for(i in 1:nrow(b.sd)){
 i = ncol(b.mean)
 o = order(b.mean[,i], decreasing = F)
 
-pdf(file = "Working_figure/SFigures/paper/Related_Figure4C_all_feature_correlation.pdf")
+pdf(file = "Working_figure/SFigures/paper/FigureS8_all_other_features/Correlation_variability_other_features.pdf")
 par(mar= c(5,10,1,1))
 barCenter = barplot(b.mean[o, i], horiz=T, beside=F, xlim=c(-0.5, 0.3), 
                     xlab="Spearman correlation with protein interaction dynamicity",
