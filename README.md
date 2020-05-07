@@ -1,6 +1,8 @@
 
 # PPiSeq
 code for second PPiSeq paper
+To run the codes please download the addtional data (Mendeley Data, V1, doi: 10.17632/9ygwhk5cs3.1) and change the corresponeding directory in the script accordingly. Please check Read_me.txt in the data folder for the explanation of some datasets in the folder. There are separate script for each Figure panel (e.g. Figure1A) for Figure 1, 2, 3, 5, Figure 4A-C, and Supplementary Figures S1-9.
+For Figure 4D-F, Figure6, and Supplemenatry Figure S10, see belows (Darach edit).
 
 ## network properties
 
