@@ -1,0 +1,3 @@
+"DMSO_barcode_count_correction_filter.R" is a home-made R script to make barcode count trajectories, correct the barcode count based on PCR chimeras at each time point, and identify the noisy trajectories and merge them in DMSO environment.
+
+We run similar scripts for other environments and obtain high-confidence barcode count trajectories, which can be used as the input for Fit-seq (https://github.com/sashaflevy/Fit-Seq) to obtain fitness values for double barcodes in different environments.
