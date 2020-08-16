@@ -37,7 +37,7 @@ upper.panel<-function(x, y){
   lines(x,x, col = "black", lty = 1)
 }
 
-png("Figures/SFigures/SFigure4/FigureS4C_pairwisefitness_scatter_plot.png", height = 15, width = 15, units = 'in', res = 600)
+png("Figures/SFigures/SFigure5/FigureS5C_pairwisefitness_scatter_plot.png", height = 15, width = 15, units = 'in', res = 600)
 col_group = c("#4575b4","#74add1","#abd9e9","#e0f3f8",
               "#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
 pairs(vScore_PPI[,4:12], 

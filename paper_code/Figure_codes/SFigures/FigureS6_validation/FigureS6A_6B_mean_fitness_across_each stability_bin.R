@@ -31,7 +31,7 @@ ggplot() +
         theme(axis.text.x = element_text(size = 10, color = "black"),
               axis.text.y.left = element_text(size = 10, color = "black")) 
 #theme(plot.margin = unit(c(1,1,2,1), "cm"))
-ggsave("Figures/SFigures/SFigure5/FigureS5A_Mean_fitness_PPI_each_stability_bin.pdf", width=5, height =5)
+ggsave("Figures/SFigures/SFigure6/FigureS6A_Mean_fitness_PPI_each_stability_bin.pdf", width=5, height =5)
 
 ##### Separate reported and unreported PPIs
 ################# Figure S5B can be directly Figure 3B
@@ -58,7 +58,7 @@ counts_label = c("0/5", "55/99", "0/1", "22/32", "5/6", "21/31",
 library(RColorBrewer)
 #col_chosen = brewer.pal(3,"Dark2")[1:2]
 col_chosen = apple_colors[c(1,4)]
-pdf("Figures/SFigures/SFigure5/FigureS5B_Validation_bar_plot_merge_reported_unreported.pdf", 
+pdf("Figures/SFigures/SFigure6/FigureS6B_Validation_bar_plot_merge_reported_unreported.pdf", 
     width= 6, height=5)
 barCenter = barplot(ratio_all*100, horiz=F, beside=F, ylim=c(0,100), ylab="Validation rate (%)",
                     space= c(0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15,

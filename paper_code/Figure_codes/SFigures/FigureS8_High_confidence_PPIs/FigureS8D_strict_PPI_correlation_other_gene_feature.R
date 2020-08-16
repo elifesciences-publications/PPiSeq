@@ -90,7 +90,7 @@ for(i in 1:nrow(b.sd)){
 i = ncol(b.mean)
 o = order(b.mean[,i], decreasing = F)
 
-pdf(file = "Figures/SFigures/SFigure6/FigureS6D_all_feature_correlation.pdf")
+pdf(file = "Figures/SFigures/SFigure8/FigureS8D_all_feature_correlation.pdf")
 par(mar= c(5,5,1,1))
 barCenter = barplot(b.mean[o, i], horiz=T, beside=F, xlim=c(-0.5, 0.5), 
                     xlab="Spearman correlation with PPI mutability",
@@ -104,7 +104,7 @@ fs = c(17, 15, 18, 8,  3,  2, 1)
 fc = b.mean[fs, 3:1]
 fc_ci_lower = b.mean[fs, 3:1]- b.sd[fs, 3:1] 
 fc_ci_upper = b.mean[fs, 3:1]+ b.sd[fs, 3:1] 
-pdf(file = "Figures/SFigures/SFigure6/FigureS6E_gene_features_PPI_stability.pdf")
+pdf(file = "Figures/SFigures/SFigure8/FigureS8E_gene_features_PPI_stability.pdf")
 par(mar= c(5,5,1,2))
 barCenter = barplot(t(fc), horiz=T, beside=T, xlim=c(-0.8, 0.6), 
                     xlab="Correlation with the mutability score",

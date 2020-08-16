@@ -93,7 +93,7 @@ predict_external_test = predict(fitmodel, external_test, type = "response")
 cor(external_test$val_rate, predict_external_test, method = "spearman") # 0.9833333
 cor(external_test$val_rate, predict_external_test, method = "pearson") # 0.9768506
 
-pdf("Figures/SFigures/SFigure5/FigureS5E_model_accuracy.pdf", width =5, height =5)
+pdf("Figures/SFigures/SFigure6/FigureS6E_model_accuracy.pdf", width =5, height =5)
 plot(external_test$val_rate, predict_external_test, pch = 16, col = "blue",
      type = "p", xlim = c(0.5, 1), ylim = c(0.5,1), xlab = "Observed validation rate",
      ylab = "Predicted validation rate", bty = "n")
@@ -154,7 +154,7 @@ env_count_final = c(a[1], b[1], a[2], b[2], a[3], b[3], a[4], b[4], a[5], b[5],
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
 col_chosen = apple_colors[c(1,4)]
-pdf("Figures/SFigures/SFigure5/FigureS5E_Corrected_Validation_bar_plot_comparison.pdf.pdf", width= 5.5, height=5)
+pdf("Figures/SFigures/SFigure6/FigureS6E_Corrected_Validation_bar_plot_comparison.pdf.pdf", width= 5.5, height=5)
 barCenter = barplot(env_count_final, horiz=F, beside=F, ylim=c(0,10000), ylab="Number of PPIs",
                     space= c(0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15,
                              0.4, 0.15, 0.4, 0.15, 0.4, 0.15, 0.4, 0.15), axisnames=F, 

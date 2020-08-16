@@ -13,7 +13,7 @@ for(i in 3:11){
 }
 environment_matrix_order = environment_matrix[,c(1,9,2,3,7,5,6,4,8)]
 col_purple = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
-pdf("Figures/SFigures/SFigure4/FigureS4A_Number_PPIs_across_environments.pdf", height = 5, width = 5)
+pdf("Figures/SFigures/SFigure5/FigureS5A_Number_PPIs_across_environments.pdf", height = 5, width = 5)
 par(mar = c(4,4,2,1))
 barCenter = barplot(environment_matrix_order, horiz=F, beside=F,  ylab="Number of PPIs",
                     space= c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2), yaxt="n", ylim = c(0,7000),

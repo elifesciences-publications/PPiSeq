@@ -72,7 +72,7 @@ ggplot(stability_bin_degree, aes(x = degree, fill = label, col = label))+
 
 #ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/degree_environment_bin.pdf", width =4, height =4)
 
-ggsave("Figures/SFigures/SFigure7/FigureS7A_Degree_environment_bin.pdf", width =4, height =4)
+ggsave("Figures/SFigures/SFigure10/FigureS10A_Degree_environment_bin.pdf", width =4, height =4)
 
 
 

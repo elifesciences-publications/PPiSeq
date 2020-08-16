@@ -36,7 +36,7 @@ ratio_PCA_low_overlapped = c("8%", "24.5%", "33.9%", "37.7%", "39.6%", "38.9%", 
 
 library(RColorBrewer)
 col_chosen = apple_colors[c(1,3,4)]
-pdf("Figures/SFigures/SFigure6/FigureS6A_Number_environments_PPI_reproted.pdf", height = 5, width = 5)
+pdf("Figures/SFigures/SFigure8/FigureS8A_Number_environments_PPI_reproted.pdf", height = 5, width = 5)
 par(mar = c(3,5,2,1))
 barCenter = barplot(matrix_PPI_env_rep, horiz=F, beside=F, ylim=c(0,4000), ylab="Number of PPIs",
                     space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6),

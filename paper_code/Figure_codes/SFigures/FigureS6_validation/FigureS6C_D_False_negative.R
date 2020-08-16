@@ -34,7 +34,7 @@ combine_matrix_SD = combine_matrix[which(combine_matrix$SD != 0),]
 heatmap = pheatmap(combine_matrix_SD, cluster_rows = T, cluster_cols = TRUE, show_rownames=T,
                    labels_col  = c("SD", expression('H'[2]* 'O'[2]), "Hydroxyurea",
                                    "Forskolin", "FK506", "NaCl", "Raffinose"),show_colnames=T)
-pdf("Figures/SFigures/SFigure5/FigureS5C_PPI_calling_SD_only_PPIs.pdf", width = 7, height = 6)
+pdf("Figures/SFigures/SFigure6/FigureS6C_PPI_calling_SD_only_PPIs.pdf", width = 7, height = 6)
 grid::grid.newpage()
 grid::grid.draw(heatmap$gtable)
 dev.off()
@@ -88,5 +88,5 @@ ggplot(density_matrix, aes(x = dynamics, fill = label, col = label))+
         axis.title.y=element_text(size=10)) + 
   theme(text = element_text(size=10))
 
-ggsave("Figures/SFigures/SFigure5/FigureS5D_Relative_AUC_SD_only_PPIs.pdf", width =4, height =4)
+ggsave("Figures/SFigures/SFigure6/FigureS6D_Relative_AUC_SD_only_PPIs.pdf", width =4, height =4)
 

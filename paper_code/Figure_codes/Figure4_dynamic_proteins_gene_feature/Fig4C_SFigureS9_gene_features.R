@@ -104,8 +104,8 @@ for(i in 1:nrow(b.sd)){
 i = ncol(b.mean)
 o = order(b.mean[,i], decreasing = F)
 
-# Generate Figure S9
-pdf(file = "Figures/SFigures/SFigure9/SFigure9_Correlation_variability_other_features.pdf")
+# Generate Figure S12
+pdf(file = "Figures/SFigures/SFigure12/SFigure12_Correlation_variability_other_features.pdf")
 par(mar= c(5,5,1,1))
 barCenter = barplot(b.mean[o, i], horiz=T, beside=F, xlim=c(-0.5, 0.3), 
                     xlab="Spearman correlation with the mutability score",

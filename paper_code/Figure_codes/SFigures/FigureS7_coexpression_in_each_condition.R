@@ -1,10 +1,9 @@
 #A plot of co-expression mutual rank by environment number
-setwd("~/Desktop/PPiSeq_additional_data/")
 source("function.R") # Load commonly used functions
 load("~/Desktop/PPiSeq_additional_data/Outsourced_datasets/Coexpression/CoExpressDB.Rfile") # Load coexpression database
 ppi_coex = coex
 
-
+setwd("~/Desktop/PPiSeq_additional_data/")
 # SD
 coexpression_env = function(column_num){
   PPI_count = csvReader_T("Datasets_generated_by_preprocessing/PPI_environment_count_summary_SD_merge_filter.csv")
@@ -47,7 +46,7 @@ dev.off()
 ##H2O2
 column_num = 4
 pdf_name = 'Figures/SFigures/SFigure7/H2O2_coexpression_by_env_number.pdf'
-df = coexpression_env(column_num, pdf_name)
+df = coexpression_env(column_num)
 pdf(file = pdf_name, height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   
   geom_boxplot(notch = T) +  labs(x="Environments in which a PPI is observed", y = "Co-expression mutual rank")
@@ -59,7 +58,7 @@ dev.off()
 ##HU
 column_num = 5
 pdf_name = 'Figures/SFigures/SFigure7/HU_coexpression_by_env_number.pdf'
-df = coexpression_env(column_num, pdf_name)
+df = coexpression_env(column_num)
 pdf(file = pdf_name, height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   
   geom_boxplot(notch = T) +  labs(x="Environments in which a PPI is observed", y = "Co-expression mutual rank")

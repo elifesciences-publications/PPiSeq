@@ -25,7 +25,7 @@ ppi_coex = x
 df = data.frame(ppi_coex, env.number)
 df$env.number = as.factor(df$env.number)
 library(ggplot2)
-pdf(file = "Figures/SFigures/SFigure6/FigureS6B_coexpression_by_env_number.pdf", height = 6, width = 4)
+pdf(file = "Figures/SFigures/SFigure8/FigureS8B_coexpression_by_env_number.pdf", height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   
   geom_boxplot(notch = T) +  labs(x="Environments in which a PPI is observed", y = "Co-expression mutual rank")
 p + theme_classic() + theme(axis.text.y = element_text(size=10, angle=45), 
