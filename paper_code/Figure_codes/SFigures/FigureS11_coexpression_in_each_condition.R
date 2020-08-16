@@ -33,7 +33,7 @@ coexpression_env = function(column_num){
 library(ggplot2)
 ## SD
 column_num = 3
-pdf_name = 'Figures/SFigures/SFigure7/SD_coexpression_by_env_number.pdf'
+pdf_name = 'Figures/SFigures/SFigure11/SD_coexpression_by_env_number.pdf'
 df = coexpression_env(column_num)
 pdf(file = pdf_name, height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   
@@ -45,7 +45,7 @@ dev.off()
 
 ##H2O2
 column_num = 4
-pdf_name = 'Figures/SFigures/SFigure7/H2O2_coexpression_by_env_number.pdf'
+pdf_name = 'Figures/SFigures/SFigure11/H2O2_coexpression_by_env_number.pdf'
 df = coexpression_env(column_num)
 pdf(file = pdf_name, height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   
@@ -57,7 +57,7 @@ dev.off()
 
 ##HU
 column_num = 5
-pdf_name = 'Figures/SFigures/SFigure7/HU_coexpression_by_env_number.pdf'
+pdf_name = 'Figures/SFigures/SFigure11/HU_coexpression_by_env_number.pdf'
 df = coexpression_env(column_num)
 pdf(file = pdf_name, height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   
@@ -69,7 +69,7 @@ dev.off()
 
 ##Dox
 column_num = 6
-pdf_name = 'Figures/SFigures/SFigure7/Dox_coexpression_by_env_number.pdf'
+pdf_name = 'Figures/SFigures/SFigure11/Dox_coexpression_by_env_number.pdf'
 df = coexpression_env(column_num)
 pdf(file = pdf_name, height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   
@@ -82,7 +82,7 @@ dev.off()
 
 ## Forskolin
 column_num = 7
-pdf_name = 'Figures/SFigures/SFigure7/Forskolin_coexpression_by_env_number.pdf'
+pdf_name = 'Figures/SFigures/SFigure11/Forskolin_coexpression_by_env_number.pdf'
 df = coexpression_env(column_num)
 pdf(file = pdf_name, height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   
@@ -94,7 +94,7 @@ dev.off()
 
 ## Raffinose
 column_num = 8
-pdf_name = 'Figures/SFigures/SFigure7/Raffinose_coexpression_by_env_number.pdf'
+pdf_name = 'Figures/SFigures/SFigure11/Raffinose_coexpression_by_env_number.pdf'
 df = coexpression_env(column_num)
 pdf(file = pdf_name, height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   
@@ -107,7 +107,7 @@ dev.off()
 
 ## NaCl
 column_num = 9
-pdf_name = 'Figures/SFigures/SFigure7/NaCl_coexpression_by_env_number.pdf'
+pdf_name = 'Figures/SFigures/SFigure11/NaCl_coexpression_by_env_number.pdf'
 df = coexpression_env(column_num)
 pdf(file = pdf_name, height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   
@@ -119,7 +119,7 @@ dev.off()
 
 ## 16C
 column_num = 10
-pdf_name = 'Figures/SFigures/SFigure7/16C_coexpression_by_env_number.pdf'
+pdf_name = 'Figures/SFigures/SFigure11/16C_coexpression_by_env_number.pdf'
 df = coexpression_env(column_num)
 pdf(file = pdf_name, height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   
@@ -131,7 +131,7 @@ dev.off()
 
 ## FK506
 column_num = 11
-pdf_name = 'Figures/SFigures/SFigure7/FK506_coexpression_by_env_number.pdf'
+pdf_name = 'Figures/SFigures/SFigure11/FK506_coexpression_by_env_number.pdf'
 df = coexpression_env(column_num)
 pdf(file = pdf_name, height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   

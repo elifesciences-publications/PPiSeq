@@ -69,6 +69,6 @@ ggplot(stability_bin_vScore, aes(x = vScore, fill = label, col = label))+
         axis.title.y=element_text(size=10)) + 
   theme(text = element_text(size=10))
 
-ggsave("Figures/SFigures/SFigure10/FigureS10C_mutability_score_environment_bin.pdf", width =4, height =4)
+ggsave("Figures/SFigures/SFigure9/FigureS9C_mutability_score_environment_bin.pdf", width =4, height =4)
 
 

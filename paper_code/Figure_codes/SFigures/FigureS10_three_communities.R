@@ -27,7 +27,7 @@ ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
               axis.title.y=element_text(size=10)) + 
         theme(text = element_text(size=10))
 
-ggsave("Figures/SFigures/SFigure11/FigureS11A_fast_greedy_community_variability_score.pdf", width =4, height =4)
+ggsave("Figures/SFigures/SFigure10/FigureS10A_fast_greedy_community_variability_score.pdf", width =4, height =4)
 
 ### Random walk trap
 vScore_community_data = dataFrameReader_T("Figure3_related_network_data/community_walktrap.csv")
@@ -55,7 +55,7 @@ ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
               axis.title.y=element_text(size=10)) + 
         theme(text = element_text(size=10))
 
-ggsave("Figures/SFigures/SFigure11//FigureS11B_walktrap_community_variability_score.pdf", width =4, height =4)
+ggsave("Figures/SFigures/SFigure10/FigureS10B_walktrap_community_variability_score.pdf", width =4, height =4)
 
 ### informap
 vScore_community_data = dataFrameReader_T("Figure3_related_network_data/community_infomap.csv")
@@ -82,5 +82,5 @@ ggplot(vScore_community_data_select, aes(x = community, y = vScore))+
               axis.title.y=element_text(size=10)) + 
         theme(text = element_text(size=10))
 
-ggsave("Figures/SFigures/SFigure11/SFigure11C_Infomap_community_variability_score.pdf", width =5, height =4)
+ggsave("Figures/SFigures/SFigure10/SFigure10C_Infomap_community_variability_score.pdf", width =5, height =4)
 

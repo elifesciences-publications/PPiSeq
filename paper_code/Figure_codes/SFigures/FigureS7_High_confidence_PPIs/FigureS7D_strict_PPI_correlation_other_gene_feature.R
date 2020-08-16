@@ -104,7 +104,7 @@ fs = c(17, 15, 18, 8,  3,  2, 1)
 fc = b.mean[fs, 3:1]
 fc_ci_lower = b.mean[fs, 3:1]- b.sd[fs, 3:1] 
 fc_ci_upper = b.mean[fs, 3:1]+ b.sd[fs, 3:1] 
-pdf(file = "Figures/SFigures/SFigure8/FigureS8E_gene_features_PPI_stability.pdf")
+pdf(file = "Figures/SFigures/SFigure7/FigureS7E_gene_features_PPI_stability.pdf")
 par(mar= c(5,5,1,2))
 barCenter = barplot(t(fc), horiz=T, beside=T, xlim=c(-0.8, 0.6), 
                     xlab="Correlation with the mutability score",

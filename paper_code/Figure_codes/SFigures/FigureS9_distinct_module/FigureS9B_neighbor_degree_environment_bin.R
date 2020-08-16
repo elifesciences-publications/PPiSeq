@@ -81,6 +81,6 @@ ggplot(stability_bin_degree, aes(x = degree, fill = label, col = label))+
         theme(text = element_text(size=10))
 
 #ggsave("Working_figure/Figure3_accessory_PPIs/accessory_PPI/neighbor_degree_environment_bin.pdf", width =4, height =4)
-ggsave("Figures/SFigures/SFigure10/FigureS10B_Neighbor_degree_environment_bin.pdf", width =4, height =4)
+ggsave("Figures/SFigures/SFigure9/FigureS9B_Neighbor_degree_environment_bin.pdf", width =4, height =4)
 
 

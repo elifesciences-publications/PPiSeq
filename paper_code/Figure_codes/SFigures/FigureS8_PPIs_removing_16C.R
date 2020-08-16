@@ -12,9 +12,9 @@ nrow(all_PPI_matrix_final) # 12981
 all_PPI_matrix_final = all_PPI_matrix_final[which(all_PPI_matrix_final[,2] > 0),]
 nrow(all_PPI_matrix_final) # 9887
 all_PPI_matrix_final_remove = all_PPI_matrix_final[,c(1:9, 11)]
-csvWriter(all_PPI_matrix_final_remove, 'SFigure9_related_data/PPI_environment_count_summary_SD_merge_filter_removing_cold.csv')
+csvWriter(all_PPI_matrix_final_remove, 'SFigure8_related_data/PPI_environment_count_summary_SD_merge_filter_removing_cold.csv')
 
-all_PPI_matrix_final = csvReader_T('SFigure9_related_data/PPI_environment_count_summary_SD_merge_filter_removing_cold.csv')
+all_PPI_matrix_final = csvReader_T('SFigure8_related_data/PPI_environment_count_summary_SD_merge_filter_removing_cold.csv')
 reported_PPI = csvReader_T("Outsourced_datasets/BIOGRID//multiple_validated_PPI.csv")
 PCA_lower = as.matrix(read.table("Outsourced_datasets/Tarassov_PPI_PPV_80.txt", header= T, sep = "\t"))
 PCA_lower_PPI = paste(PCA_lower[,1], PCA_lower[,4], sep = "_")
@@ -45,7 +45,7 @@ ratio_PCA_low_overlapped = c("5.4%", "13.7%", "22.3%", "26.0%", "33.2%", "35.8%"
 
 library(RColorBrewer)
 col_chosen = apple_colors[c(1,3,4)]
-pdf("Figures/SFigures/SFigure9/FigureS9A_Number_environments_PPI_reproted.pdf", height = 5, width = 5)
+pdf("Figures/SFigures/SFigure8/FigureS8A_Number_environments_PPI_reproted.pdf", height = 5, width = 5)
 par(mar = c(3,5,2,1))
 barCenter = barplot(matrix_PPI_env_rep, horiz=F, beside=F, ylim=c(0,6000), ylab="Number of PPIs",
                     space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6),
@@ -110,7 +110,7 @@ PPI_norm_matrix_final_filter = PPI_norm_matrix_final[which(PPI_norm_matrix_final
 PPI_norm_matrix_final_filter = PPI_norm_matrix_final_filter[which(PPI_norm_matrix_final_filter[,2] != "0"),] # 9887
 cor(as.numeric(PPI_norm_matrix_final_filter[,2]), as.numeric(PPI_norm_matrix_final_filter[,3]), method="spearman") # -0.7469293
 
-csvWriter(PPI_norm_matrix_final_filter, "~/Desktop/PPiSeq_additional_data/SFigure9_related_data/Variation_score_PPI_environment_neg_zero_SD_merge_filter_removing_cold.csv")
+csvWriter(PPI_norm_matrix_final_filter, "~/Desktop/PPiSeq_additional_data/SFigure8_related_data/Variation_score_PPI_environment_neg_zero_SD_merge_filter_removing_cold.csv")
 
 ### Make second figure
 setwd("~/Desktop/PPiSeq_additional_data/")
@@ -118,7 +118,7 @@ setwd("~/Desktop/PPiSeq_additional_data/")
 load("Outsourced_datasets/Coexpression/CoExpressDB.Rfile") # load coexpresion data
 #load data
 ppi_coex = coex
-v = csvReader_T("SFigure9_related_data/Variation_score_PPI_environment_neg_zero_SD_merge_filter_removing_cold.csv")
+v = csvReader_T("SFigure8_related_data/Variation_score_PPI_environment_neg_zero_SD_merge_filter_removing_cold.csv")
 a = sapply(as.character(v[,1]), strsplit, "_")
 x = matrix(NA, length(a), 2)
 for(i in 1:length(a)){
@@ -140,7 +140,7 @@ ppi_coex = x
 df = data.frame(ppi_coex, env.number)
 df$env.number = as.factor(df$env.number)
 library(ggplot2)
-pdf(file = "Figures/SFigures/Sfigure9/FigureS9B_coexpression_by_env_number.pdf", height = 6, width = 4)
+pdf(file = "Figures/SFigures/Sfigure8/FigureS8B_coexpression_by_env_number.pdf", height = 6, width = 4)
 p <- ggplot(df, aes(x=env.number, y=ppi_coex, fill=env.number)) +   
   geom_boxplot(notch = T) +  labs(x="Environments in which a PPI is observed", y = "Co-expression mutual rank")
 p + theme_classic() + theme(axis.text.y = element_text(size=10, angle=45), 
@@ -156,8 +156,8 @@ load("Outsourced_datasets/Colocalization/GO_loc_matrix.Rfile") # Load GO colocal
 GO_loc_matrix = GO_loc_matrix[,c(1, 5:24)] #remove general terms  "other", "membrane",  "cellular_component" 
 
 #Import PPIs by environemnt
-PPI_count_filter = read.csv("SFigure9_related_data/PPI_environment_count_summary_SD_merge_filter_removing_cold.csv")
-PPI_variation = read.csv("SFigure9_related_data//Variation_score_PPI_environment_neg_zero_SD_merge_filter_removing_cold.csv")
+PPI_count_filter = read.csv("SFigure8_related_data/PPI_environment_count_summary_SD_merge_filter_removing_cold.csv")
+PPI_variation = read.csv("SFigure8_related_data//Variation_score_PPI_environment_neg_zero_SD_merge_filter_removing_cold.csv")
 ppi_by_env = PPI_count_filter[,3:ncol(PPI_count_filter)]
 rownames(ppi_by_env) <- PPI_count_filter[,1]
 
@@ -245,7 +245,7 @@ semgo = sd/sqrt(1000)
 ugo = mgo+sdgo
 lgo = mgo-sdgo
 
-pdf(file = "Figures/SFigures/SFigure9/FigureS9C_colocalization_rate.pdf", height = 7, width = 4)
+pdf(file = "Figures/SFigures/SFigure8/FigureS8C_colocalization_rate.pdf", height = 7, width = 4)
 plot(1:8, m, xlab = "Environments in which a PPI is observed", 
      ylab = "Percent colocalized", type = 'l', ylim = c(30,100), pch = 16, cex = 1.7, lwd =2, col = "black" ) 
 points(1:8, m,  ylim = c(30,90), pch = 16, cex = 1.7, col = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027"))
@@ -262,7 +262,7 @@ setwd("~/Desktop/PPiSeq_additional_data/")
 source("function.R")
 paper.colors = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
 #Make a combined data matrix with variation score
-variation_score = read.csv("SFigure9_related_data//Variation_score_PPI_environment_neg_zero_SD_merge_filter_removing_cold.csv") # 5928
+variation_score = read.csv("SFigure8_related_data//Variation_score_PPI_environment_neg_zero_SD_merge_filter_removing_cold.csv") # 5928
 PP_pair = split_string_vector(variation_score[,1])
 protein_unique = unique(as.vector(PP_pair)) 
 vScore_protein = cbind(protein_unique, rep(0, length(protein_unique)))
@@ -350,7 +350,7 @@ for(i in 1:nrow(b.sd)){
 i = ncol(b.mean)
 o = order(b.mean[,i], decreasing = F)
 
-pdf(file = "Figures/SFigures/SFigure9/FigureS9D_all_feature_correlation.pdf")
+pdf(file = "Figures/SFigures/SFigure8/FigureS8D_all_feature_correlation.pdf")
 par(mar= c(5,5,1,1))
 barCenter = barplot(b.mean[o, i], horiz=T, beside=F, xlim=c(-0.5, 0.5), 
                     xlab="Spearman correlation with PPI mutability",
@@ -364,7 +364,7 @@ fs = c(17, 15, 18, 8,  3,  2, 1)
 fc = b.mean[fs, 3:1]
 fc_ci_lower = b.mean[fs, 3:1]- b.sd[fs, 3:1] 
 fc_ci_upper = b.mean[fs, 3:1]+ b.sd[fs, 3:1] 
-pdf(file = "Figures/SFigures/SFigure9/FigureS9E_gene_features_PPI_stability.pdf")
+pdf(file = "Figures/SFigures/SFigure8/FigureS8E_gene_features_PPI_stability.pdf")
 par(mar= c(5,5,1,2))
 barCenter = barplot(t(fc), horiz=T, beside=T, xlim=c(-0.8, 0.6), 
                     xlab="Correlation with the mutability score",

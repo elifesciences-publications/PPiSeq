@@ -87,6 +87,6 @@ ggplot(stability_bin_degree, aes(x = sCore, fill = label, col = label))+
               axis.title.y=element_text(size=10)) + 
         theme(text = element_text(size=10))
 
-ggsave("Figures/SFigures/SFigure10/FigureS10D_neighbor_variability_score_environment_bin.pdf", width =4, height =4)
+ggsave("Figures/SFigures/SFigure9/FigureS9D_neighbor_variability_score_environment_bin.pdf", width =4, height =4)
 
 
