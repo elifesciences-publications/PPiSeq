@@ -3,6 +3,7 @@ setwd("~/Desktop/PPiSeq_additional_data/")
 source("function.R") # Load commonly used functions
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
                  "#8E8E93", "#EFEFF4", "#CECED2", "#000000", "007AFF")
+paper.colors = c("#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090", "#fdae61","#f46d43","#d73027")
 # Calculate a mutability score for each protein
 variation_score = read.csv("Datasets_generated_by_preprocessing/Variation_score_PPI_environment_neg_zero_SD_merge_filter.csv")
 PP_pair = split_string_vector(variation_score[,1])
@@ -81,13 +82,13 @@ matrix_complex = rbind(low_count, medium_count, high_count)
 all_count = low_count + medium_count  + high_count
 all_count # 611 100  19   4   6   1
 library(RColorBrewer)
-col_chosen = apple_colors[c(5,3,7)]
+col_chosen = paper.colors[c(8,6,2)]
 pdf('Figures/SFigures/SFigure12/SFigure12B_Histogram_complex_count_protein.pdf', width = 5, height = 5)    
 barCenter = barplot(matrix_complex, horiz=F, beside=F, ylim=c(0,800), #ylab="Number of PPIs",
                     space= c(0.6, 0.6, 0.6, 0.6, 0.6, 0.6), 
                     col= col_chosen,  ylab = "Number of proteins", border=NA, cex.axis = 0.6)
-legend("topright", legend=c("> 15", "5-14", "0-4"), 
-       fill=col_chosen[c(3,2,1)], cex = 0.6, bty="n", border=FALSE)
+legend("topright", legend=c("0-4", "5-14", "> 15"), 
+       fill=col_chosen[c(1,2,3)], cex = 0.6, bty="n", border=FALSE)
 text(x= barCenter, y = all_count + 15, labels = low_label, 
      cex=0.6, xpd = TRUE, col= col_chosen[1]) 
 text(x= barCenter, y = all_count + 40, labels = medium_label, 
@@ -97,3 +98,51 @@ text(x= barCenter, y = all_count + 65, labels = high_label,
 text(x= barCenter, y = -40, labels = as.character(1:6), xpd = TRUE, cex = 0.6)
 text(median(barCenter), y = -100, labels = "Number of complexes per protein", xpd = TRUE)
 dev.off()
+
+####### Check the number of members for each complex
+complex_GI = csvReader_T('Outsourced_datasets/Costanzo_2016_Science_Data_File_S12_protein_complex_standard.csv')
+gene_ppiseq = as.vector(num_complex_new[,1])
+length(gene_ppiseq) # 741
+index = 0
+intersect_count = 0
+protein = 0
+#component = unlist(strsplit(as.character(complex_GI[537,6]), "; "))
+for (i in 1:nrow(complex_GI)){
+  component = unlist(strsplit(as.character(complex_GI[i,6]), "; "))
+  protein = c(protein, component)
+  overlap = length(intersect(component, gene_ppiseq))
+  if(overlap >= 1){
+    index = c(index, i)
+    intersect_count = c(intersect_count, overlap)
+  }
+}
+index_new = index[2:length(index)]
+protein = unique(protein[2:length(protein)]) # 2317
+overlap = intersect(protein, gene_ppiseq) # 740
+
+gene_ppiseq[which(!gene_ppiseq %in% overlap)] # 'YDR005C' not in the dataframe by which we calculate the R.
+
+num_complex_new[which(num_complex_new == 'YDR005C'),]
+# X                   PPI.degree                Number.of.complexes              vScore 
+# "YDR005C"               "  8"               "  1"                  "1.589438755" 
+
+intersect_count_new = intersect_count[2:length(intersect_count)]
+complex_GI_ppiseq = complex_GI[index_new,] # 357
+complex_GI_ppiseq = cbind(complex_GI_ppiseq, intersect_count_new)
+complex_member_count = as.numeric(complex_GI_ppiseq[,3])
+complex_ppiseq_gene_count = as.numeric(complex_GI_ppiseq[,8])
+complex_GI_ppiseq[1,]
+
+pdf('Figures/SFigures/SFigure12/SFigure12C_Histogram_number_members_Protein_complex.pdf', width = 5, height = 5)
+par(mar = c(5,4,1,1)) 
+hist(complex_member_count, breaks =seq(1,55, by = 1), col = paper.colors[2],
+     xlab = 'Number of genes per complex', ylab = 'Number of complexes', main = NA)
+dev.off()
+
+pdf('Figures/SFigures/SFigure12/SFigure12D_Histogram_number_PPiSeq_genes_per_protein_complex.pdf', width = 5, height = 5)
+par(mar = c(5,4,1,1)) 
+hist(complex_ppiseq_gene_count, breaks =seq(1,40, by = 1), col = paper.colors[2],
+     xlab = 'Number of genes in PPiSeq per complex', ylab = 'Number of complexes', main = NA)
+dev.off()
+
+
