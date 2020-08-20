@@ -1,4 +1,4 @@
-
+# Code for Figure S12 can be found in the code of Main Figure 4C
 setwd("~/Desktop/PPiSeq_additional_data/")
 source("function.R") # Load commonly used functions
 apple_colors = c("#5AC8FA", "#FFCC00", "#FF9500", "#FF2D55", "#007AFF", "#4CD964", "#FF3B30",
