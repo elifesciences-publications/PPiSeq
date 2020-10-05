@@ -1,6 +1,6 @@
 # PPiSeq
 
-## Code for the analysis of PPiSeq data
+## Code for the analysis of PPiSeq data from "A large accessory protein interactome is rewired across environments"
 
 ### Analyses for Figures 1, 2, 3, 4A-C, 5, and Supplementary Figures S1-13
 
