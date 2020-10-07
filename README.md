@@ -1,3 +1,7 @@
+This code is associated with the paper from Liu et al., "A large accessory protein interactome is
+rewired across environments". eLife, 2020. http://doi.org/10.7554/eLife.62365
+
+
 # PPiSeq
 
 ## Code for the analysis of PPiSeq data from "A large accessory protein interactome is rewired across environments"
